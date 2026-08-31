@@ -201,6 +201,11 @@ a, a:hover { color:#7B2D8E; }
           <div style="height:4px;background:#f0e6f6;border-radius:99px;margin-bottom:20px;overflow:hidden">
             <div style="height:100%;background:linear-gradient(90deg,#7B2D8E,#A855F7);border-radius:99px;transition:width 0.4s;width:{{ quizBarWidth }}"></div>
           </div>
+          <sc-if value="{{ quizHasImg }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#000;border-radius:var(--radius-md);overflow:hidden;margin-bottom:16px;box-shadow:0 4px 16px rgba(0,0,0,0.15)">
+              <img src="{{ quizImgSrc }}" style="width:100%;display:block;max-height:44vh;object-fit:contain;background:#000" alt="Family photo">
+            </div>
+          </sc-if>
           <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;margin:0 0 20px;color:#1a1a1a;line-height:1.4">{{ quizQuestion }}</h3>
           <div style="display:flex;flex-direction:column;gap:10px">
             <sc-for list="{{ quizOptions }}" as="opt" hint-placeholder-count="4">
@@ -847,9 +852,10 @@ class Component extends DCLogic {
     {q:'What mountain is the family visiting?',a:['Stone Mountain','Lookout Mountain','Smoky Mountain','Blue Mountain'],c:1},
     {q:'How many days is the reunion?',a:['2','3','4','5'],c:2},
     {q:'What is the family karaoke night called?',a:['Sing-Off','Reoke','Voice Battle','Mic Night'],c:1},
-    {q:'Who are the parents of the Moreland children?',a:['Frank and Katherine','Will and Mattie','Jerry and Jane','Robert and Lucy'],c:1},
-    {q:'Which character did a young family member famously portray on stage?',a:['Curtis Taylor Jr.','Jimmy Early','James Brown','Berry Gordy'],c:1},
-    {q:'Elliott and Skeeter are the siblings of which cousin group?',a:['The Hartsfields','The Porch cousins','The Dennises','The Walkers'],c:1},
+    {q:'Name this family member\'s parents.',a:['Frank and Katherine','Will and Mattie Moreland','Jerry and Jane','Robert and Lucy'],c:1,img:'6055'},
+    {q:'Name the character being portrayed here.',a:['Curtis Taylor Jr.','Jimmy Early','James Brown','Berry Gordy'],c:1,img:'6049'},
+    {q:'Name the siblings of this baby.',a:['David and Ashley','Elliott and Skeeter','Julia and Subrina','Samone and Precious'],c:1,img:'6052'},
+    {q:'Name BOTH of this family member\'s daughters.',a:['Mattie and Lucy','Julia and Subrina','Samone and Savannah','Ashley and Deondra'],c:1,img:'6070'},
     // ===== FAMILY HISTORY — 1700s ROOTS =====
     {q:'James Porch, one of our earliest known ancestors, was born in 1749 in which colony?',a:['North Carolina','Virginia','Georgia','Maryland'],c:1},
     {q:'Thomas Porch, son of James, was born in 1772 in which colony?',a:['Virginia','South Carolina','Georgia','Delaware'],c:0},
@@ -1252,6 +1258,7 @@ class Component extends DCLogic {
       quizProgress: (qi+1)+' / '+qd.length, quizScore: s.quizScore,
       quizBarWidth: ((qi+(s.quizSelected!==null?1:0))/qd.length*100)+'%',
       quizQuestion: curQ.q, quizOptions,
+      quizHasImg: !!curQ.img, quizImgSrc: curQ.img ? (this._photoSrc[curQ.img]||'') : '',
       quizFinalScore: s.quizScore, quizTotal: qd.length,
       quizPercent: Math.round(s.quizScore/qd.length*100),
       quizRestart: () => this.setState({quizIdx:0,quizScore:0,quizSelected:null,quizFinished:false}),
