@@ -554,7 +554,8 @@ h1,h2,h3,.btn,.door-num,.slot-item{font-family:'Bebas Neue',sans-serif;letter-sp
         🥬 <strong>Collard Greens</strong> = Health Refill<br>
         🥧 <strong>Sweet Potato Pie</strong> = Bonus Points<br>
         ⚠️ Avoid potholes, shopping carts, hay bales & pigeons!<br>
-        👮 <strong>Cousin Eli</strong> throws obstacles — dodge them!
+        👮 <strong>Cousin Eli</strong> throws obstacles — dodge them!<br>
+        ✨ <strong>Aunt Alberta</strong> has the <strong>Soothing Aura</strong> — tap AURA (or Shift) to calm every obstacle near you, and her puppy tags along!
       </p>
     </div>
   </div>
@@ -568,7 +569,8 @@ h1,h2,h3,.btn,.door-num,.slot-item{font-family:'Bebas Neue',sans-serif;letter-sp
     <canvas id="runner-canvas" width="800" height="400"></canvas>
     <div id="r-powerup-status" style="text-align:center;font-size:0.9rem;color:var(--gold);min-height:22px;margin-top:4px;"></div>
     <div class="runner-controls">
-      <button class="btn btn-gold btn-sm" onclick="runnerJump()" style="flex:1;max-width:300px;font-size:1.4rem;">⬆️ JUMP</button>
+      <button class="btn btn-gold btn-sm" onclick="runnerJump()" style="flex:1;max-width:240px;font-size:1.4rem;">⬆️ JUMP</button>
+      <button class="btn btn-cyan btn-sm" id="aura-btn" onclick="activateAura()" style="display:none;font-size:1.2rem;">✨ AURA</button>
     </div>
     <div id="runner-gameover" style="display:none;text-align:center;margin-top:14px;">
       <div class="card">
@@ -829,10 +831,12 @@ const CHARS=[
   {name:"Uncle James",role:"Dapper Keepsake Collector",color:"#6A1B9A",hat:null,desc:"Silver hair, gold jacket, collecting keepsakes for bonus points",skin:"#8B6914"},
   {name:"Aunt Jean",role:"Radiant Memory Trail Runner",color:"#7B1FA2",hat:null,desc:"Silver hair sparkles, leaves a memory trail, graceful speed",skin:"#8B6914"},
   {name:"Aunt Mildred",role:"Efficient Cook-off Contender",color:"#212121",hat:null,desc:"Curly hair, fast & practical, cook-off ingredients = point multiplier",skin:"#8B6914"},
+  {name:"Aunt Alberta",role:"The Peaceful Pacifier",color:"#7B2635",hat:"#1C1C1C",desc:"Maroon shawl & knit cap. Soothing Aura calms obstacles. Soft landings and a puppy friend!",skin:"#6B4423",ability:"aura",pants:"#4A4A5A"},
 ];
 let selChar=0,rCanvas,rCtx,rRunning=false,rAnim=null;
 let rPlayer,rObstacles,rPowerups,rEli,rScore,rDist,rHealth,rSpeed,rGround;
 let rInvincible=0,rSpeedBoost=0,rFrame=0,rSpawnTimer=0,rEliTimer=0;
+let rAura=0,rAuraCooldown=0,rPuppy=null;
 const R_W=800,R_H=400,GRAVITY=0.7,JUMP_FORCE=-13;
 
 // Build character select
@@ -851,28 +855,57 @@ function buildCharSelect(){
   });
 }
 
-function drawCharPixel(cx,ch,x,y,s){
-  // Simple pixel character ~16x24 scaled by s
-  const sz=2*s;
-  // Legs
-  cx.fillStyle='#333';
+function drawCharPixel(cx,ch,x,y,s,auraActive){
+  const isAlberta = ch.name.includes('Alberta');
+  // Soothing aura glow (Alberta's special ability)
+  if(isAlberta && auraActive){
+    const g=cx.createRadialGradient(x,y-14*s,0,x,y-14*s,26*s);
+    g.addColorStop(0,'rgba(120,255,220,0.35)');g.addColorStop(0.6,'rgba(160,200,255,0.15)');g.addColorStop(1,'transparent');
+    cx.fillStyle=g;cx.beginPath();cx.arc(x,y-14*s,26*s,0,Math.PI*2);cx.fill();
+    // Sparkles
+    for(let i=0;i<5;i++){
+      const a=(Date.now()/300+i*1.3)%(Math.PI*2);
+      const sx=x+Math.cos(a)*20*s, sy=y-14*s+Math.sin(a)*18*s;
+      cx.fillStyle='rgba(200,255,240,0.8)';cx.fillRect(sx,sy,2*s,2*s);
+    }
+  }
+  // Legs / pants
+  cx.fillStyle=ch.pants||'#333';
   cx.fillRect(x-4*s,y-4*s,3*s,4*s);cx.fillRect(x+1*s,y-4*s,3*s,4*s);
   // Body
   cx.fillStyle=ch.color;
-  cx.fillRect(x-5*s,y-14*s,10*s,10*s);
+  if(isAlberta){
+    // Long shawl/cape silhouette - wider and flowing
+    cx.fillRect(x-6*s,y-15*s,12*s,12*s);
+    cx.fillRect(x-7*s,y-12*s,14*s,7*s);
+  } else {
+    cx.fillRect(x-5*s,y-14*s,10*s,10*s);
+  }
   // Arms
+  cx.fillStyle=ch.color;
   cx.fillRect(x-7*s,y-12*s,2*s,6*s);cx.fillRect(x+5*s,y-12*s,2*s,6*s);
   // Head
   cx.fillStyle=ch.skin;
   cx.fillRect(x-4*s,y-20*s,8*s,7*s);
   // Hair
-  cx.fillStyle=ch.name.includes('James')||ch.name.includes('Jean')?'#ccc':ch.name.includes('Mildred')?'#222':'#555';
+  cx.fillStyle=isAlberta?'#1C1C1C':ch.name.includes('James')||ch.name.includes('Jean')?'#ccc':ch.name.includes('Mildred')?'#222':'#555';
   cx.fillRect(x-4*s,y-22*s,8*s,3*s);
-  // Hat (if applicable)
-  if(ch.hat){cx.fillStyle=ch.hat;cx.fillRect(x-6*s,y-24*s,12*s,3*s);cx.fillRect(x-4*s,y-26*s,8*s,2*s);}
+  // Hat / knit cap
+  if(ch.hat){
+    cx.fillStyle=ch.hat;
+    if(isAlberta){
+      // Knit cap - rounded, snug
+      cx.fillRect(x-5*s,y-24*s,10*s,4*s);
+      cx.fillRect(x-4*s,y-26*s,8*s,2*s);
+    } else {
+      cx.fillRect(x-6*s,y-24*s,12*s,3*s);cx.fillRect(x-4*s,y-26*s,8*s,2*s);
+    }
+  }
   // Eyes
   cx.fillStyle='#fff';cx.fillRect(x-3*s,y-18*s,2*s,2*s);cx.fillRect(x+1*s,y-18*s,2*s,2*s);
   cx.fillStyle='#000';cx.fillRect(x-2*s,y-17*s,1*s,1*s);cx.fillRect(x+2*s,y-17*s,1*s,1*s);
+  // Alberta's smile
+  if(isAlberta){cx.fillStyle='#000';cx.fillRect(x-2*s,y-15*s,4*s,1*s);}
 }
 
 function showRunnerSelect(){
@@ -889,8 +922,12 @@ function startRunner(){
   rPlayer={x:100,y:rGround,vy:0,w:24,h:40,onGround:true,runFrame:0};
   rObstacles=[];rPowerups=[];rEli={active:false,x:0,y:0,type:0,timer:0,throwing:false,projectile:null};
   rScore=0;rDist=0;rHealth=3;rSpeed=4;rInvincible=0;rSpeedBoost=0;rFrame=0;rSpawnTimer=0;rEliTimer=300;
+  rAura=0;rAuraCooldown=0;rPuppy=null;
+  // Alberta starts with an extra heart (Peaceful Pacifier perk)
+  if(CHARS[selChar].ability==='aura')rHealth=4;
   document.getElementById('runner-select').style.display='none';
   document.getElementById('runner-game-area').style.display='block';
+  document.getElementById('aura-btn').style.display=CHARS[selChar].ability==='aura'?'inline-block':'none';
   document.getElementById('runner-gameover').style.display='none';
   document.getElementById('r-powerup-status').textContent='';
   rRunning=true;
@@ -898,7 +935,21 @@ function startRunner(){
 }
 
 function runnerJump(){if(!rRunning)return;if(rPlayer.onGround){rPlayer.vy=JUMP_FORCE;rPlayer.onGround=false;sfxTick();}}
-document.addEventListener('keydown',e=>{if(e.code==='Space'&&document.getElementById('pg-runner').classList.contains('active')){e.preventDefault();runnerJump();}});
+function activateAura(){
+  if(!rRunning)return;
+  if(CHARS[selChar].ability!=='aura'){return;}
+  if(rAuraCooldown>0||rAura>0)return;
+  rAura=180;rAuraCooldown=600;
+  sfxDing();
+  document.getElementById('r-powerup-status').textContent='\u2728 SOOTHING AURA ACTIVE!';
+  // Spawn a friendly puppy companion
+  rPuppy={x:rPlayer.x-40,y:rGround,bounce:0};
+}
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('pg-runner').classList.contains('active'))return;
+  if(e.code==='Space'){e.preventDefault();runnerJump();}
+  if(e.code==='ShiftLeft'||e.code==='ShiftRight'){e.preventDefault();activateAura();}
+});
 document.getElementById('runner-canvas')?.addEventListener('click',runnerJump);
 document.getElementById('runner-canvas')?.addEventListener('touchstart',e=>{e.preventDefault();runnerJump();},{passive:false});
 
@@ -971,7 +1022,7 @@ function runnerLoop(ts){
   // Collisions - obstacles
   const px=rPlayer.x,py=rPlayer.y-rPlayer.h,pw=rPlayer.w,ph=rPlayer.h;
   rObstacles.forEach(o=>{
-    if(rInvincible>0)return;
+    if(rInvincible>0||rAura>0)return;
     if(px+pw>o.x&&px<o.x+o.w&&py+ph>o.y&&py<o.y+o.h){
       rHealth--;sfxBuzz();rInvincible=60;
       if(rHealth<=0)gameOver();
@@ -979,7 +1030,7 @@ function runnerLoop(ts){
   });
 
   // Collision - Eli projectile
-  if(rEli.projectile&&rInvincible<=0){
+  if(rEli.projectile&&rInvincible<=0&&rAura<=0){
     const pr=rEli.projectile;
     if(px+pw>pr.x&&px<pr.x+pr.w&&py+ph>pr.y&&py<pr.y+pr.h){
       rHealth--;sfxBuzz();rInvincible=60;rEli.projectile=null;
@@ -1003,11 +1054,37 @@ function runnerLoop(ts){
   // Timers
   if(rInvincible>0)rInvincible--;
   if(rSpeedBoost>0)rSpeedBoost--;
+  if(rAuraCooldown>0)rAuraCooldown--;
+  if(rAura>0){
+    rAura--;
+    // Soothing Aura: nearby obstacles are calmed (pushed away / removed)
+    for(let i=rObstacles.length-1;i>=0;i--){
+      const o=rObstacles[i];
+      const dist=Math.abs((o.x+o.w/2)-(rPlayer.x+12));
+      if(dist<90){rObstacles.splice(i,1);rScore+=25;}
+    }
+    // Calms Eli too
+    if(rEli.projectile){rEli.projectile=null;}
+    if(rAura===0){document.getElementById('r-powerup-status').textContent='';}
+  }
+  // Puppy companion follows
+  if(rPuppy){
+    rPuppy.bounce+=0.15;
+    const targetX=rPlayer.x-45;
+    rPuppy.x+=(targetX-rPuppy.x)*0.08;
+    if(rAura<=0&&Math.random()<0.005)rPuppy=null;
+  }
 
   // Score
   rDist+=spd/10;rScore+=1;
 
   // Update HUD
+  const ab=document.getElementById('aura-btn');
+  if(ab&&CHARS[selChar].ability==='aura'){
+    if(rAura>0){ab.textContent='✨ ACTIVE';ab.disabled=true;}
+    else if(rAuraCooldown>0){ab.textContent='✨ '+Math.ceil(rAuraCooldown/60)+'s';ab.disabled=true;}
+    else{ab.textContent='✨ AURA';ab.disabled=false;}
+  }
   document.getElementById('r-health').textContent='❤️'.repeat(rHealth);
   document.getElementById('r-dist').textContent=Math.floor(rDist);
   document.getElementById('r-score').textContent=rScore;
@@ -1070,12 +1147,26 @@ function runnerLoop(ts){
     }
   }
 
+  // Draw puppy companion (Alberta's soft-landing friend)
+  if(rPuppy){
+    const pb=Math.abs(Math.sin(rPuppy.bounce))*4;
+    rCtx.fillStyle='#D2A679';
+    rCtx.fillRect(rPuppy.x,rGround-12-pb,18,9);
+    rCtx.fillRect(rPuppy.x+14,rGround-17-pb,8,7);
+    rCtx.fillStyle='#8B6544';
+    rCtx.fillRect(rPuppy.x+13,rGround-19-pb,3,4);
+    rCtx.fillRect(rPuppy.x+19,rGround-19-pb,3,4);
+    rCtx.fillRect(rPuppy.x-3,rGround-14-pb,4,3);
+    rCtx.fillStyle='#000';rCtx.fillRect(rPuppy.x+18,rGround-15-pb,2,2);
+    rCtx.fillStyle='#333';rCtx.fillRect(rPuppy.x+2,rGround-3-pb,3,3);rCtx.fillRect(rPuppy.x+12,rGround-3-pb,3,3);
+  }
+
   // Draw player
   const ch=CHARS[selChar];
   if(rInvincible>0&&rFrame%6<3){/* blink */}
   else{
     const bobY=rPlayer.onGround?Math.sin(rPlayer.runFrame*0.15)*2:0;
-    drawCharPixel(rCtx,ch,rPlayer.x+12,rPlayer.y+bobY,1.6);
+    drawCharPixel(rCtx,ch,rPlayer.x+12,rPlayer.y+bobY,1.6,rAura>0);
     // Speed boost trail
     if(rSpeedBoost>0){rCtx.fillStyle='rgba(255,165,0,0.3)';for(let i=1;i<4;i++)rCtx.fillRect(rPlayer.x-i*12,rPlayer.y-rPlayer.h+10+bobY,8,20);}
     // Invincible glow
@@ -1103,8 +1194,8 @@ function drawHomeSprites(){
     {id:'mc-q',char:4}, // Aunt Mildred for Quiz
     {id:'mc-g',char:2}, // Uncle James for Games
     {id:'mc-r',char:1}, // Uncle Norah for Runner
-    {id:'mc-a',char:0}, // Aunt Freddie for Places
-    {id:'mc-m',char:4}, // Aunt Mildred for Menu
+    {id:'mc-a',char:5}, // Aunt Alberta for Places
+    {id:'mc-m',char:5}, // Aunt Alberta for Menu
     {id:'mc-d',char:3}, // Aunt Jean for Contacts
   ];
   spriteMap.forEach(s=>{
