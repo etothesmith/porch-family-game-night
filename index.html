@@ -1,1395 +1,943 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Porch Family Game Night</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <style>
-        :root {
-            --gold: #ffd700;
-            --gold-dark: #b8860b;
-            --gold-light: #ffe766;
-            --neon-blue: #00f3ff;
-            --neon-pink: #ff00ea;
-            --green: #00ff66;
-            --red: #ff3333;
-            --bg-color: #050510;
-            --panel-bg: rgba(10, 10, 30, 0.88);
-            --glass-border: rgba(255,255,255,0.12);
-        }
-        *, *::before, *::after { box-sizing: border-box; }
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden;
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-color);
-            color: white; text-align: center;
-        }
-        h1, h2, h3, .slot-item, .btn, .door-number {
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 2px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porch Family Game Night</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;600;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<style>
+:root {
+  --gold:#ffd700; --gold-dk:#b8860b; --gold-lt:#ffe766;
+  --cyan:#00f3ff; --pink:#ff2d95; --green:#00ff88; --red:#ff4444;
+  --bg:#04040e; --panel:rgba(8,8,28,0.92); --glass:rgba(255,255,255,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;}
+body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background:var(--bg);color:#fff;text-align:center;}
+h1,h2,h3,.btn,.door-num,.slot-item{font-family:'Bebas Neue',sans-serif;letter-spacing:2px;}
 
-        /* === MARQUEE LIGHTS === */
-        .marquee {
-            position: fixed; top: 0; left: 0; width: 100%; height: 44px;
-            background: linear-gradient(180deg, #111 0%, #000 100%);
-            z-index: 500; display: flex; justify-content: space-around; align-items: center;
-            border-bottom: 3px solid var(--gold);
-            box-shadow: 0 4px 30px rgba(255, 215, 0, 0.25), 0 2px 10px rgba(255, 215, 0, 0.4);
-        }
-        .bulb {
-            width: 12px; height: 12px; border-radius: 50%;
-            background: #fff;
-            box-shadow: 0 0 6px 2px rgba(255,255,255,0.8), 0 0 14px 4px rgba(255,215,0,0.6), 0 0 28px 6px rgba(255,215,0,0.3);
-            animation: bulbGlow 1.2s infinite alternate ease-in-out;
-        }
-        .bulb:nth-child(3n) { animation-delay: 0.4s; }
-        .bulb:nth-child(3n+1) { animation-delay: 0.8s; }
-        .bulb.red { box-shadow: 0 0 6px 2px rgba(255,80,80,0.8), 0 0 14px 4px rgba(255,0,0,0.5), 0 0 28px 6px rgba(255,0,0,0.2); }
-        .bulb.blue { box-shadow: 0 0 6px 2px rgba(0,200,255,0.8), 0 0 14px 4px rgba(0,243,255,0.5), 0 0 28px 6px rgba(0,243,255,0.2); }
-        @keyframes bulbGlow {
-            0% { opacity: 0.3; transform: scale(0.85); filter: brightness(0.4); }
-            100% { opacity: 1; transform: scale(1.1); filter: brightness(1.4); }
-        }
+/* CANVAS BG */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
 
-        /* === STAGE === */
-        .stage-floor {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 22%;
-            background: linear-gradient(to top, #0c0c2e, #06061a 40%, transparent);
-            transform: perspective(500px) rotateX(55deg);
-            transform-origin: bottom; z-index: 1;
-            border-top: 2px solid rgba(0, 243, 255, 0.3);
-            box-shadow: 0 -15px 60px rgba(0, 243, 255, 0.12);
-        }
-        .background-glow {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background:
-                radial-gradient(ellipse at 30% 20%, rgba(138, 43, 226, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(255, 0, 234, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(0, 100, 255, 0.06) 0%, transparent 60%);
-            z-index: 2; pointer-events: none;
-        }
-        .spotlight {
-            position: fixed; top: -60%; width: 100%; height: 200%;
-            background: conic-gradient(from 180deg at 50% 0%, transparent 44%, rgba(255,215,0,0.04) 46%, rgba(255,215,0,0.06) 50%, rgba(255,215,0,0.04) 54%, transparent 56%);
-            z-index: 2; pointer-events: none; animation: spotSweep 8s ease-in-out infinite alternate;
-        }
-        @keyframes spotSweep { 0% { transform: rotate(-8deg); } 100% { transform: rotate(8deg); } }
+/* HEADER BAR */
+.top-bar{position:fixed;top:0;left:0;width:100%;height:48px;background:linear-gradient(180deg,#111 0%,#000 100%);z-index:600;display:flex;align-items:center;justify-content:center;border-bottom:3px solid var(--gold);box-shadow:0 4px 30px rgba(255,215,0,0.2);}
+.top-bar-title{font-family:'Bebas Neue';font-size:1.4rem;color:var(--gold);letter-spacing:6px;text-shadow:0 0 12px rgba(255,215,0,0.3);}
+.light-strip{position:fixed;top:48px;left:0;width:100%;height:4px;z-index:601;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--gold),var(--green),var(--pink));background-size:400% 100%;animation:lightFlow 4s linear infinite;}
+@keyframes lightFlow{0%{background-position:0% 0%;}100%{background-position:400% 0%;}}
 
-        /* === CURTAINS === */
-        .curtain {
-            position: fixed; top: 44px; width: 52%; height: calc(100% - 44px);
-            z-index: 200; transition: transform 2.8s cubic-bezier(0.22, 0.61, 0.36, 1);
-            overflow: hidden;
-        }
-        .curtain::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(to right, #5a0000 0px, #7a0a0a 18px, #6b0505 36px, #4a0000 54px);
-        }
-        .curtain::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 15%, transparent 80%, rgba(0,0,0,0.7) 100%);
-        }
-        #curtain-left { left: 0; border-right: 6px solid var(--gold); box-shadow: 8px 0 30px rgba(0,0,0,0.8); }
-        #curtain-right { right: 0; border-left: 6px solid var(--gold); box-shadow: -8px 0 30px rgba(0,0,0,0.8); }
-        .curtains-open #curtain-left { transform: translateX(-102%); }
-        .curtains-open #curtain-right { transform: translateX(102%); }
+/* CURTAINS - New design */
+.curtain{position:fixed;top:52px;width:52%;height:calc(100% - 52px);z-index:200;transition:transform 3s cubic-bezier(0.22,0.61,0.36,1);overflow:hidden;}
+.curtain-inner{width:100%;height:100%;position:relative;}
+.curtain-inner::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background:repeating-linear-gradient(92deg,#3a0018 0px,#5c0028 14px,#4a0020 28px,#380016 42px);
+}
+.curtain-inner::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(180deg,rgba(0,0,0,0.5) 0%,transparent 8%,transparent 92%,rgba(0,0,0,0.6) 100%),
+  linear-gradient(90deg,rgba(255,255,255,0.03) 0%,transparent 30%,transparent 70%,rgba(255,255,255,0.03) 100%);
+}
+.curtain-fringe{position:absolute;bottom:0;left:0;width:100%;height:60px;
+  background:repeating-linear-gradient(90deg,transparent 0px,transparent 8px,var(--gold) 8px,var(--gold) 10px);
+  opacity:0.3;mask-image:linear-gradient(to bottom,transparent,black);
+}
+.curtain-trim{position:absolute;top:0;width:8px;height:100%;background:linear-gradient(180deg,var(--gold),var(--gold-dk),var(--gold));box-shadow:0 0 15px rgba(255,215,0,0.3);}
+#curtain-left{left:0;}
+#curtain-left .curtain-trim{right:0;}
+#curtain-right{right:0;}
+#curtain-right .curtain-trim{left:0;}
+.curtains-open #curtain-left{transform:translateX(-105%);}
+.curtains-open #curtain-right{transform:translateX(105%);}
 
-        /* === OVERLAYS & MENUS === */
-        #intro-overlay, .instruction-panel {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2,2,12,0.97); z-index: 300;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            backdrop-filter: blur(12px);
-        }
-        .instruction-panel { z-index: 250; display: none; }
-        .intro-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.5rem, 7vw, 5.5rem); color: #fff; margin: 0 0 5px 0;
-            text-shadow: 0 0 20px rgba(0, 243, 255, 0.6), 0 0 60px rgba(0, 243, 255, 0.2);
-            line-height: 1.1;
-        }
-        .intro-sub {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(1rem, 3vw, 1.6rem); color: var(--gold);
-            letter-spacing: 8px; margin-bottom: 25px;
-            text-shadow: 0 0 10px rgba(255,215,0,0.4);
-        }
-        .instructions-box {
-            background: rgba(12, 12, 35, 0.95);
-            border: 1px solid var(--glass-border);
-            padding: 35px 40px; border-radius: 20px; max-width: 800px; text-align: left;
-            box-shadow: 0 0 40px rgba(0, 100, 255, 0.15), 0 20px 60px rgba(0,0,0,0.6);
-            backdrop-filter: blur(20px);
-        }
-        .instructions-box h2 { margin-top: 0; text-align: center; }
-        .instructions-box li { font-size: clamp(1rem, 2vw, 1.3rem); margin-bottom: 12px; line-height: 1.5; color: #ccc; }
-        .instructions-box strong { color: var(--neon-blue); }
+/* VALANCE */
+.valance{position:fixed;top:48px;left:0;width:100%;height:40px;z-index:210;
+  background:linear-gradient(180deg,#4a0020,#2a0010);
+  border-bottom:4px solid var(--gold);
+  box-shadow:0 6px 20px rgba(0,0,0,0.6);
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.valance-scallop{width:100%;height:20px;
+  background:repeating-radial-gradient(ellipse 40px 20px at top,#3a0018 0 18px,transparent 18px 40px);
+}
 
-        /* === BUTTONS === */
-        .btn {
-            padding: 14px 28px; font-size: 1.6rem;
-            border: none; border-radius: 10px; cursor: pointer; margin: 8px;
-            text-transform: uppercase; color: #fff; position: relative; overflow: hidden;
-            box-shadow: 0 5px 0 rgba(0,0,0,0.4), 0 8px 20px rgba(0,0,0,0.3);
-            transition: transform 0.08s, box-shadow 0.08s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.4), 0 3px 8px rgba(0,0,0,0.3); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .btn::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-            transition: left 0.5s;
-        }
-        .btn:hover::after { left: 140%; }
-        .btn-gold { background: linear-gradient(135deg, #ffd700 0%, #c9a100 50%, #e6be00 100%); color: #1a1000; font-weight: 900; }
-        .btn-green { background: linear-gradient(135deg, #00c853, #009624); border: 2px solid var(--green);
-            box-shadow: 0 5px 0 #005f15, 0 0 20px rgba(0,255,102,0.15); }
-        .btn-red { background: linear-gradient(135deg, #e53935, #b71c1c); border: 2px solid var(--red);
-            box-shadow: 0 5px 0 #7f0000, 0 0 20px rgba(255,51,51,0.15); }
-        .btn-blue { background: linear-gradient(135deg, #0288d1, #01579b); border: 2px solid var(--neon-blue);
-            box-shadow: 0 5px 0 #003d6b, 0 0 20px rgba(0,243,255,0.1); }
-        .glass-panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 28px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05);
-            backdrop-filter: blur(16px);
-            width: 92%; max-width: 900px;
-        }
+/* SCREENS */
+.screen{position:fixed;top:52px;left:0;width:100%;height:calc(100% - 52px);z-index:10;
+  display:none;flex-direction:column;align-items:center;padding-top:50px;
+  overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:thin;scrollbar-color:rgba(255,215,0,0.3) transparent;
+  opacity:0;transition:opacity 0.6s ease;
+}
+.screen.active{display:flex;opacity:1;}
+.screen::-webkit-scrollbar{width:6px;}
+.screen::-webkit-scrollbar-thumb{background:rgba(255,215,0,0.3);border-radius:3px;}
 
-        /* === GAME CONTAINERS === */
-        .game-container {
-            position: fixed; top: 44px; left: 0; width: 100%; height: calc(100% - 44px);
-            z-index: 10; padding-top: 15px; display: none; flex-direction: column; align-items: center;
-            overflow-y: auto; overflow-x: hidden;
-            scrollbar-width: thin; scrollbar-color: rgba(255,215,0,0.3) transparent;
-        }
-        .game-container::-webkit-scrollbar { width: 6px; }
-        .game-container::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.3); border-radius: 3px; }
-        h1.title {
-            font-size: clamp(2.8rem, 6vw, 4.5rem); color: #fff; margin: 0 0 15px 0;
-            text-shadow: 0 0 10px var(--neon-pink), 0 0 30px var(--neon-pink), 0 0 60px rgba(255,0,234,0.3);
-        }
-        .back-btn { position: sticky; top: 0; z-index: 20; align-self: flex-start; margin-left: 15px; margin-bottom: 5px; }
+/* BUTTONS */
+.btn{padding:14px 30px;font-size:1.5rem;border:none;border-radius:12px;cursor:pointer;margin:8px;
+  text-transform:uppercase;color:#fff;position:relative;overflow:hidden;
+  box-shadow:0 4px 0 rgba(0,0,0,0.4),0 6px 20px rgba(0,0,0,0.3);
+  transition:transform 0.08s,box-shadow 0.08s,filter 0.2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,0.4);}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.btn:hover:not(:disabled){filter:brightness(1.15);}
+.btn-gold{background:linear-gradient(135deg,#ffd700,#c9a100,#e6be00);color:#1a1000;font-weight:900;}
+.btn-green{background:linear-gradient(135deg,#00c853,#007e33);border:2px solid var(--green);}
+.btn-red{background:linear-gradient(135deg,#e53935,#b71c1c);border:2px solid var(--red);}
+.btn-cyan{background:linear-gradient(135deg,#0288d1,#01579b);border:2px solid var(--cyan);}
+.btn-pink{background:linear-gradient(135deg,#c2185b,#880e4f);border:2px solid var(--pink);}
+.btn-sm{font-size:1rem;padding:8px 16px;}
 
-        /* === WHEEL === */
-        #wheel-container { position: relative; margin: 10px auto; display: none; }
-        .wheel-frame {
-            position: relative; display: inline-block;
-            padding: 18px; border-radius: 50%;
-            background: conic-gradient(from 0deg, #222, #3a3a3a, #222, #3a3a3a, #222, #3a3a3a, #222, #3a3a3a);
-            box-shadow: 0 0 0 6px var(--gold), 0 0 0 10px #222, 0 0 40px rgba(255,215,0,0.3), 0 0 80px rgba(0,0,0,0.8);
-        }
-        #canvas-wheel { border-radius: 50%; display: block; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); }
-        #wheel-pointer {
-            position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 18px solid transparent; border-right: 18px solid transparent;
-            border-top: 40px solid #fff;
-            z-index: 20; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
-            transition: transform 0.05s;
-        }
-        #wheel-pointer.tick { transform: translateX(-50%) rotate(8deg); }
-        .wheel-center {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 40px; height: 40px; border-radius: 50%;
-            background: radial-gradient(circle, #fff 0%, #ccc 40%, #888 100%);
-            box-shadow: 0 0 15px rgba(0,0,0,0.6); z-index: 15; border: 3px solid var(--gold);
-        }
-        #selected-name {
-            font-size: clamp(2rem, 5vw, 3.2rem); margin-top: 12px; color: var(--gold);
-            text-shadow: 2px 2px 0 #000, 0 0 20px rgba(255,215,0,0.3);
-            min-height: 50px;
-        }
+.glass{background:var(--panel);border:1px solid var(--glass);border-radius:20px;padding:28px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.04);
+  backdrop-filter:blur(16px);width:92%;max-width:920px;
+}
 
-        /* === QUESTION === */
-        #question-text {
-            font-size: clamp(1.1rem, 2.5vw, 1.45rem); margin: 18px 0; font-weight: 700;
-            line-height: 1.6; color: #eee;
-        }
-        .q-category { display: inline-block; padding: 4px 16px; border-radius: 20px;
-            font-size: 0.85rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-        .cat-family { background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
-        .cat-pop { background: rgba(0,243,255,0.15); color: var(--neon-blue); border: 1px solid rgba(0,243,255,0.3); }
-        .cat-task { background: rgba(255,0,234,0.15); color: var(--neon-pink); border: 1px solid rgba(255,0,234,0.3); }
-        #options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0; }
-        .option-box {
-            background: rgba(0, 100, 180, 0.12);
-            border: 2px solid rgba(0, 180, 255, 0.3);
-            color: #fff; padding: 14px 12px; border-radius: 12px;
-            font-size: clamp(1rem, 2vw, 1.2rem); text-align: center; font-weight: bold;
-            transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;
-            user-select: none; -webkit-tap-highlight-color: transparent;
-        }
-        .option-box:hover:not(.locked) {
-            background: rgba(0, 180, 255, 0.2); border-color: rgba(0, 220, 255, 0.6);
-            transform: scale(1.02);
-        }
-        .option-box.selected {
-            background: rgba(0, 180, 255, 0.35) !important;
-            border-color: var(--neon-blue) !important;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3) !important;
-            transform: scale(1.03);
-        }
-        .option-box.correct {
-            background: rgba(0, 255, 102, 0.3) !important;
-            border-color: var(--green) !important;
-            box-shadow: 0 0 30px rgba(0, 255, 102, 0.4) !important;
-            color: #fff !important;
-        }
-        .option-box.wrong-pick {
-            background: rgba(255, 51, 51, 0.35) !important;
-            border-color: var(--red) !important;
-            box-shadow: 0 0 20px rgba(255,51,51,0.3) !important;
-        }
-        .option-box.dimmed { opacity: 0.2; }
-        .option-box.locked { cursor: default; pointer-events: none; }
-        @media (max-width: 600px) { #options-grid { grid-template-columns: 1fr; } }
-        #answer-text {
-            font-size: 1.5rem; color: var(--green); display: none; margin: 15px 0;
-            background: rgba(0,255,102,0.08); padding: 14px; border-radius: 12px;
-            font-weight: bold; border: 1px solid rgba(0,255,102,0.2);
-        }
+/* INTRO */
+#intro-screen{z-index:300;background:rgba(4,4,14,0.98);padding-top:0;justify-content:center;}
+.logo{font-family:'Playfair Display',serif;font-size:clamp(3rem,8vw,6rem);margin:0;line-height:1;
+  background:linear-gradient(135deg,#fff 0%,var(--cyan) 50%,var(--pink) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.logo-sub{font-family:'Bebas Neue';font-size:clamp(1.2rem,3vw,1.8rem);color:var(--gold);
+  letter-spacing:10px;margin:0 0 30px;text-shadow:0 0 12px rgba(255,215,0,0.3);}
+.name-input{width:85%;max-width:620px;font-size:1.1rem;padding:14px 18px;margin-bottom:20px;
+  border-radius:14px;background:rgba(255,255,255,0.04);color:#fff;
+  border:2px solid rgba(255,255,255,0.12);font-family:'Outfit';resize:vertical;
+  transition:border-color 0.3s;
+}
+.name-input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 20px rgba(0,243,255,0.1);}
+.name-input::placeholder{color:rgba(255,255,255,0.3);}
 
-        /* === COUNTDOWN === */
-        #countdown-display {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(4rem, 10vw, 7rem);
-            color: var(--gold);
-            text-shadow: 0 0 30px rgba(255,215,0,0.5), 3px 3px 0 #000;
-            margin: 15px 0;
-            min-height: 90px;
-            display: none;
-            animation: countPulse 1s ease-in-out infinite;
-        }
-        @keyframes countPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-        }
-        #countdown-display.final {
-            animation: none;
-        }
+/* INSTRUCTIONS */
+.inst-screen{z-index:250;background:rgba(4,4,14,0.98);justify-content:center;}
+.inst-box{max-width:780px;text-align:left;}
+.inst-box h2{text-align:center;margin-top:0;font-size:clamp(1.8rem,4vw,2.8rem);}
+.inst-box li{font-size:clamp(0.95rem,1.8vw,1.2rem);margin-bottom:10px;line-height:1.5;color:#bbb;}
+.inst-box strong{color:var(--cyan);}
 
-        /* === TASK BUTTONS === */
-        #task-judgment { display: none; margin-top: 15px; }
+/* DOOR SETUP */
+#door-setup-screen{z-index:240;background:rgba(4,4,14,0.98);justify-content:center;}
+.setup-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:15px 0;max-width:700px;}
+.setup-door{width:70px;height:95px;border-radius:10px;cursor:pointer;position:relative;
+  border:3px solid #333;transition:all 0.25s;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;user-select:none;-webkit-tap-highlight-color:transparent;
+}
+.setup-door .door-num{font-size:1.8rem;color:#888;pointer-events:none;}
+.setup-door .door-label{font-size:0.7rem;font-family:'Outfit';font-weight:800;letter-spacing:1px;
+  margin-top:4px;pointer-events:none;text-transform:uppercase;}
+.setup-door.prize{background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,200,100,0.08));
+  border-color:var(--green);box-shadow:0 0 15px rgba(0,255,136,0.15);}
+.setup-door.prize .door-num{color:var(--green);}
+.setup-door.prize .door-label{color:var(--green);}
+.setup-door.gag{background:linear-gradient(135deg,rgba(255,68,68,0.15),rgba(200,30,30,0.08));
+  border-color:var(--red);box-shadow:0 0 15px rgba(255,68,68,0.1);}
+.setup-door.gag .door-num{color:var(--red);}
+.setup-door.gag .door-label{color:var(--red);}
+.setup-door.unset{background:rgba(255,255,255,0.03);}
+.setup-counter{font-size:1.3rem;margin:8px 0;color:#999;}
+.setup-counter span{font-weight:900;font-size:1.5rem;}
+.count-prize{color:var(--green);}
+.count-gag{color:var(--red);}
 
-        /* === DOORS === */
-        .door-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 18px; }
-        .door-wrapper {
-            perspective: 1200px; width: 88px; height: 125px; cursor: pointer; position: relative;
-            transition: transform 0.3s;
-        }
-        .door-wrapper:hover:not(.open):not(.locked) { transform: scale(1.08); }
-        .door-wrapper.pulse-hint {
-            animation: doorPulse 0.8s ease-in-out infinite alternate;
-        }
-        @keyframes doorPulse {
-            0% { box-shadow: 0 0 0 0 rgba(255,215,0,0); }
-            100% { box-shadow: 0 0 25px 5px rgba(255,215,0,0.4); border-radius: 10px; }
-        }
-        .door-frame {
-            width: 100%; height: 100%;
-            background: linear-gradient(180deg, #0a0a1e 0%, #111133 100%);
-            border: 3px solid #2a2a4a; border-radius: 10px 10px 2px 2px;
-            position: absolute; top: 0; left: 0;
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.9), inset 0 -4px 10px rgba(0,100,255,0.1);
-            display: flex; justify-content: center; align-items: center;
-        }
-        .door-content { opacity: 0; transition: opacity 0.4s ease 0.7s; text-align: center; }
-        .door-content .prize-icon { font-size: 2.2rem; display: block; margin-bottom: 2px; }
-        .door-content .prize-label { font-family: 'Bebas Neue'; font-size: 1.3rem; letter-spacing: 1px; }
-        .door-panel {
-            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-            background: linear-gradient(160deg, #e8c84a 0%, #c9a100 25%, #a68500 50%, #c9a100 75%, #e8c84a 100%);
-            border: 2px solid #ffd700; border-radius: 8px 8px 2px 2px;
-            transform-origin: left; transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 4px 0 15px rgba(0,0,0,0.7), inset 0 0 20px rgba(255,255,255,0.15);
-            z-index: 5;
-        }
-        .door-panel::before {
-            content: ''; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
-        }
-        .door-number { font-size: 2.8rem; color: #3a2800; text-shadow: 0 1px 0 rgba(255,255,255,0.4); z-index: 6; }
-        .doorknob {
-            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-            width: 12px; height: 12px;
-            background: radial-gradient(circle at 35% 35%, #fff, #bbb 40%, #777);
-            border-radius: 50%; box-shadow: -1px 1px 4px rgba(0,0,0,0.7); z-index: 6;
-        }
-        .door-wrapper.open .door-panel {
-            transform: rotateY(-120deg);
-            box-shadow: 15px 0 25px rgba(0,0,0,0.3); pointer-events: none;
-        }
-        .door-wrapper.open .door-content { opacity: 1; }
+/* TITLE */
+h1.title{font-size:clamp(2.5rem,5.5vw,4rem);margin:0 0 10px;
+  text-shadow:0 0 15px currentColor,0 0 40px currentColor;}
 
-        /* Door suspense overlay */
-        #door-suspense-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 400;
-            justify-content: center; align-items: center; flex-direction: column;
-            backdrop-filter: blur(8px);
-        }
-        #door-suspense-text {
-            font-family: 'Bebas Neue'; font-size: clamp(3rem, 8vw, 6rem);
-            color: var(--gold); text-shadow: 0 0 30px rgba(255,215,0,0.5);
-        }
+.back-btn{position:sticky;top:0;z-index:20;align-self:flex-start;margin:0 0 5px 15px;}
 
-        /* === REOKE SLOT MACHINE === */
-        .slot-machine-housing {
-            background: linear-gradient(180deg, #1c1c3a 0%, #0e0e25 100%);
-            border: 3px solid #333; border-radius: 24px; padding: 24px 28px;
-            box-shadow: inset 0 2px 0 rgba(255,255,255,0.05), inset 0 0 40px rgba(0,0,0,0.5),
-                0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,215,0,0.15);
-            display: inline-block; position: relative;
-        }
-        .slot-machine-housing::before {
-            content: '🎰 FAMILY REOKE 🎰';
-            position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: #1a1000; font-family: 'Bebas Neue'; font-size: 1.2rem;
-            padding: 4px 20px; border-radius: 12px; letter-spacing: 3px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.5); white-space: nowrap;
-        }
-        .slot-labels { display: flex; justify-content: space-between; margin-bottom: 8px; padding: 0 8px; }
-        .slot-label { flex: 1; text-align: center; color: var(--gold); font-size: 1.3rem;
-            text-shadow: 0 0 8px rgba(255,215,0,0.3); font-family: 'Bebas Neue'; letter-spacing: 2px; }
-        .slots-wrapper { display: flex; gap: 10px; }
-        .slot-window {
-            height: 90px; background: linear-gradient(180deg, #e8e8e8, #fff 20%, #fff 80%, #e0e0e0);
-            border: 3px solid #1a1a1a; border-radius: 10px;
-            box-shadow: inset 0 10px 20px rgba(0,0,0,0.3), inset 0 -10px 20px rgba(0,0,0,0.2), 0 2px 5px rgba(0,0,0,0.5);
-            overflow: hidden; position: relative;
-        }
-        .slot-window::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 100%);
-            pointer-events: none; z-index: 10;
-        }
-        .slot-window::after {
-            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
-            background: rgba(255,0,0,0.2); transform: translateY(-50%);
-            pointer-events: none; z-index: 11; box-shadow: 0 0 6px rgba(255,0,0,0.15);
-        }
-        .slot-track { display: flex; flex-direction: column; width: 100%; }
-        .slot-item {
-            height: 90px; display: flex; justify-content: center; align-items: center;
-            color: #111; font-size: 1.6rem; text-align: center; font-family: 'Bebas Neue';
-            border-bottom: 1px solid #ddd; padding: 0 10px; letter-spacing: 1px;
-        }
-        .slot-item.highlight { background: linear-gradient(135deg, var(--gold-light), var(--gold)); color: #1a1000; font-weight: 900; }
-        #window-singer { width: 220px; }
-        #window-type { width: 130px; }
-        #window-song { width: 340px; }
-        #duet-spinner-container {
-            display: none; margin-top: 18px; padding: 18px;
-            background: rgba(255,0,234,0.06); border-radius: 16px; border: 2px dashed rgba(255,0,234,0.3);
-            animation: fadeSlideIn 0.5s ease forwards;
-        }
-        #window-duet-partner { width: 260px; margin: 0 auto; }
-        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
-        #reoke-action-card { display: none; margin-top: 18px; }
-        .song-marquee {
-            background: rgba(0,0,0,0.5); padding: 20px; border-radius: 14px;
-            border: 1px solid rgba(0,243,255,0.2); margin-bottom: 18px;
-            position: relative; overflow: hidden;
-        }
+/* WHEEL */
+#wheel-area{position:relative;margin:10px auto;}
+.wheel-housing{position:relative;display:inline-block;padding:20px;border-radius:50%;
+  background:conic-gradient(from 0deg,#1a1a1a,#2a2a2a,#1a1a1a,#2a2a2a,#1a1a1a,#2a2a2a,#1a1a1a,#2a2a2a);
+  box-shadow:0 0 0 5px var(--gold),0 0 0 9px #1a1a1a,0 0 50px rgba(255,215,0,0.2),0 0 100px rgba(0,0,0,0.8);
+}
+#canvas-wheel{border-radius:50%;display:block;}
+#wheel-ptr{position:absolute;top:2px;left:50%;transform:translateX(-50%);z-index:20;
+  width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;
+  border-top:38px solid var(--gold);filter:drop-shadow(0 3px 6px rgba(0,0,0,0.8));
+  transition:transform 0.06s;}
+#wheel-ptr.bounce{transform:translateX(-50%) rotate(10deg);}
+.wheel-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:36px;height:36px;border-radius:50%;z-index:15;
+  background:radial-gradient(circle,#fff 0%,#ddd 30%,#999 100%);
+  border:3px solid var(--gold);box-shadow:0 0 12px rgba(0,0,0,0.5);}
+#who-next{font-size:clamp(1.8rem,4vw,2.8rem);margin-top:12px;color:var(--gold);
+  text-shadow:2px 2px 0 #000,0 0 20px rgba(255,215,0,0.2);min-height:45px;font-family:'Bebas Neue';}
 
-        /* === YOUTUBE EMBED === */
-        .yt-embed-container {
-            position: relative; width: 100%; max-width: 640px; margin: 15px auto;
-            padding-bottom: 56.25%; height: 0; overflow: hidden;
-            border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); background: #000;
-        }
-        .yt-embed-container iframe {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border: none; border-radius: 10px;
-        }
+/* QUESTION */
+#q-text{font-size:clamp(1.05rem,2.2vw,1.35rem);margin:14px 0;font-weight:600;line-height:1.6;color:#ddd;}
+.badge{display:inline-block;padding:4px 14px;border-radius:18px;font-size:0.8rem;font-weight:900;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.badge-fam{background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.25);}
+.badge-pop{background:rgba(0,243,255,0.12);color:var(--cyan);border:1px solid rgba(0,243,255,0.25);}
+.badge-task{background:rgba(255,45,149,0.12);color:var(--pink);border:1px solid rgba(255,45,149,0.25);}
 
-        /* === EFFECTS === */
-        #effect-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; z-index: 999; display: none;
-            justify-content: center; align-items: center; flex-direction: column;
-            font-family: 'Bebas Neue'; text-transform: uppercase;
-        }
-        #effect-overlay.show { display: flex; animation: effectPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes effectPop { 0% { transform: scale(0.1); opacity: 0; } 60% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
-        #effect-text { font-size: clamp(4rem, 12vw, 9rem); text-shadow: 6px 6px 0 rgba(0,0,0,0.5), 0 0 40px currentColor; }
-        .effect-great { background: radial-gradient(circle, rgba(0, 200, 80, 0.92), rgba(0, 100, 40, 0.92)); color: #fff; }
-        .effect-gag { background: radial-gradient(circle, rgba(200, 30, 30, 0.92), rgba(100, 0, 0, 0.92)); color: #fff; }
-        @keyframes shake {
-            0%, 100% { transform: translate(0,0) rotate(0); }
-            10% { transform: translate(-12px,-8px) rotate(-2deg); }
-            30% { transform: translate(12px,6px) rotate(2deg); }
-            50% { transform: translate(-8px,12px) rotate(-1.5deg); }
-            70% { transform: translate(10px,-6px) rotate(1.5deg); }
-        }
-        .shaking { animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both; }
+#opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}
+.opt{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.12);color:#fff;
+  padding:14px 10px;border-radius:14px;font-size:clamp(0.95rem,1.8vw,1.15rem);text-align:center;
+  font-weight:700;cursor:pointer;transition:all 0.25s;user-select:none;-webkit-tap-highlight-color:transparent;}
+.opt:hover:not(.locked){background:rgba(0,243,255,0.08);border-color:rgba(0,243,255,0.3);transform:scale(1.02);}
+.opt.picked{background:rgba(0,243,255,0.2)!important;border-color:var(--cyan)!important;
+  box-shadow:0 0 20px rgba(0,243,255,0.2)!important;transform:scale(1.03);}
+.opt.right{background:rgba(0,255,136,0.2)!important;border-color:var(--green)!important;
+  box-shadow:0 0 25px rgba(0,255,136,0.3)!important;}
+.opt.wrong-pick{background:rgba(255,68,68,0.25)!important;border-color:var(--red)!important;}
+.opt.dim{opacity:0.15;}
+.opt.locked{cursor:default;pointer-events:none;}
+@media(max-width:600px){#opts-grid{grid-template-columns:1fr;}}
 
-        /* === RESPONSIVE === */
-        @media (max-width: 900px) {
-            .slots-wrapper { flex-direction: column; align-items: center; }
-            .slot-window { width: 92% !important; max-width: 360px; }
-            .slot-labels { display: none; }
-            .slot-machine-housing { padding: 20px 14px; width: 95%; }
-            .door-wrapper { width: 70px; height: 100px; }
-            .door-number { font-size: 2rem; }
-        }
-        @media (max-width: 500px) { .glass-panel { padding: 18px 14px; } .btn { font-size: 1.2rem; padding: 12px 20px; } }
-        .name-input {
-            width: 85%; max-width: 600px; font-size: 1.2rem; padding: 14px;
-            margin-bottom: 25px; border-radius: 12px;
-            background: rgba(0,0,0,0.5); color: #fff;
-            border: 2px solid rgba(0,243,255,0.3);
-            font-family: 'Montserrat'; resize: vertical;
-            transition: border-color 0.3s;
-        }
-        .name-input:focus { outline: none; border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0,243,255,0.15); }
-        .fade-in { animation: fadeIn 0.6s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+#countdown{font-family:'Bebas Neue';font-size:clamp(3.5rem,9vw,6rem);color:var(--gold);
+  text-shadow:0 0 25px rgba(255,215,0,0.4),3px 3px 0 #000;margin:10px 0;min-height:80px;
+  display:none;animation:pulse 1s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+#countdown.done{animation:none;}
+
+/* DOORS (game) */
+.door-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:15px;}
+.door-w{perspective:1200px;width:82px;height:115px;cursor:pointer;position:relative;transition:transform 0.3s;}
+.door-w:hover:not(.open):not(.locked){transform:scale(1.08);}
+.door-w.glow{animation:doorGlow 0.7s ease-in-out infinite alternate;}
+@keyframes doorGlow{0%{filter:drop-shadow(0 0 0 transparent);}100%{filter:drop-shadow(0 0 12px rgba(255,215,0,0.5));}}
+.door-bg{width:100%;height:100%;position:absolute;top:0;left:0;
+  background:linear-gradient(180deg,#0a0a20,#12123a);
+  border:2px solid #222;border-radius:8px;
+  box-shadow:inset 0 0 20px rgba(0,0,0,0.8);
+  display:flex;justify-content:center;align-items:center;}
+.door-reveal{opacity:0;transition:opacity 0.5s ease 0.8s;text-align:center;}
+.door-reveal .emoji{font-size:2rem;display:block;}
+.door-reveal .label{font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:1px;}
+.door-face{width:100%;height:100%;position:absolute;top:0;left:0;
+  background:linear-gradient(160deg,#c9a100 0%,#a68500 30%,#8a7000 50%,#a68500 70%,#c9a100 100%);
+  border:2px solid var(--gold);border-radius:8px;
+  transform-origin:left;transition:transform 1.2s cubic-bezier(0.4,0,0.2,1);
+  display:flex;justify-content:center;align-items:center;
+  box-shadow:3px 0 12px rgba(0,0,0,0.6),inset 0 0 15px rgba(255,255,255,0.1);z-index:5;}
+.door-face::before{content:'';position:absolute;inset:6px;border:1px solid rgba(255,255,255,0.15);border-radius:4px;}
+.door-num{font-size:2.4rem;color:#3a2800;text-shadow:0 1px 0 rgba(255,255,255,0.3);z-index:6;}
+.knob{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:10px;height:10px;
+  background:radial-gradient(circle at 35% 35%,#fff,#bbb 40%,#666);border-radius:50%;
+  box-shadow:-1px 1px 3px rgba(0,0,0,0.6);z-index:6;}
+.door-w.open .door-face{transform:rotateY(-125deg);box-shadow:12px 0 20px rgba(0,0,0,0.2);}
+.door-w.open .door-reveal{opacity:1;}
+
+/* SUSPENSE */
+#suspense{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:500;
+  justify-content:center;align-items:center;flex-direction:column;backdrop-filter:blur(10px);}
+#suspense-txt{font-family:'Bebas Neue';font-size:clamp(3rem,8vw,6rem);color:var(--gold);
+  text-shadow:0 0 30px rgba(255,215,0,0.4);}
+
+/* EFFECT OVERLAY */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:999;display:none;
+  justify-content:center;align-items:center;font-family:'Bebas Neue';text-transform:uppercase;}
+#fx.show{display:flex;animation:fxPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards;}
+@keyframes fxPop{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
+#fx-txt{font-size:clamp(4rem,12vw,8rem);text-shadow:5px 5px 0 rgba(0,0,0,0.5),0 0 40px currentColor;}
+.fx-win{background:radial-gradient(circle,rgba(0,200,80,0.93),rgba(0,80,30,0.93));color:#fff;}
+.fx-lose{background:radial-gradient(circle,rgba(200,20,20,0.93),rgba(80,0,0,0.93));color:#fff;}
+@keyframes shake{0%,100%{transform:translate(0) rotate(0);}15%{transform:translate(-10px,-6px) rotate(-2deg);}
+  35%{transform:translate(10px,4px) rotate(2deg);}55%{transform:translate(-6px,8px) rotate(-1deg);}
+  75%{transform:translate(8px,-4px) rotate(1deg);}}
+.shaking{animation:shake 0.5s ease both;}
+
+/* REOKE */
+.slot-housing{background:linear-gradient(180deg,#18183a,#0c0c28);border:3px solid #2a2a4a;
+  border-radius:22px;padding:22px 24px;box-shadow:inset 0 2px 0 rgba(255,255,255,0.04),
+  inset 0 0 30px rgba(0,0,0,0.4),0 20px 50px rgba(0,0,0,0.7);display:inline-block;position:relative;}
+.slot-housing::before{content:'🎰 FAMILY REOKE 🎰';position:absolute;top:-16px;left:50%;
+  transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),var(--gold-dk));
+  color:#1a1000;font-family:'Bebas Neue';font-size:1.1rem;padding:3px 18px;border-radius:10px;
+  letter-spacing:3px;box-shadow:0 3px 8px rgba(0,0,0,0.5);white-space:nowrap;}
+.slot-labels{display:flex;justify-content:space-between;margin-bottom:6px;padding:0 6px;}
+.slot-lbl{flex:1;text-align:center;color:var(--gold);font-size:1.2rem;font-family:'Bebas Neue';letter-spacing:2px;}
+.slots-row{display:flex;gap:8px;}
+.slot-win{height:90px;background:linear-gradient(180deg,#e8e8e8,#fff 20%,#fff 80%,#e0e0e0);
+  border:3px solid #1a1a1a;border-radius:8px;overflow:hidden;position:relative;
+  box-shadow:inset 0 8px 16px rgba(0,0,0,0.25),inset 0 -8px 16px rgba(0,0,0,0.15);}
+.slot-win::after{content:'';position:absolute;top:50%;left:0;width:100%;height:2px;
+  background:rgba(255,0,0,0.15);transform:translateY(-50%);pointer-events:none;z-index:11;}
+.slot-track{display:flex;flex-direction:column;width:100%;}
+.slot-item{height:90px;display:flex;justify-content:center;align-items:center;
+  color:#111;font-size:1.5rem;text-align:center;font-family:'Bebas Neue';
+  border-bottom:1px solid #ddd;padding:0 8px;letter-spacing:1px;}
+.slot-item.hl{background:linear-gradient(135deg,var(--gold-lt),var(--gold));color:#1a1000;font-weight:900;}
+#win-singer{width:200px;}#win-type{width:120px;}#win-song{width:320px;}
+#duet-box{display:none;margin-top:15px;padding:15px;background:rgba(255,45,149,0.06);
+  border-radius:14px;border:2px dashed rgba(255,45,149,0.25);animation:fadeUp 0.5s ease;}
+#win-duet{width:240px;margin:0 auto;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:translateY(0);}}
+#reoke-result{display:none;margin-top:15px;}
+.song-card{background:rgba(0,0,0,0.4);padding:18px;border-radius:14px;border:1px solid rgba(0,243,255,0.15);margin-bottom:15px;}
+.yt-box{position:relative;width:100%;max-width:620px;margin:12px auto;padding-bottom:56.25%;height:0;
+  overflow:hidden;border-radius:12px;border:2px solid rgba(255,255,255,0.08);box-shadow:0 8px 30px rgba(0,0,0,0.5);background:#000;}
+.yt-box iframe{position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:10px;}
+
+@media(max-width:900px){
+  .slots-row{flex-direction:column;align-items:center;}
+  .slot-win{width:92%!important;max-width:340px;}
+  .slot-labels{display:none;}
+  .slot-housing{padding:18px 12px;width:95%;}
+  .door-w{width:65px;height:92px;}.door-num{font-size:1.8rem;}
+  .setup-door{width:58px;height:78px;}.setup-door .door-num{font-size:1.4rem;}
+}
+@media(max-width:500px){.glass{padding:16px 12px;}.btn{font-size:1.1rem;padding:10px 18px;}}
+</style>
 </head>
 <body>
-    <div class="marquee" id="lights"></div>
-    <div class="spotlight"></div>
+<canvas id="bg-canvas"></canvas>
 
-    <!-- MAIN MENU -->
-    <div id="intro-overlay">
-        <div class="intro-title">Porch Family</div>
-        <div class="intro-sub">Game Night</div>
-        <p style="font-size: clamp(0.9rem,2vw,1.15rem); margin-bottom: 18px; color: #aaa; max-width: 560px; padding: 0 20px;">
-            Welcome, host! Enter the family members playing tonight, separated by commas.
-        </p>
-        <textarea id="name-input" class="name-input" rows="3">Uncle John, Aunt Mary, Cousin Tim, Grandma, Grandpa, Sarah, Mike, Lisa</textarea>
-        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
-            <button class="btn btn-gold" style="font-size: clamp(1.4rem,4vw,2.2rem);" onclick="showInstructions('deal')">PORCH OF A DEAL</button>
-            <button class="btn btn-blue" style="font-size: clamp(1.4rem,4vw,2.2rem);" onclick="showInstructions('reoke')">FAMILY REOKE</button>
-        </div>
+<!-- HEADER -->
+<div class="top-bar"><div class="top-bar-title">PORCH FAMILY GAME NIGHT</div></div>
+<div class="light-strip"></div>
+
+<!-- CURTAINS -->
+<div id="curtain-left" class="curtain"><div class="curtain-inner"><div class="curtain-fringe"></div><div class="curtain-trim"></div></div></div>
+<div id="curtain-right" class="curtain"><div class="curtain-inner"><div class="curtain-fringe"></div><div class="curtain-trim"></div></div></div>
+<div class="valance"><div class="valance-scallop"></div></div>
+
+<!-- INTRO -->
+<div id="intro-screen" class="screen active">
+  <div class="logo">Porch Family</div>
+  <div class="logo-sub">Game Night</div>
+  <p style="font-size:clamp(0.85rem,1.8vw,1.05rem);color:#777;max-width:520px;padding:0 20px;margin-bottom:15px;">
+    Enter all players separated by commas. The host controls the whole show!
+  </p>
+  <textarea id="name-input" class="name-input" rows="3" placeholder="Uncle John, Aunt Mary, Cousin Tim, Grandma...">Uncle John, Aunt Mary, Cousin Tim, Grandma, Grandpa, Sarah, Mike, Lisa</textarea>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <button class="btn btn-gold" style="font-size:clamp(1.4rem,4vw,2rem);" onclick="goToInstructions('deal')">PORCH OF A DEAL</button>
+    <button class="btn btn-pink" style="font-size:clamp(1.4rem,4vw,2rem);" onclick="goToInstructions('reoke')">FAMILY REOKE</button>
+  </div>
+</div>
+
+<!-- DEAL INSTRUCTIONS -->
+<div id="inst-deal" class="screen inst-screen">
+  <div class="glass inst-box">
+    <h2 style="color:var(--gold);">HOW TO PLAY: PORCH OF A DEAL</h2>
+    <ul>
+      <li><strong>HOST SETS THE DOORS:</strong> Before the game, YOU decide which doors hide prizes and which hide gag gifts.</li>
+      <li><strong>SPIN THE WHEEL:</strong> Each spin selects a family member.</li>
+      <li><strong>TAP YOUR ANSWER:</strong> The player picks their answer, then a 5-second countdown reveals the result!</li>
+      <li><strong>CORRECT = MAKE A DEAL:</strong> Pick a door for a prize or gag!</li>
+      <li><strong>WRONG = ZONK:</strong> Back to the wheel — no door for you!</li>
+    </ul>
+    <div style="text-align:center;margin-top:20px;">
+      <button class="btn btn-green" style="font-size:1.6rem;" onclick="goToDoorSetup()">NEXT: SET UP THE DOORS →</button>
     </div>
+  </div>
+</div>
 
-    <!-- INSTRUCTIONS -->
-    <div id="inst-deal" class="instruction-panel">
-        <div class="instructions-box">
-            <h2 style="color: var(--gold); font-size: clamp(2rem,5vw,3.2rem);">HOW TO PLAY: PORCH OF A DEAL</h2>
-            <ul>
-                <li><strong>SPIN THE WHEEL:</strong> The wheel randomly selects a family member.</li>
-                <li><strong>PICK YOUR ANSWER:</strong> Tap the answer you think is correct.</li>
-                <li><strong>COUNTDOWN:</strong> A 5-second countdown locks in your answer, then reveals if you're right or wrong!</li>
-                <li><strong>WIN = MAKE A DEAL:</strong> Pick one of the 20 doors — 10 hide GREAT prizes, 10 hide GAG gifts!</li>
-                <li><strong>ZONK:</strong> Wrong answer? You're ZONKED and go back to the wheel!</li>
-            </ul>
-            <div style="text-align: center; margin-top: 25px;">
-                <button class="btn btn-green" style="font-size: 1.8rem;" onclick="startGameReal('deal')">GOT IT — START GAME!</button>
-            </div>
-        </div>
+<!-- DOOR SETUP (HOST) -->
+<div id="door-setup-screen" class="screen">
+  <div class="glass" style="max-width:760px;">
+    <h2 style="color:var(--gold);font-size:clamp(1.8rem,4vw,2.6rem);margin-top:0;">HOST: SET UP THE DOORS</h2>
+    <p style="color:#888;font-size:1rem;margin:0 0 10px;">Tap each door to toggle between <span style="color:var(--green);font-weight:800;">PRIZE</span> and <span style="color:var(--red);font-weight:800;">GAG</span>. Players won't see this!</p>
+    <div class="setup-counter">
+      Prizes: <span class="count-prize" id="prize-count">0</span> &nbsp;|&nbsp; Gags: <span class="count-gag" id="gag-count">0</span>
     </div>
-    <div id="inst-reoke" class="instruction-panel">
-        <div class="instructions-box">
-            <h2 style="color: var(--neon-pink); font-size: clamp(2rem,5vw,3.2rem);">HOW TO PLAY: FAMILY REOKE</h2>
-            <ul>
-                <li><strong>PULL THE LEVER:</strong> The slot machine picks the Singer, Type, and Song!</li>
-                <li><strong>DUETS & GROUPS:</strong> If Duet or Group lands, the machine spins again for a partner!</li>
-                <li><strong>WILDCARD:</strong> The rare [VOLUNTEER] wildcard lets anyone jump up and pick their own song!</li>
-                <li><strong>HIT THE STAGE:</strong> The karaoke video loads right on screen — grab the mic!</li>
-            </ul>
-            <div style="text-align: center; margin-top: 25px;">
-                <button class="btn btn-green" style="font-size: 1.8rem;" onclick="startGameReal('reoke')">GOT IT — START GAME!</button>
-            </div>
-        </div>
+    <div class="setup-grid" id="setup-grid"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;">
+      <button class="btn btn-cyan btn-sm" onclick="autoFillDoors('even')">AUTO: 10/10 SPLIT</button>
+      <button class="btn btn-cyan btn-sm" onclick="autoFillDoors('generous')">AUTO: 14 PRIZES / 6 GAGS</button>
+      <button class="btn btn-cyan btn-sm" onclick="autoFillDoors('cruel')">AUTO: 6 PRIZES / 14 GAGS</button>
     </div>
-
-    <!-- CURTAINS & STAGE -->
-    <div id="curtain-left" class="curtain"></div>
-    <div id="curtain-right" class="curtain"></div>
-    <div class="stage-floor"></div>
-    <div class="background-glow"></div>
-
-    <!-- GAME 1: PORCH OF A DEAL -->
-    <div id="deal-game" class="game-container">
-        <button class="btn btn-blue back-btn" style="font-size: 0.9rem; padding: 7px 14px;" onclick="returnToMainMenu()">⬅ MAIN MENU</button>
-        <h1 class="title">PORCH OF A DEAL</h1>
-        <div id="wheel-container">
-            <div class="wheel-frame">
-                <div id="wheel-pointer"></div>
-                <canvas id="canvas-wheel" width="340" height="340"></canvas>
-                <div class="wheel-center"></div>
-            </div>
-            <br>
-            <button class="btn btn-gold" style="font-size: clamp(1.6rem,4vw,2.4rem); margin-top: 15px;" onclick="spinDealWheel()" id="spin-btn">SPIN THE WHEEL</button>
-            <div id="selected-name">Who's next?</div>
-        </div>
-
-        <div id="question-area" class="glass-panel fade-in" style="display:none;">
-            <div id="q-category-badge"></div>
-            <h2 style="color: var(--neon-blue); font-size: clamp(1.8rem,4vw,2.8rem); margin: 5px 0 0 0;">TRIVIA TIME</h2>
-            <div id="player-answering" style="color: var(--gold); font-size: 1.4rem; margin: 5px 0;"></div>
-            <div id="question-text"></div>
-            <div id="options-grid"></div>
-            <div id="answer-text"></div>
-            <div id="countdown-display"></div>
-            <div id="task-judgment" style="margin-top: 15px;">
-                <p style="color: #aaa; font-size: 1.1rem;">Host: Did they complete the task?</p>
-                <button class="btn btn-green" onclick="taskComplete(true)">NAILED IT!</button>
-                <button class="btn btn-red" onclick="taskComplete(false)">NOT QUITE!</button>
-            </div>
-        </div>
-
-        <div id="prize-area" class="glass-panel fade-in" style="display:none;">
-            <h2 id="door-grid-title" style="color: var(--gold); font-size: clamp(1.8rem,4vw,2.8rem); margin: 0;">PICK A DOOR!</h2>
-            <div class="door-grid" id="door-grid"></div>
-        </div>
+    <div style="text-align:center;margin-top:18px;">
+      <button class="btn btn-gold" style="font-size:1.6rem;" id="start-deal-btn" onclick="startDealGame()" disabled>START THE GAME!</button>
+      <p id="setup-warning" style="color:var(--red);font-size:0.9rem;margin:6px 0 0;">Assign all 20 doors before starting.</p>
     </div>
+  </div>
+</div>
 
-    <!-- DOOR SUSPENSE OVERLAY -->
-    <div id="door-suspense-overlay">
-        <div id="door-suspense-text"></div>
+<!-- REOKE INSTRUCTIONS -->
+<div id="inst-reoke" class="screen inst-screen">
+  <div class="glass inst-box">
+    <h2 style="color:var(--pink);">HOW TO PLAY: FAMILY REOKE</h2>
+    <ul>
+      <li><strong>PULL THE LEVER:</strong> The slot machine picks Singer, Type, and Song!</li>
+      <li><strong>DUETS & GROUPS:</strong> The machine spins again for a partner!</li>
+      <li><strong>WILDCARD:</strong> Rare [VOLUNTEER] — anyone picks their own song!</li>
+      <li><strong>SING IT:</strong> The karaoke video plays right on screen!</li>
+    </ul>
+    <div style="text-align:center;margin-top:20px;">
+      <button class="btn btn-green" style="font-size:1.6rem;" onclick="startReokeGame()">LET'S GO!</button>
     </div>
+  </div>
+</div>
 
-    <!-- GAME 2: FAMILY REOKE -->
-    <div id="reoke-game" class="game-container">
-        <button class="btn btn-blue back-btn" style="font-size: 0.9rem; padding: 7px 14px;" onclick="returnToMainMenu()">⬅ MAIN MENU</button>
-        <h1 class="title" style="color: var(--neon-pink); text-shadow: 0 0 10px #fff, 0 0 25px var(--neon-pink), 0 0 50px rgba(255,0,234,0.3);">FAMILY REOKE</h1>
-        <div class="slot-machine-housing" id="slots-ui">
-            <div class="slot-labels">
-                <div class="slot-label" style="width: 220px;">SINGER</div>
-                <div class="slot-label" style="width: 130px;">TYPE</div>
-                <div class="slot-label" style="width: 340px;">SONG</div>
-            </div>
-            <div class="slots-wrapper">
-                <div class="slot-window" id="window-singer"><div class="slot-track" id="track-singer"><div class="slot-item">?</div></div></div>
-                <div class="slot-window" id="window-type"><div class="slot-track" id="track-type"><div class="slot-item">?</div></div></div>
-                <div class="slot-window" id="window-song"><div class="slot-track" id="track-song"><div class="slot-item">?</div></div></div>
-            </div>
-        </div>
-        <div id="duet-spinner-container">
-            <h3 style="color: var(--neon-pink); margin: 0 0 10px 0; font-size: 1.8rem;">DUET PARTNER:</h3>
-            <div class="slot-window" id="window-duet-partner"><div class="slot-track" id="track-duet-partner"><div class="slot-item">?</div></div></div>
-        </div>
-        <div><button class="btn btn-gold" id="pull-lever-btn" style="font-size: clamp(1.6rem,4vw,2.4rem); padding: 18px 36px; margin-top: 10px;" onclick="pullReokeLever()">🎰 PULL THE LEVER 🎰</button></div>
-        <div id="reoke-action-card" class="glass-panel">
-            <h2 style="color: var(--neon-blue); font-size: clamp(1.8rem,4vw,2.8rem); margin-top:0;">IT'S SHOWTIME!</h2>
-            <div class="song-marquee">
-                <div style="font-size: 1.3rem; color: #999; letter-spacing: 2px;">PERFORMING</div>
-                <div id="final-singer-display" style="font-size: clamp(1.8rem,5vw,2.8rem); color: var(--gold); font-family: 'Bebas Neue';"></div>
-                <div style="margin: 12px auto; width: 60%; border-top: 1px solid rgba(255,255,255,0.1);"></div>
-                <div id="final-song-display" style="font-size: clamp(1.3rem,3.5vw,2rem); color: #fff; font-weight: bold;"></div>
-                <div id="final-artist-display" style="font-size: 1.3rem; color: var(--neon-pink); font-style: italic;"></div>
-            </div>
-            <div id="yt-embed-area" class="yt-embed-container" style="display:none;">
-                <iframe id="yt-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            </div>
-            <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                <button id="play-video-btn" class="btn btn-green" style="font-size: 1.5rem; flex: 1; min-width: 200px;" onclick="playEmbeddedVideo()">▶ PLAY KARAOKE VIDEO</button>
-                <a id="yt-karaoke-search-link" href="#" target="_blank" style="text-decoration: none; flex: 0;">
-                    <button class="btn btn-blue" style="font-size: 1rem; white-space: nowrap;">🔍 Search YouTube</button>
-                </a>
-            </div>
-            <br>
-            <button class="btn btn-red" onclick="resetReokeSlots()" style="font-size: 1.4rem;">DONE / NEXT SINGER</button>
-        </div>
+<!-- DEAL GAME -->
+<div id="deal-screen" class="screen">
+  <button class="btn btn-cyan btn-sm back-btn" onclick="goHome()">⬅ MENU</button>
+  <h1 class="title" style="color:var(--gold);">PORCH OF A DEAL</h1>
+
+  <div id="wheel-area">
+    <div class="wheel-housing">
+      <div id="wheel-ptr"></div>
+      <canvas id="canvas-wheel" width="360" height="360"></canvas>
+      <div class="wheel-hub"></div>
     </div>
+    <br>
+    <button class="btn btn-gold" style="font-size:clamp(1.5rem,3.5vw,2.2rem);margin-top:12px;" onclick="spinWheel()" id="spin-btn">SPIN THE WHEEL</button>
+    <div id="who-next">Who's next?</div>
+  </div>
 
-    <!-- EFFECTS OVERLAY -->
-    <div id="effect-overlay"><div id="effect-text"></div></div>
+  <div id="q-area" class="glass" style="display:none;">
+    <div id="q-badge"></div>
+    <h2 style="color:var(--cyan);font-size:clamp(1.6rem,3.5vw,2.4rem);margin:4px 0 0;">TRIVIA TIME</h2>
+    <div id="player-turn" style="color:var(--gold);font-size:1.3rem;margin:4px 0;font-family:'Bebas Neue';letter-spacing:2px;"></div>
+    <div id="q-text"></div>
+    <div id="opts-grid"></div>
+    <div id="countdown"></div>
+    <div id="task-btns" style="display:none;margin-top:12px;">
+      <p style="color:#888;font-size:0.95rem;">Host: Did they complete the task?</p>
+      <button class="btn btn-green" onclick="judgeTask(true)">NAILED IT!</button>
+      <button class="btn btn-red" onclick="judgeTask(false)">NOT QUITE!</button>
+    </div>
+  </div>
 
-    <script>
-        /* ============ AUDIO (lazy init) ============ */
-        let audioCtx = null;
-        function ensureAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-        }
-        function playTone(freq, type, dur, vol = 0.4) {
-            try { ensureAudio();
-                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-                o.type = type; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                g.gain.setValueAtTime(vol, audioCtx.currentTime);
-                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-                o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
-            } catch(e) {}
-        }
-        function playDing() { playTone(880,'sine',0.5,0.4); setTimeout(()=>playTone(1100,'sine',0.4,0.25),60); }
-        function playBuzzer() { playTone(150,'sawtooth',0.8,0.5); }
-        function playTick() { playTone(1800,'triangle',0.04,0.08); }
-        function playThud() { playTone(80,'square',0.1,0.4); }
-        function playCountTick() { playTone(600,'sine',0.15,0.3); }
-        function playDrumroll() {
-            for(let i=0;i<20;i++) setTimeout(()=>playTone(200+Math.random()*100,'triangle',0.08,0.15),i*80);
-        }
-        function playFanfare() {
-            [523.25,659.25,783.99,1046.50].forEach((f,i)=>{
-                setTimeout(()=>playTone(f,'square',i===3?0.8:0.2,0.35),i*180);
-            });
-        }
-        function playTrombone() {
-            [300,280,260,240].forEach((f,i)=>{
-                setTimeout(()=>playTone(f,'sawtooth',i===3?1.2:0.4,0.35),i*350);
-            });
-        }
+  <div id="doors-area" class="glass" style="display:none;">
+    <h2 id="doors-title" style="color:var(--gold);font-size:clamp(1.6rem,3.5vw,2.4rem);margin:0;">PICK A DOOR!</h2>
+    <div class="door-grid" id="door-grid"></div>
+  </div>
+</div>
 
-        /* ============ GLOBALS ============ */
-        let familyNames = [];
-        let lockInteraction = false;
-        let currentPlayerName = '';
+<!-- SUSPENSE OVERLAY -->
+<div id="suspense"><div id="suspense-txt"></div></div>
+<!-- EFFECT OVERLAY -->
+<div id="fx"><div id="fx-txt"></div></div>
 
-        const lightsDiv = document.getElementById('lights');
-        const bulbColors = ['','red','blue'];
-        for(let i=0;i<50;i++){ const b=document.createElement('div'); b.className='bulb '+bulbColors[i%3]; lightsDiv.appendChild(b); }
+<!-- REOKE GAME -->
+<div id="reoke-screen" class="screen">
+  <button class="btn btn-cyan btn-sm back-btn" onclick="goHome()">⬅ MENU</button>
+  <h1 class="title" style="color:var(--pink);">FAMILY REOKE</h1>
+  <div class="slot-housing">
+    <div class="slot-labels">
+      <div class="slot-lbl" style="width:200px;">SINGER</div>
+      <div class="slot-lbl" style="width:120px;">TYPE</div>
+      <div class="slot-lbl" style="width:320px;">SONG</div>
+    </div>
+    <div class="slots-row">
+      <div class="slot-win" id="win-singer"><div class="slot-track" id="tr-singer"><div class="slot-item">?</div></div></div>
+      <div class="slot-win" id="win-type"><div class="slot-track" id="tr-type"><div class="slot-item">?</div></div></div>
+      <div class="slot-win" id="win-song"><div class="slot-track" id="tr-song"><div class="slot-item">?</div></div></div>
+    </div>
+  </div>
+  <div id="duet-box">
+    <h3 style="color:var(--pink);margin:0 0 8px;font-size:1.6rem;">DUET PARTNER:</h3>
+    <div class="slot-win" id="win-duet"><div class="slot-track" id="tr-duet"><div class="slot-item">?</div></div></div>
+  </div>
+  <div><button class="btn btn-gold" id="lever-btn" style="font-size:clamp(1.5rem,3.5vw,2.2rem);padding:16px 34px;margin-top:10px;" onclick="pullLever()">🎰 PULL THE LEVER 🎰</button></div>
+  <div id="reoke-result" class="glass">
+    <h2 style="color:var(--cyan);font-size:clamp(1.6rem,3.5vw,2.4rem);margin-top:0;">IT'S SHOWTIME!</h2>
+    <div class="song-card">
+      <div style="font-size:1.1rem;color:#666;letter-spacing:2px;">PERFORMING</div>
+      <div id="r-singer" style="font-size:clamp(1.6rem,4vw,2.4rem);color:var(--gold);font-family:'Bebas Neue';"></div>
+      <div style="margin:10px auto;width:50%;border-top:1px solid rgba(255,255,255,0.08);"></div>
+      <div id="r-song" style="font-size:clamp(1.2rem,3vw,1.8rem);font-weight:800;"></div>
+      <div id="r-artist" style="font-size:1.2rem;color:var(--pink);font-style:italic;"></div>
+    </div>
+    <div id="yt-area" class="yt-box" style="display:none;"><iframe id="yt-frame" src="" allow="autoplay;encrypted-media" allowfullscreen></iframe></div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+      <button id="play-btn" class="btn btn-green" style="font-size:1.4rem;flex:1;min-width:180px;" onclick="playVideo()">▶ PLAY KARAOKE</button>
+      <a id="yt-link" href="#" target="_blank" style="text-decoration:none;"><button class="btn btn-cyan btn-sm">🔍 YouTube</button></a>
+    </div>
+    <br><button class="btn btn-red" onclick="resetReoke()" style="font-size:1.2rem;">DONE / NEXT</button>
+  </div>
+</div>
 
-        /* ============ NAVIGATION ============ */
-        function returnToMainMenu() {
-            document.getElementById('deal-game').style.display = 'none';
-            document.getElementById('reoke-game').style.display = 'none';
-            document.body.classList.remove('curtains-open');
-            document.getElementById('yt-iframe').src = '';
-            document.getElementById('yt-embed-area').style.display = 'none';
-            setTimeout(()=>{ document.getElementById('intro-overlay').style.display='flex'; },900);
-        }
-        function showInstructions(gt) {
-            ensureAudio();
-            const raw = document.getElementById('name-input').value;
-            familyNames = raw.split(',').map(n=>n.trim()).filter(n=>n.length>0);
-            if(familyNames.length===0){alert("Please enter at least one name!");return;}
-            familyNames.forEach(n=>{dealPlayCounts[n]=dealPlayCounts[n]||0;reokePlayCounts[n]=reokePlayCounts[n]||0;});
-            document.getElementById('intro-overlay').style.display='none';
-            document.getElementById('inst-'+gt).style.display='flex';
-        }
-        function startGameReal(gt) {
-            document.getElementById('inst-deal').style.display='none';
-            document.getElementById('inst-reoke').style.display='none';
-            document.body.classList.add('curtains-open');
-            setTimeout(()=>{
-                if(gt==='deal'){
-                    document.getElementById('deal-game').style.display='flex';
-                    document.getElementById('wheel-container').style.display='block';
-                    if(doors.length===0) initDoors();
-                    drawWheel();
-                } else {
-                    document.getElementById('reoke-game').style.display='flex';
-                }
-            },2200);
-        }
+<script>
+/* ============ AUDIO ============ */
+let aC=null;
+function initA(){if(!aC)aC=new(window.AudioContext||window.webkitAudioContext)();if(aC.state==='suspended')aC.resume();}
+function tone(f,t,d,v=0.35){try{initA();const o=aC.createOscillator(),g=aC.createGain();o.type=t;o.frequency.setValueAtTime(f,aC.currentTime);g.gain.setValueAtTime(v,aC.currentTime);g.gain.exponentialRampToValueAtTime(0.001,aC.currentTime+d);o.connect(g);g.connect(aC.destination);o.start();o.stop(aC.currentTime+d);}catch(e){}}
+function sfxDing(){tone(880,'sine',0.5);setTimeout(()=>tone(1100,'sine',0.35,0.2),60);}
+function sfxBuzz(){tone(150,'sawtooth',0.7,0.45);}
+function sfxTick(){tone(1800,'triangle',0.04,0.07);}
+function sfxThud(){tone(80,'square',0.1,0.35);}
+function sfxCount(){tone(600,'sine',0.15,0.25);}
+function sfxDrum(){for(let i=0;i<18;i++)setTimeout(()=>tone(180+Math.random()*120,'triangle',0.07,0.12),i*75);}
+function sfxFanfare(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,'square',i===3?0.7:0.18,0.3),i*170));}
+function sfxSad(){[300,280,260,240].forEach((f,i)=>setTimeout(()=>tone(f,'sawtooth',i===3?1:0.35,0.3),i*320));}
 
-        /* ============ DEAL: DATA ============ */
-        let dealPlayCounts = {}, dealNameHistory = [], penaltyBox = [], currentQuestion = null, doors = [], prizeDoorActive = false;
+/* ============ CANVAS PARTICLES ============ */
+const bgC=document.getElementById('bg-canvas'),bgX=bgC.getContext('2d');
+let particles=[];
+function resizeBg(){bgC.width=window.innerWidth;bgC.height=window.innerHeight;}
+window.addEventListener('resize',resizeBg);resizeBg();
+function spawnParticles(){
+  for(let i=0;i<60;i++) particles.push({
+    x:Math.random()*bgC.width,y:Math.random()*bgC.height,
+    r:Math.random()*2+0.5,
+    vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3,
+    a:Math.random()*0.3+0.05,
+    hue:Math.random()<0.5?45:190+Math.random()*30
+  });
+}
+spawnParticles();
+function drawBg(){
+  bgX.clearRect(0,0,bgC.width,bgC.height);
+  // Ambient glow
+  const g1=bgX.createRadialGradient(bgC.width*0.3,bgC.height*0.2,0,bgC.width*0.3,bgC.height*0.2,bgC.height*0.6);
+  g1.addColorStop(0,'rgba(100,0,180,0.06)');g1.addColorStop(1,'transparent');bgX.fillStyle=g1;bgX.fillRect(0,0,bgC.width,bgC.height);
+  const g2=bgX.createRadialGradient(bgC.width*0.7,bgC.height*0.8,0,bgC.width*0.7,bgC.height*0.8,bgC.height*0.5);
+  g2.addColorStop(0,'rgba(255,0,100,0.04)');g2.addColorStop(1,'transparent');bgX.fillStyle=g2;bgX.fillRect(0,0,bgC.width,bgC.height);
 
-        const questions = [
-            // PORCH FAMILY (PRIORITY)
-            {q:"What is the actual name of the man that our parents and grandparents called 'Grandpa'?",options:["Frank Hall","Frank Porch","James Porch","Jerry Porch"],a:"Frank Porch",cat:"family"},
-            {q:"What is the actual name of 'Grandpa's' wife?",options:["Mabel Earlene Simmons","Bertha McGill","Lena Moreland","Katherine Hall"],a:"Katherine Hall",cat:"family"},
-            {q:"Frank and Katherine had one son together. What was his name?",options:["James Porch","Frank Porch III","Sam Porch","Eddie Kang Porch"],a:"James Porch",cat:"family"},
-            {q:"How many children did Frank and Katherine Porch have together?",options:["3","4","5","6"],a:"5",cat:"family"},
-            {q:"About what year was Frank Porch born?",options:["1778","1878","1978","1900"],a:"1878",cat:"family"},
-            {q:"What Georgia county was Frank Porch and his family primarily from?",options:["Coweta County","Henry County","Monroe County","Pike County"],a:"Pike County",cat:"family"},
-            {q:"This stew is often referenced as always being on the menu at Frank's birthday celebrations.",options:["Brummich (Brunswick) Stew","Oxtail Stew","Onion Stew","Beef Stew"],a:"Brummich (Brunswick) Stew",cat:"family"},
-            {q:"Which is the correct birth order for Frank Porch's children?",options:["Frankie, Mattie, Lucy, Alberta, James","Mattie, Lucy, Alberta, James, Frankie","Mattie, Frankie, Lucy, Alberta, James","James, Mattie, Frankie, Lucy, Alberta"],a:"Mattie, Frankie, Lucy, Alberta, James",cat:"family"},
-            {q:"Frank Porch was raised by his paternal grandparents. Who are they?",options:["Lucy and Ricky Porch","Jane and Jerry Porch","Will and Mattie Porch","Mary and Felton Smith"],a:"Jane and Jerry Porch",cat:"family"},
-            {q:"Frankie and Elias produced how many Hartsfield children?",options:["7","10","9","8"],a:"8",cat:"family"},
-            {q:"Lucy and Robert produced how many Dennis children?",options:["6","7","8","9"],a:"6",cat:"family"},
-            {q:"Mattie and Will produced how many surviving Moreland children?",options:["4","5","6","7"],a:"4",cat:"family"},
-            {q:"What street did Aunt Alberta live on in Alton Park?",options:["Oakland Avenue","Main Street","Elm Street","Maple Drive"],a:"Oakland Avenue",cat:"family"},
-            {q:"What street did the Hartsfields live on growing up?",options:["Cooley Street","Oakland Avenue","Heaton Street","Broad Street"],a:"Cooley Street",cat:"family"},
-            {q:"What was the name of Aunt Alberta's cat?",options:["Fluffy","Monkey","Tiger","Sugar"],a:"Monkey",cat:"family"},
-            {q:"Aunt Alberta and Uncle Bud bought this memorable gift for each of the Moreland children. What was it?",options:["Skates","A Pony","Blue Suede Shoes","Bicycles"],a:"Bicycles",cat:"family"},
-            {q:"What was Aunt Alberta's favorite board game?",options:["Monopoly","Sorry","Checkers","Backgammon"],a:"Monopoly",cat:"family"},
-            {q:"What was Aunt Alberta's favorite food?",options:["Fried Catfish","Neck Bones","Fried Chicken","Pinto Beans and Cornbread"],a:"Neck Bones",cat:"family"},
-            {q:"What was Aunt Alberta's favorite spectator sport?",options:["Baseball","Wrestling","Boxing","Football"],a:"Wrestling",cat:"family"},
-            {q:"According to African Ancestry DNA testing, we share our maternal genetic ancestry with what Nigerian tribe?",options:["Yoruba","Igbo","Hausa","Fulani"],a:"Fulani",cat:"family"},
-            {q:"What was Aunt Frankie's favorite fruit?",options:["Peaches","Watermelon","Plums","Apples"],a:"Watermelon",cat:"family"},
-            {q:"What brand of tobacco did Aunt Alberta chew?",options:["Red Man","Day's Work","Copenhagen","Old Mule"],a:"Day's Work",cat:"family"},
-            {q:"Elias Hartsfield had several hustles, but where was his primary occupation?",options:["Eureka Foundry","Mueller","Sisken Steel","Combustion"],a:"Combustion",cat:"family"},
-            {q:"How many children did Mattie and Will have that did NOT survive?",options:["2","4","6","8"],a:"6",cat:"family"},
-            {q:"What was the first year of the Porch Family Reunion?",options:["1959","1969","1979","1989"],a:"1979",cat:"family"},
-            {q:"What is the name of Jerry and Arthur Porch's mother, the Porch matriarch who traveled with them from Virginia?",options:["Rhoda","Martha","Bessie","Hattie"],a:"Rhoda",cat:"family"},
-            {q:"Complete the adopted family motto: 'One generation plants the tree, another gets the _______.'",options:["Shade","Fruit","Harvest","Blessing"],a:"Shade",cat:"family"},
-            {q:"Frank Porch already had two children when he married Katherine. What were their names?",options:["James and Willie Mae","Bonnie and Clyde","Jane and Jerry","Arthur and Nora"],a:"Arthur and Nora",cat:"family"},
-            {q:"What vintage tool was traditionally used to vigorously mix cream in order to make butter?",options:["Butter Churn","Ice Cream Maker","Wash Tub","Grain Mill"],a:"Butter Churn",cat:"family"},
-            {q:"What small outdoor building was used for curing and preserving meat with smoke?",options:["Smokehouse","Greenhouse","Root Cellar","Tool Shed"],a:"Smokehouse",cat:"family"},
-            {q:"Before electric dryers, what clip was essential for securing laundry to a clothesline?",options:["Clothespin","Paperclip","Safety Pin","Hairpin"],a:"Clothespin",cat:"family"},
-            {q:"What tall pole, decorated with ribbons, do people dance around during spring folk festivals?",options:["Maypole","Totem Pole","Tetherball Pole","Festivus Pole"],a:"Maypole",cat:"family"},
-            {q:"What small musical instrument is played by plucking a reed while holding the frame against your teeth?",options:["Jaw Harp","Harmonica","Kazoo","Ocarina"],a:"Jaw Harp",cat:"family"},
-            {q:"What small, high-pitched flute is traditionally associated with military marching bands?",options:["Fife","Piccolo","Recorder","Pennywhistle"],a:"Fife",cat:"family"},
-            {q:"What underground structure was traditionally used for storing vegetables and preventing them from freezing?",options:["Root Cellar","Bunker","Storm Shelter","Cistern"],a:"Root Cellar",cat:"family"},
-            // Who Am I
-            {q:"I attended James A. Henry Elementary. In Junior High I was in the band and started a friend group called the 4-H Club. I attended Howard High where I sang in the Glee Club and played basketball. Who Am I?",options:["Mama Tine","Aunt Jean","Aunt Freddie","Uncle James"],a:"Mama Tine",cat:"family"},
-            {q:"I attended a one room school called Beech. We loved playing baseball using a rock tied in cloth and 'riding' pine trees. I loved Jitterbugging at Henry's Place and plaiting the Maypole. 'Brut Owens' proposed to me, but he moved to Ohio. Who am I?",options:["Aunt Jean","Mama Tine","Aunt Alberta","Aunt Frankie"],a:"Aunt Jean",cat:"family"},
-            {q:"At Howard High (Class of '57), I was in the W.J. Davenport Honor Society, took Cosmetology and public speaking, and was known as 'The Stallion.' I met my future husband at a Chattanooga bus station. Who am I?",options:["Aunt Freddie","Mama Tine","Aunt Jean","Aunt Alberta"],a:"Aunt Freddie",cat:"family"},
-            {q:"I attended Beech Elementary and Howard High (Class of '62). I was in Scouts and went camping in Cherokee, NC. I made the news riding in a stolen car. Aunt Alberta worried more about my socks than my injuries. Who am I?",options:["Uncle James","Uncle Bud","Frank Porch","Elias Hartsfield"],a:"Uncle James",cat:"family"},
-            {q:"I grew up loving hunting and fishing. I attended Jack Yates High School in Houston, Texas. I love BBQ, baseball, football, and especially the National Negro Leagues. My favorite modern teams are the LA Dodgers and Dallas Cowboys. Who Am I?",options:["Norah","Uncle James","Uncle Bud","Frank Porch"],a:"Norah",cat:"family"},
-            {q:"My nickname was 'Nell.' At Howard High (Class of '60), I was a student activist in civil rights protests — I was hosed, jailed, and a picture from a Woolworth sit-in is in a museum. Who am I?",options:["Aunt Frankie","Aunt Alberta","Aunt Jean","Mama Tine"],a:"Aunt Frankie",cat:"family"},
-            // POP CULTURE
-            {q:"What TV show featured the Ricardo and Mertz families and premiered in 1951?",options:["I Love Lucy","The Honeymooners","Father Knows Best","Leave It to Beaver"],a:"I Love Lucy",cat:"pop"},
-            {q:"In 1963, Dr. Martin Luther King Jr. delivered his 'I Have a Dream' speech at what event?",options:["March on Washington","Selma March","Million Man March","Freedom Rides"],a:"March on Washington",cat:"pop"},
-            {q:"What Motown group sang 'My Girl' in 1964?",options:["The Temptations","The Four Tops","The Supremes","The Miracles"],a:"The Temptations",cat:"pop"},
-            {q:"What TV show airing 1971-1979 featured Fred Sanford and his son in a junkyard?",options:["All in the Family","Good Times","The Jeffersons","Sanford and Son"],a:"Sanford and Son",cat:"pop"},
-            {q:"What 1977 TV miniseries traced an African American family from slavery through the Civil War?",options:["Roots","The Autobiography of Miss Jane Pittman","Eyes on the Prize","North and South"],a:"Roots",cat:"pop"},
-            {q:"What game show, hosted by Bob Barker for 35 years, asks contestants to guess product prices?",options:["The Price Is Right","Wheel of Fortune","Jeopardy!","Family Feud"],a:"The Price Is Right",cat:"pop"},
-            {q:"What 1984 sitcom featured the Huxtable family?",options:["The Cosby Show","A Different World","Family Matters","227"],a:"The Cosby Show",cat:"pop"},
-            {q:"In the Fresh Prince of Bel-Air, what city did Will move FROM?",options:["Philadelphia","New York","Baltimore","Atlanta"],a:"Philadelphia",cat:"pop"},
-            {q:"What 1992 movie starred Whitney Houston and Kevin Costner?",options:["The Bodyguard","Waiting to Exhale","Sparkle","The Preacher's Wife"],a:"The Bodyguard",cat:"pop"},
-            {q:"(1999) This cartoon sponge made his debut on Nickelodeon.",options:["SpongeBob SquarePants","Hey Arnold!","CatDog","Rugrats"],a:"SpongeBob SquarePants",cat:"pop"},
-            {q:"What massive video-sharing website was founded in 2005?",options:["YouTube","Vimeo","Dailymotion","Twitch"],a:"YouTube",cat:"pop"},
-            {q:"In 2008, what historic event happened when Barack Obama was elected?",options:["First African American President","First Woman VP","End of the Iraq War","Moon Landing Anniversary"],a:"First African American President",cat:"pop"},
-            {q:"What 2017 Marvel movie featured a fictional African nation called Wakanda?",options:["Black Panther","Blade","Luke Cage","Hancock"],a:"Black Panther",cat:"pop"},
-            {q:"What Netflix documentary about big cat breeders became a sensation in 2020?",options:["Tiger King","Making a Murderer","Wild Wild Country","The Staircase"],a:"Tiger King",cat:"pop"},
-            {q:"What is the name of the blue hedgehog video game character who got his own movies?",options:["Sonic","Crash Bandicoot","Mega Man","Pac-Man"],a:"Sonic",cat:"pop"},
-            {q:"In the movie 'Encanto,' what is the name of the magical family?",options:["The Madrigals","The Riveras","The Coco Family","The Garcias"],a:"The Madrigals",cat:"pop"},
-            {q:"What block-building video game became the best-selling game of all time?",options:["Minecraft","Roblox","Fortnite","Terraria"],a:"Minecraft",cat:"pop"},
-            {q:"What social media app is known for short-form videos and dance trends?",options:["TikTok","Instagram","Snapchat","X (Twitter)"],a:"TikTok",cat:"pop"},
-            {q:"What Disney movie features a Polynesian teenager who sets sail to save her island?",options:["Moana","Frozen","Tangled","Brave"],a:"Moana",cat:"pop"},
-            {q:"Who was the first African American woman to travel in space?",options:["Mae Jemison","Katherine Johnson","Dorothy Vaughan","Mary Jackson"],a:"Mae Jemison",cat:"pop"},
-            {q:"What inventor created the three-position traffic light and the gas mask?",options:["Garrett Morgan","George Washington Carver","Elijah McCoy","Lewis Latimer"],a:"Garrett Morgan",cat:"pop"},
-            {q:"Before Rosa Parks, this 15-year-old girl refused to give up her seat on a Montgomery bus.",options:["Claudette Colvin","Harriet Tubman","Sojourner Truth","Ida B. Wells"],a:"Claudette Colvin",cat:"pop"},
-            {q:"(1999) What new currency was introduced to world financial markets?",options:["The Euro","The Peso","The Yen","The Franc"],a:"The Euro",cat:"pop"},
-            {q:"What board game has players buying properties like Boardwalk and Park Place?",options:["Monopoly","Life","Clue","Risk"],a:"Monopoly",cat:"pop"},
-            {q:"What card game requires you to shout its name when you have one card left?",options:["UNO","Go Fish","Spades","War"],a:"UNO",cat:"pop"},
-            {q:"In the Bible, who was swallowed by a great fish?",options:["Jonah","Moses","David","Noah"],a:"Jonah",cat:"pop"},
-            {q:"What holiday celebrates the end of slavery in the United States on June 19th?",options:["Juneteenth","Emancipation Day","Freedom Day","Liberation Day"],a:"Juneteenth",cat:"pop"},
-            // TASKS
-            {q:"TASK: Sing the National Anthem word for word!",options:[],a:"Task Complete!",cat:"task"},
-            {q:"TASK: Name 5 family members' middle names in 15 seconds!",options:[],a:"Task Complete!",cat:"task"},
-            {q:"TASK: Do your best impression of another family member. The family votes!",options:[],a:"Task Complete!",cat:"task"},
-            {q:"TASK: Name 3 dishes that are always at the family cookout!",options:[],a:"Task Complete!",cat:"task"},
-            {q:"TASK: Tell us your favorite family memory in 30 seconds or less!",options:[],a:"Task Complete!",cat:"task"},
-        ];
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=bgC.width;if(p.x>bgC.width)p.x=0;
+    if(p.y<0)p.y=bgC.height;if(p.y>bgC.height)p.y=0;
+    bgX.beginPath();bgX.arc(p.x,p.y,p.r,0,Math.PI*2);
+    bgX.fillStyle=`hsla(${p.hue},80%,70%,${p.a})`;bgX.fill();
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
 
-        let availableQuestions = [];
-        let askedQuestions = new Set();
+/* ============ STATE ============ */
+let names=[],lock=false,curPlayer='';
+let dealCounts={},dealHist=[],penBox=[],curQ=null,doors=[],doorActive=false;
+let doorSetup=[]; // host-configured: 'prize' or 'gag' per door
 
-        function buildQuestionPool() {
-            availableQuestions = [];
-            questions.forEach(q => {
-                if(q.cat==='family') { availableQuestions.push(q,q,q); }
-                else { availableQuestions.push(q); }
-            });
-            for(let i=availableQuestions.length-1;i>0;i--){
-                const j=Math.floor(Math.random()*(i+1));
-                [availableQuestions[i],availableQuestions[j]]=[availableQuestions[j],availableQuestions[i]];
-            }
-        }
-        function pickQuestion() {
-            let pool = availableQuestions.filter(q => !askedQuestions.has(q.q));
-            if(pool.length===0){ askedQuestions.clear(); pool=[...availableQuestions]; }
-            const chosen = pool[Math.floor(Math.random()*pool.length)];
-            askedQuestions.add(chosen.q);
-            return chosen;
-        }
+/* ============ NAVIGATION ============ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  const el=document.getElementById(id);el.style.display='flex';
+  requestAnimationFrame(()=>el.classList.add('active'));
+}
+function goHome(){
+  document.getElementById('deal-screen').classList.remove('active');
+  document.getElementById('reoke-screen').classList.remove('active');
+  document.body.classList.remove('curtains-open');
+  document.getElementById('yt-frame').src='';
+  setTimeout(()=>showScreen('intro-screen'),800);
+}
+function parseNames(){
+  names=document.getElementById('name-input').value.split(',').map(n=>n.trim()).filter(n=>n);
+  if(!names.length){alert("Enter at least one name!");return false;}
+  names.forEach(n=>{dealCounts[n]=dealCounts[n]||0;reokeCounts[n]=reokeCounts[n]||0;});
+  return true;
+}
+function goToInstructions(game){
+  initA();if(!parseNames())return;
+  showScreen(game==='deal'?'inst-deal':'inst-reoke');
+}
+function goToDoorSetup(){
+  buildSetupGrid();showScreen('door-setup-screen');
+}
+function startDealGame(){
+  showScreen('deal-screen');
+  document.body.classList.add('curtains-open');
+  buildGameDoors();
+  setTimeout(()=>{
+    document.getElementById('wheel-area').style.display='block';
+    drawWheel();
+  },800);
+}
+function startReokeGame(){
+  showScreen('reoke-screen');
+  document.body.classList.add('curtains-open');
+}
 
-        /* ============ DOORS ============ */
-        const prizeEmojis=['🏆','🎁','💎','🌟','👑','💰','🎯','✨','🥇','🎊'];
-        const gagEmojis=['🤡','🧦','🪣','💀','🧹','😬','🪤','🐸','🧻','🎃'];
+/* ============ DOOR SETUP (HOST) ============ */
+function buildSetupGrid(){
+  doorSetup=Array(20).fill('');
+  const grid=document.getElementById('setup-grid');grid.innerHTML='';
+  for(let i=0;i<20;i++){
+    const d=document.createElement('div');
+    d.className='setup-door unset';d.dataset.idx=i;
+    d.innerHTML=`<span class="door-num">${i+1}</span><span class="door-label"></span>`;
+    d.onclick=()=>toggleSetupDoor(i,d);
+    grid.appendChild(d);
+  }
+  updateSetupCounts();
+}
+function toggleSetupDoor(i,el){
+  if(doorSetup[i]==='')doorSetup[i]='prize';
+  else if(doorSetup[i]==='prize')doorSetup[i]='gag';
+  else doorSetup[i]='';
+  el.className='setup-door '+(doorSetup[i]||'unset');
+  el.querySelector('.door-label').textContent=doorSetup[i]==='prize'?'PRIZE':doorSetup[i]==='gag'?'GAG':'';
+  updateSetupCounts();
+}
+function autoFillDoors(mode){
+  let pCount=mode==='even'?10:mode==='generous'?14:6;
+  let arr=Array(pCount).fill('prize').concat(Array(20-pCount).fill('gag'));
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  doorSetup=arr;
+  document.querySelectorAll('.setup-door').forEach((el,idx)=>{
+    el.className='setup-door '+doorSetup[idx];
+    el.querySelector('.door-label').textContent=doorSetup[idx]==='prize'?'PRIZE':'GAG';
+  });
+  updateSetupCounts();
+}
+function updateSetupCounts(){
+  const p=doorSetup.filter(d=>d==='prize').length, g=doorSetup.filter(d=>d==='gag').length;
+  document.getElementById('prize-count').textContent=p;
+  document.getElementById('gag-count').textContent=g;
+  const allSet=doorSetup.every(d=>d!=='');
+  document.getElementById('start-deal-btn').disabled=!allSet;
+  document.getElementById('setup-warning').style.display=allSet?'none':'block';
+}
 
-        function initDoors() {
-            let types = Array(10).fill('great').concat(Array(10).fill('gag'));
-            for(let i=types.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[types[i],types[j]]=[types[j],types[i]];}
-            const grid = document.getElementById('door-grid'); grid.innerHTML=''; doors=[];
-            for(let i=0;i<20;i++){
-                const emoji = types[i]==='great'?prizeEmojis[i%10]:gagEmojis[i%10];
-                doors.push({id:i+1,type:types[i],used:false,emoji});
-                const wrapper=document.createElement('div'); wrapper.className='door-wrapper';
-                wrapper.onclick=()=>openDoor(i,wrapper);
-                const frame=document.createElement('div'); frame.className='door-frame';
-                const content=document.createElement('div'); content.className='door-content';
-                content.innerHTML = types[i]==='great'
-                    ? `<span class="prize-icon">${emoji}</span><span class="prize-label" style="color:var(--green);">WIN!</span>`
-                    : `<span class="prize-icon">${emoji}</span><span class="prize-label" style="color:var(--red);">GAG!</span>`;
-                frame.appendChild(content);
-                const panel=document.createElement('div'); panel.className='door-panel';
-                panel.innerHTML=`<span class="door-number">${i+1}</span><div class="doorknob"></div>`;
-                wrapper.appendChild(frame); wrapper.appendChild(panel); grid.appendChild(wrapper);
-            }
-        }
+/* ============ BUILD GAME DOORS ============ */
+const prizeE=['🏆','🎁','💎','🌟','👑','💰','🎯','✨','🥇','🎊'];
+const gagE=['🤡','🧦','🪣','💀','🧹','😬','🪤','🐸','🧻','🎃'];
+let prizeI=0,gagI=0;
+function buildGameDoors(){
+  const grid=document.getElementById('door-grid');grid.innerHTML='';doors=[];prizeI=0;gagI=0;
+  for(let i=0;i<20;i++){
+    const type=doorSetup[i];
+    const emoji=type==='prize'?prizeE[prizeI++%10]:gagE[gagI++%10];
+    doors.push({id:i+1,type,used:false,emoji});
+    const w=document.createElement('div');w.className='door-w';w.onclick=()=>openDoor(i,w);
+    const bg=document.createElement('div');bg.className='door-bg';
+    const rev=document.createElement('div');rev.className='door-reveal';
+    rev.innerHTML=type==='prize'
+      ?`<span class="emoji">${emoji}</span><span class="label" style="color:var(--green);">WIN!</span>`
+      :`<span class="emoji">${emoji}</span><span class="label" style="color:var(--red);">GAG!</span>`;
+    bg.appendChild(rev);
+    const face=document.createElement('div');face.className='door-face';
+    face.innerHTML=`<span class="door-num">${i+1}</span><div class="knob"></div>`;
+    w.appendChild(bg);w.appendChild(face);grid.appendChild(w);
+  }
+}
 
-        /* ============ CANVAS WHEEL (FIXED) ============ */
-        const canvas = document.getElementById('canvas-wheel');
-        const ctx = canvas.getContext('2d');
-        let currentRotation = 0, isSpinning = false;
-        const wheelColors=["#e63946","#457b9d","#2a9d8f","#e9c46a","#9b5de5","#f77f00","#00b4d8","#ef476f","#06d6a0","#ffd166","#118ab2","#ff6b6b"];
+/* ============ WHEEL ============ */
+const cv=document.getElementById('canvas-wheel'),cx=cv.getContext('2d');
+let rot=0,spinning=false;
+const wCol=["#c2185b","#0277bd","#00897b","#f9a825","#7b1fa2","#ef6c00","#00838f","#d81b60","#00c853","#ff8f00","#1565c0","#e53935"];
+function drawWheel(){
+  const n=names.length;if(!n)return;
+  const sa=2*Math.PI/n,r=cv.width/2-2,mx=cv.width/2,my=cv.height/2;
+  cx.clearRect(0,0,cv.width,cv.height);cx.save();cx.translate(mx,my);cx.rotate(rot);
+  for(let i=0;i<n;i++){
+    cx.beginPath();cx.moveTo(0,0);cx.arc(0,0,r,i*sa,(i+1)*sa);
+    cx.fillStyle=wCol[i%wCol.length];cx.fill();
+    cx.lineWidth=2;cx.strokeStyle='rgba(0,0,0,0.3)';cx.stroke();
+    cx.save();cx.rotate(i*sa+sa/2);cx.textAlign='right';cx.fillStyle='#fff';
+    cx.font=`800 ${Math.min(20,Math.floor(140/n)+10)}px 'Outfit',sans-serif`;
+    cx.shadowColor='rgba(0,0,0,0.7)';cx.shadowBlur=4;
+    cx.fillText(names[i],r-16,5);cx.restore();
+  }
+  cx.restore();
+}
+function nameAtPointer(){
+  const n=names.length;if(!n)return'';
+  const sa=2*Math.PI/n;let a=(-rot-Math.PI/2)%(2*Math.PI);if(a<0)a+=2*Math.PI;
+  return names[Math.floor(a/sa)%n];
+}
+function spinWheel(){
+  if(spinning||lock)return;
+  let valid=[];
+  names.forEach((nm,i)=>{
+    const c=dealCounts[nm]||0;
+    const rec=dealHist.slice(-Math.min(6,Math.max(1,Math.floor(names.length/2))));
+    if(c<2&&!rec.includes(nm))valid.push(i);
+  });
+  if(!valid.length) names.forEach((nm,i)=>{if((dealCounts[nm]||0)<2)valid.push(i);});
+  if(!valid.length){document.getElementById('who-next').innerText="ALL PLAYED!";return;}
 
-        function drawWheel() {
-            const n=familyNames.length; if(n===0)return;
-            const sa=(2*Math.PI)/n, cx=canvas.width/2, cy=canvas.height/2, r=canvas.width/2-2;
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            ctx.save(); ctx.translate(cx,cy); ctx.rotate(currentRotation);
-            for(let i=0;i<n;i++){
-                ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,r,i*sa,(i+1)*sa);
-                ctx.fillStyle=wheelColors[i%wheelColors.length]; ctx.fill();
-                ctx.lineWidth=1.5; ctx.strokeStyle="rgba(0,0,0,0.4)"; ctx.stroke();
-                ctx.save(); ctx.rotate(i*sa+sa/2);
-                ctx.textAlign="right"; ctx.fillStyle="#fff";
-                ctx.font=`bold ${Math.min(22,Math.floor(160/n)+10)}px 'Montserrat',sans-serif`;
-                ctx.shadowColor="rgba(0,0,0,0.6)"; ctx.shadowBlur=3;
-                ctx.fillText(familyNames[i],r-18,5);
-                ctx.restore();
-            }
-            ctx.restore();
-        }
+  const wi=valid[Math.floor(Math.random()*valid.length)];
+  document.getElementById('spin-btn').disabled=true;
+  document.getElementById('who-next').innerText="SPINNING...";
+  spinning=true;lock=true;
 
-        // Determine which name is under the pointer (top = -PI/2)
-        function getNameUnderPointer() {
-            const n=familyNames.length; if(n===0) return '';
-            const sa=(2*Math.PI)/n;
-            // Normalize rotation to 0..2PI
-            let angle = (-currentRotation - Math.PI/2) % (2*Math.PI);
-            if(angle<0) angle += 2*Math.PI;
-            const idx = Math.floor(angle / sa) % n;
-            return familyNames[idx];
-        }
+  const n=names.length,sa=2*Math.PI/n;
+  const jit=(Math.random()-0.5)*sa*0.55;
+  const target=-Math.PI/2-wi*sa-sa/2+jit;
+  const extra=(7+Math.random()*4)*2*Math.PI;
+  const end=target-extra,start=rot,delta=end-start;
+  let t0=null;const dur=6000+Math.random()*1500;
+  let lastTick=start;const ptr=document.getElementById('wheel-ptr');
 
-        function spinDealWheel() {
-            if(isSpinning||lockInteraction) return;
+  function ease(t){return 1-Math.pow(1-t,5);}
+  function anim(ts){
+    if(!t0)t0=ts;const p=Math.min((ts-t0)/dur,1);
+    rot=start+delta*ease(p);drawWheel();
+    if(Math.abs(rot-lastTick)>=sa*0.85){sfxTick();lastTick=rot;ptr.classList.add('bounce');setTimeout(()=>ptr.classList.remove('bounce'),55);}
+    if(p<1)requestAnimationFrame(anim);
+    else{rot=start+delta;drawWheel();spinning=false;
+      curPlayer=nameAtPointer();
+      document.getElementById('who-next').innerText=curPlayer;
+      sfxDing();dealHist.push(curPlayer);dealCounts[curPlayer]=(dealCounts[curPlayer]||0)+1;
+      setTimeout(()=>{document.getElementById('spin-btn').disabled=false;showQ();lock=false;},2000);
+    }
+  }
+  requestAnimationFrame(anim);
+}
 
-            let validIndices=[];
-            familyNames.forEach((name,i)=>{
-                const counts=dealPlayCounts[name]||0;
-                const recentSlice=dealNameHistory.slice(-Math.min(6,Math.max(1,Math.floor(familyNames.length/2))));
-                if(counts<2 && !recentSlice.includes(name)) validIndices.push(i);
-            });
-            if(validIndices.length===0){
-                familyNames.forEach((name,i)=>{if((dealPlayCounts[name]||0)<2)validIndices.push(i);});
-            }
-            if(validIndices.length===0){document.getElementById('selected-name').innerText="ALL PLAYED OUT!";return;}
+/* ============ QUESTIONS ============ */
+const Qs=[
+  // PORCH FAMILY
+  {q:"What is the actual name of the man our parents and grandparents called 'Grandpa'?",o:["Frank Hall","Frank Porch","James Porch","Jerry Porch"],a:"Frank Porch",c:"f"},
+  {q:"What is the actual name of 'Grandpa's' wife?",o:["Mabel Earlene Simmons","Bertha McGill","Lena Moreland","Katherine Hall"],a:"Katherine Hall",c:"f"},
+  {q:"Frank and Katherine had one son together. What was his name?",o:["James Porch","Frank Porch III","Sam Porch","Eddie Kang Porch"],a:"James Porch",c:"f"},
+  {q:"How many children did Frank and Katherine Porch have together?",o:["3","4","5","6"],a:"5",c:"f"},
+  {q:"About what year was Frank Porch born?",o:["1778","1878","1978","1900"],a:"1878",c:"f"},
+  {q:"What Georgia county was Frank Porch and his family primarily from?",o:["Coweta County","Henry County","Monroe County","Pike County"],a:"Pike County",c:"f"},
+  {q:"This stew was always on the menu at Frank's birthday celebrations.",o:["Brummich (Brunswick) Stew","Oxtail Stew","Onion Stew","Beef Stew"],a:"Brummich (Brunswick) Stew",c:"f"},
+  {q:"Which is the correct birth order for Frank Porch's children?",o:["Frankie, Mattie, Lucy, Alberta, James","Mattie, Lucy, Alberta, James, Frankie","Mattie, Frankie, Lucy, Alberta, James","James, Mattie, Frankie, Lucy, Alberta"],a:"Mattie, Frankie, Lucy, Alberta, James",c:"f"},
+  {q:"Frank Porch was raised by his paternal grandparents. Who are they?",o:["Lucy and Ricky Porch","Jane and Jerry Porch","Will and Mattie Porch","Mary and Felton Smith"],a:"Jane and Jerry Porch",c:"f"},
+  {q:"Frankie and Elias produced how many Hartsfield children?",o:["7","10","9","8"],a:"8",c:"f"},
+  {q:"Lucy and Robert produced how many Dennis children?",o:["6","7","8","9"],a:"6",c:"f"},
+  {q:"Mattie and Will produced how many surviving Moreland children?",o:["4","5","6","7"],a:"4",c:"f"},
+  {q:"What street did Aunt Alberta live on in Alton Park?",o:["Oakland Avenue","Main Street","Elm Street","Maple Drive"],a:"Oakland Avenue",c:"f"},
+  {q:"What street did the Hartsfields live on growing up?",o:["Cooley Street","Oakland Avenue","Heaton Street","Broad Street"],a:"Cooley Street",c:"f"},
+  {q:"What was the name of Aunt Alberta's cat?",o:["Fluffy","Monkey","Tiger","Sugar"],a:"Monkey",c:"f"},
+  {q:"What memorable gift did Aunt Alberta and Uncle Bud buy for each Moreland child?",o:["Skates","A Pony","Blue Suede Shoes","Bicycles"],a:"Bicycles",c:"f"},
+  {q:"What was Aunt Alberta's favorite board game?",o:["Monopoly","Sorry","Checkers","Backgammon"],a:"Monopoly",c:"f"},
+  {q:"What was Aunt Alberta's favorite food?",o:["Fried Catfish","Neck Bones","Fried Chicken","Pinto Beans and Cornbread"],a:"Neck Bones",c:"f"},
+  {q:"What was Aunt Alberta's favorite spectator sport?",o:["Baseball","Wrestling","Boxing","Football"],a:"Wrestling",c:"f"},
+  {q:"According to African Ancestry DNA testing, we share maternal ancestry with what Nigerian tribe?",o:["Yoruba","Igbo","Hausa","Fulani"],a:"Fulani",c:"f"},
+  {q:"What was Aunt Frankie's favorite fruit?",o:["Peaches","Watermelon","Plums","Apples"],a:"Watermelon",c:"f"},
+  {q:"What brand of tobacco did Aunt Alberta chew?",o:["Red Man","Day's Work","Copenhagen","Old Mule"],a:"Day's Work",c:"f"},
+  {q:"Where was Elias Hartsfield's primary occupation?",o:["Eureka Foundry","Mueller","Sisken Steel","Combustion"],a:"Combustion",c:"f"},
+  {q:"How many of Mattie and Will's children did NOT survive?",o:["2","4","6","8"],a:"6",c:"f"},
+  {q:"What was the first year of the Porch Family Reunion?",o:["1959","1969","1979","1989"],a:"1979",c:"f"},
+  {q:"What is the name of the Porch matriarch who traveled from Virginia with Jerry and Arthur?",o:["Rhoda","Martha","Bessie","Hattie"],a:"Rhoda",c:"f"},
+  {q:"Complete the motto: 'One generation plants the tree, another gets the _______.'",o:["Shade","Fruit","Harvest","Blessing"],a:"Shade",c:"f"},
+  {q:"Frank had two children before marrying Katherine. What were their names?",o:["James and Willie Mae","Bonnie and Clyde","Jane and Jerry","Arthur and Nora"],a:"Arthur and Nora",c:"f"},
+  {q:"What tool was traditionally used to mix cream into butter?",o:["Butter Churn","Ice Cream Maker","Wash Tub","Grain Mill"],a:"Butter Churn",c:"f"},
+  {q:"What small outdoor building was used for curing meat with smoke?",o:["Smokehouse","Greenhouse","Root Cellar","Tool Shed"],a:"Smokehouse",c:"f"},
+  {q:"What clip secured laundry to a clothesline before dryers?",o:["Clothespin","Paperclip","Safety Pin","Hairpin"],a:"Clothespin",c:"f"},
+  {q:"What decorated pole do people dance around at spring festivals?",o:["Maypole","Totem Pole","Tetherball Pole","Festivus Pole"],a:"Maypole",c:"f"},
+  {q:"What instrument is played by plucking a reed held against your teeth?",o:["Jaw Harp","Harmonica","Kazoo","Ocarina"],a:"Jaw Harp",c:"f"},
+  {q:"What small flute is associated with military marching bands?",o:["Fife","Piccolo","Recorder","Pennywhistle"],a:"Fife",c:"f"},
+  {q:"What underground structure stored vegetables and kept them from freezing?",o:["Root Cellar","Bunker","Storm Shelter","Cistern"],a:"Root Cellar",c:"f"},
+  // Who Am I
+  {q:"I was in the band in Junior High, started the 4-H Club, sang in the Glee Club and played basketball at Howard High. Who Am I?",o:["Mama Tine","Aunt Jean","Aunt Freddie","Uncle James"],a:"Mama Tine",c:"f"},
+  {q:"I went to Beech one-room school, played baseball with a rock in cloth, loved Jitterbugging at Henry's Place. 'Brut Owens' proposed but moved to Ohio. Who am I?",o:["Aunt Jean","Mama Tine","Aunt Alberta","Aunt Frankie"],a:"Aunt Jean",c:"f"},
+  {q:"At Howard High (Class of '57) I was in the W.J. Davenport Honor Society, known as 'The Stallion,' and met my husband at a bus station. Who am I?",o:["Aunt Freddie","Mama Tine","Aunt Jean","Aunt Alberta"],a:"Aunt Freddie",c:"f"},
+  {q:"Howard High Class of '62, I was in Scouts, went camping in Cherokee NC, and made the news in a stolen car crash. Aunt Alberta worried about my socks. Who am I?",o:["Uncle James","Uncle Bud","Frank Porch","Elias"],a:"Uncle James",c:"f"},
+  {q:"I love hunting, fishing, BBQ, and the National Negro Leagues. I went to Jack Yates High in Houston. My teams: LA Dodgers and Dallas Cowboys. Who Am I?",o:["Norah","Uncle James","Uncle Bud","Frank Porch"],a:"Norah",c:"f"},
+  {q:"Nicknamed 'Nell,' I was a civil rights activist at Howard High (Class of '60) — hosed, jailed, with a Woolworth sit-in photo in a museum. Who am I?",o:["Aunt Frankie","Aunt Alberta","Aunt Jean","Mama Tine"],a:"Aunt Frankie",c:"f"},
+  // POP CULTURE
+  {q:"What 1951 TV show featured the Ricardo and Mertz families?",o:["I Love Lucy","The Honeymooners","Father Knows Best","Leave It to Beaver"],a:"I Love Lucy",c:"p"},
+  {q:"MLK's 'I Have a Dream' speech was at what 1963 event?",o:["March on Washington","Selma March","Million Man March","Freedom Rides"],a:"March on Washington",c:"p"},
+  {q:"What Motown group sang 'My Girl' in 1964?",o:["The Temptations","The Four Tops","The Supremes","The Miracles"],a:"The Temptations",c:"p"},
+  {q:"What 1971-79 TV show featured Fred Sanford in a junkyard?",o:["All in the Family","Good Times","The Jeffersons","Sanford and Son"],a:"Sanford and Son",c:"p"},
+  {q:"What 1977 miniseries traced an African American family from slavery?",o:["Roots","Eyes on the Prize","North and South","12 Years a Slave"],a:"Roots",c:"p"},
+  {q:"What game show did Bob Barker host for 35 years?",o:["The Price Is Right","Wheel of Fortune","Jeopardy!","Family Feud"],a:"The Price Is Right",c:"p"},
+  {q:"What 1984 sitcom featured the Huxtable family?",o:["The Cosby Show","A Different World","Family Matters","227"],a:"The Cosby Show",c:"p"},
+  {q:"In Fresh Prince of Bel-Air, what city did Will move FROM?",o:["Philadelphia","New York","Baltimore","Atlanta"],a:"Philadelphia",c:"p"},
+  {q:"What 1992 movie starred Whitney Houston and Kevin Costner?",o:["The Bodyguard","Waiting to Exhale","Sparkle","The Preacher's Wife"],a:"The Bodyguard",c:"p"},
+  {q:"This cartoon sponge debuted on Nickelodeon in 1999.",o:["SpongeBob SquarePants","Hey Arnold!","CatDog","Rugrats"],a:"SpongeBob SquarePants",c:"p"},
+  {q:"What video-sharing website was founded in 2005?",o:["YouTube","Vimeo","Dailymotion","Twitch"],a:"YouTube",c:"p"},
+  {q:"In 2008, Barack Obama became the first ______ President.",o:["African American","Democratic","Southern","Independent"],a:"African American",c:"p"},
+  {q:"What Marvel movie featured the fictional nation of Wakanda?",o:["Black Panther","Blade","Luke Cage","Hancock"],a:"Black Panther",c:"p"},
+  {q:"What Netflix tiger documentary became a 2020 sensation?",o:["Tiger King","Making a Murderer","Wild Wild Country","Our Planet"],a:"Tiger King",c:"p"},
+  {q:"What blue hedgehog got his own movie franchise?",o:["Sonic","Crash Bandicoot","Mega Man","Pac-Man"],a:"Sonic",c:"p"},
+  {q:"In 'Encanto,' what is the magical family's name?",o:["The Madrigals","The Riveras","The Garcias","The Castillos"],a:"The Madrigals",c:"p"},
+  {q:"What block-building game became the best-selling game ever?",o:["Minecraft","Roblox","Fortnite","Terraria"],a:"Minecraft",c:"p"},
+  {q:"What app is known for short-form videos and dance trends?",o:["TikTok","Instagram","Snapchat","X"],a:"TikTok",c:"p"},
+  {q:"What Disney movie features a Polynesian teen saving her island?",o:["Moana","Frozen","Tangled","Brave"],a:"Moana",c:"p"},
+  {q:"Who was the first African American woman in space?",o:["Mae Jemison","Katherine Johnson","Dorothy Vaughan","Mary Jackson"],a:"Mae Jemison",c:"p"},
+  {q:"What inventor created the traffic light and gas mask?",o:["Garrett Morgan","George W. Carver","Elijah McCoy","Lewis Latimer"],a:"Garrett Morgan",c:"p"},
+  {q:"What 15-year-old refused her bus seat before Rosa Parks?",o:["Claudette Colvin","Harriet Tubman","Sojourner Truth","Ida B. Wells"],a:"Claudette Colvin",c:"p"},
+  {q:"What board game has you buying Boardwalk and Park Place?",o:["Monopoly","Life","Clue","Risk"],a:"Monopoly",c:"p"},
+  {q:"What card game requires shouting its name with one card left?",o:["UNO","Go Fish","Spades","War"],a:"UNO",c:"p"},
+  {q:"In the Bible, who was swallowed by a great fish?",o:["Jonah","Moses","David","Noah"],a:"Jonah",c:"p"},
+  {q:"What June 19th holiday celebrates the end of slavery?",o:["Juneteenth","Emancipation Day","Freedom Day","Liberation Day"],a:"Juneteenth",c:"p"},
+  // TASKS
+  {q:"TASK: Sing the National Anthem word for word!",o:[],a:"!",c:"t"},
+  {q:"TASK: Name 5 family members' middle names in 15 seconds!",o:[],a:"!",c:"t"},
+  {q:"TASK: Do your best impression of another family member — the family votes!",o:[],a:"!",c:"t"},
+  {q:"TASK: Name 3 dishes always at the family cookout!",o:[],a:"!",c:"t"},
+  {q:"TASK: Tell your favorite family memory in 30 seconds!",o:[],a:"!",c:"t"},
+];
+let qPool=[],asked=new Set();
+function buildPool(){
+  qPool=[];Qs.forEach(q=>{if(q.c==='f'){qPool.push(q,q,q);}else qPool.push(q);});
+  for(let i=qPool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[qPool[i],qPool[j]]=[qPool[j],qPool[i]];}
+}
+function pickQ(){
+  let p=qPool.filter(q=>!asked.has(q.q));if(!p.length){asked.clear();p=[...qPool];}
+  const c=p[Math.floor(Math.random()*p.length)];asked.add(c.q);return c;
+}
+buildPool();
 
-            const winIdx = validIndices[Math.floor(Math.random()*validIndices.length)];
-            const chosenName = familyNames[winIdx];
-            currentPlayerName = chosenName;
+let selAns=null,cdTimer=null;
+function showQ(){
+  penBox=penBox.filter(p=>{p.cd--;return p.cd>0;});
+  curQ=pickQ();selAns=null;
+  const badge=document.getElementById('q-badge');
+  badge.innerHTML=curQ.c==='f'?'<span class="badge badge-fam">👑 PORCH FAMILY</span>'
+    :curQ.c==='t'?'<span class="badge badge-task">🎤 CHALLENGE</span>'
+    :'<span class="badge badge-pop">🌟 POP CULTURE</span>';
+  document.getElementById('player-turn').innerText=curPlayer+"'s Turn!";
+  document.getElementById('q-text').innerText=curQ.q;
+  const og=document.getElementById('opts-grid'),cd=document.getElementById('countdown'),tb=document.getElementById('task-btns');
+  og.innerHTML='';cd.style.display='none';cd.className='';cd.style.color='var(--gold)';tb.style.display='none';
+  if(curQ.o.length){
+    const sh=[...curQ.o];for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]];}
+    sh.forEach(op=>{const b=document.createElement('div');b.className='opt';b.innerText=op;b.onclick=()=>pickAnswer(op,b);og.appendChild(b);});
+    og.style.display='grid';
+  } else {og.style.display='none';tb.style.display='block';}
+  document.getElementById('wheel-area').style.display='none';
+  document.getElementById('q-area').style.display='block';
+}
+function pickAnswer(ans,el){
+  if(lock||selAns)return;selAns=ans;lock=true;
+  document.querySelectorAll('#opts-grid .opt').forEach(c=>c.classList.add('locked'));
+  el.classList.add('picked');sfxDing();
+  const cd=document.getElementById('countdown');cd.style.display='block';
+  let n=5;cd.innerText=n;
+  cdTimer=setInterval(()=>{n--;if(n>0){cd.innerText=n;sfxCount();}else{clearInterval(cdTimer);cd.className='done';reveal(el);}},1000);
+}
+function reveal(selEl){
+  const cd=document.getElementById('countdown');
+  const ok=selAns.trim()===curQ.a.trim();
+  document.querySelectorAll('#opts-grid .opt').forEach(c=>{
+    if(c.innerText.trim()===curQ.a.trim()){c.classList.add('right');c.classList.remove('dim');}else c.classList.add('dim');
+  });
+  if(ok){
+    selEl.classList.remove('picked');selEl.classList.add('right');
+    cd.innerText='✅ CORRECT!';cd.style.color='var(--green)';
+    sfxFanfare();showFx("WINNER! 🎉",'win');fireConfetti();
+    doorActive=true;
+    document.getElementById('doors-title').innerText="MAKE A DEAL: PICK A DOOR!";
+    document.getElementById('doors-title').style.color="var(--gold)";
+    document.querySelectorAll('.door-w:not(.open)').forEach(d=>d.classList.add('glow'));
+    setTimeout(()=>{document.getElementById('q-area').style.display='none';document.getElementById('doors-area').style.display='block';lock=false;},3000);
+  } else {
+    selEl.classList.remove('picked');selEl.classList.add('wrong-pick');
+    cd.innerText='❌ ZONKED!';cd.style.color='var(--red)';
+    sfxBuzz();document.body.classList.add('shaking');showFx("ZONKED! ❌",'lose');fireZonk();
+    penBox.push({q:curQ,cd:3});
+    setTimeout(()=>{document.body.classList.remove('shaking');document.getElementById('q-area').style.display='none';
+      document.getElementById('wheel-area').style.display='block';document.getElementById('who-next').innerText="Spin for next!";
+      cd.style.color='var(--gold)';lock=false;},3500);
+  }
+}
+function judgeTask(ok){
+  if(lock)return;lock=true;
+  if(ok){
+    sfxFanfare();showFx("NAILED IT! 🎉",'win');fireConfetti();
+    doorActive=true;document.querySelectorAll('.door-w:not(.open)').forEach(d=>d.classList.add('glow'));
+    setTimeout(()=>{document.getElementById('q-area').style.display='none';document.getElementById('doors-area').style.display='block';lock=false;},3000);
+  } else {
+    sfxBuzz();document.body.classList.add('shaking');showFx("ZONKED! ❌",'lose');fireZonk();
+    setTimeout(()=>{document.body.classList.remove('shaking');document.getElementById('q-area').style.display='none';
+      document.getElementById('wheel-area').style.display='block';document.getElementById('who-next').innerText="Spin for next!";lock=false;},3500);
+  }
+}
 
-            document.getElementById('spin-btn').disabled=true;
-            document.getElementById('selected-name').innerText="SPINNING...";
-            isSpinning=true; lockInteraction=true;
+/* ============ SUSPENSEFUL DOORS ============ */
+function openDoor(i,el){
+  if(!doorActive||lock)return;const d=doors[i];if(d.used)return;
+  lock=true;doorActive=false;
+  document.querySelectorAll('.door-w').forEach(w=>w.classList.remove('glow'));
+  const ov=document.getElementById('suspense'),tx=document.getElementById('suspense-txt');
+  ov.style.display='flex';tx.innerText="DOOR #"+d.id;sfxDrum();
+  let c=3;
+  const si=setInterval(()=>{c--;if(c>0){tx.innerText=c+"...";sfxCount();}
+    else{clearInterval(si);tx.innerText="OPEN!";sfxThud();
+      setTimeout(()=>{ov.style.display='none';d.used=true;el.classList.add('open');
+        setTimeout(()=>{
+          if(d.type==='prize'){sfxFanfare();showFx("🎁 PRIZE!",'win');fireConfetti();}
+          else{sfxSad();showFx("😬 GAG GIFT!",'lose');}
+        },800);
+        setTimeout(()=>{document.getElementById('doors-area').style.display='none';
+          document.getElementById('wheel-area').style.display='block';
+          document.getElementById('who-next').innerText="Spin for next!";lock=false;},4500);
+      },400);
+    }
+  },900);
+}
 
-            const n=familyNames.length;
-            const sa=(2*Math.PI)/n;
-            // Target: the chosen slice center should be at the pointer (top, -PI/2)
-            // We need: currentRotation such that slice winIdx center is at -PI/2
-            // Slice i center angle (in world space): currentRotation + i*sa + sa/2
-            // We want: currentRotation + winIdx*sa + sa/2 ≡ -PI/2 + randomOffset (mod 2PI)
-            // => currentRotation = -PI/2 - winIdx*sa - sa/2 + smallRandom
-            const jitter = (Math.random()-0.5)*sa*0.6; // land within the slice but not always center
-            const targetBase = -Math.PI/2 - winIdx*sa - sa/2 + jitter;
-            const extraSpins = (6 + Math.random()*3) * 2 * Math.PI; // 6-9 full dramatic spins
-            const targetRotation = targetBase - extraSpins;
+/* ============ EFFECTS ============ */
+function fireConfetti(){if(typeof confetti==='function'){const e=Date.now()+2200;(function f(){confetti({particleCount:4,angle:60,spread:55,origin:{x:0,y:0.7},colors:['#ffd700','#ff2d95','#00f3ff','#00ff88']});confetti({particleCount:4,angle:120,spread:55,origin:{x:1,y:0.7},colors:['#ffd700','#ff2d95','#00f3ff','#00ff88']});if(Date.now()<e)requestAnimationFrame(f);})();}}
+function fireZonk(){if(typeof confetti==='function')confetti({particleCount:70,spread:160,origin:{y:0.5},colors:['#333','#555','#ff4444'],gravity:2.5,scalar:1.3,ticks:70});}
+function showFx(t,type){const o=document.getElementById('fx'),x=document.getElementById('fx-txt');x.innerText=t;o.className=(type==='win'?'fx-win':'fx-lose')+' show';o.style.display='flex';setTimeout(()=>{o.style.display='none';o.className='';},2200);}
 
-            const startRot = currentRotation;
-            const totalDelta = targetRotation - startRot;
-            let startTime = null;
-            const spinDuration = 5500 + Math.random()*1500; // 5.5-7 seconds for drama
-            let lastTickRot = startRot;
-            const pointer = document.getElementById('wheel-pointer');
-
-            function easeOutQuint(t){return 1-Math.pow(1-t,5);}
-
-            function animate(ts) {
-                if(!startTime) startTime=ts;
-                const elapsed=ts-startTime;
-                const progress=Math.min(elapsed/spinDuration,1);
-                const ease=easeOutQuint(progress);
-                currentRotation = startRot + totalDelta*ease;
-                drawWheel();
-
-                // Tick at each slice boundary
-                const angleMoved = Math.abs(currentRotation - lastTickRot);
-                if(angleMoved >= sa*0.9) {
-                    playTick();
-                    lastTickRot = currentRotation;
-                    // Pointer bounce
-                    pointer.classList.add('tick');
-                    setTimeout(()=>pointer.classList.remove('tick'),50);
-                }
-
-                if(progress<1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    currentRotation = startRot + totalDelta;
-                    drawWheel();
-                    isSpinning=false;
-
-                    // Read actual name under pointer for accuracy
-                    const actualName = getNameUnderPointer();
-                    currentPlayerName = actualName;
-                    document.getElementById('selected-name').innerText = actualName;
-                    playDing();
-                    dealNameHistory.push(actualName);
-                    dealPlayCounts[actualName]=(dealPlayCounts[actualName]||0)+1;
-
-                    setTimeout(()=>{
-                        document.getElementById('spin-btn').disabled=false;
-                        showQuestion();
-                        lockInteraction=false;
-                    },2000);
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-
-        /* ============ QUESTION DISPLAY (clickable answers + countdown) ============ */
-        let selectedAnswer = null;
-        let countdownTimer = null;
-
-        function showQuestion() {
-            for(let i=penaltyBox.length-1;i>=0;i--){
-                penaltyBox[i].cooldown--;
-                if(penaltyBox[i].cooldown<=0) penaltyBox.splice(i,1);
-            }
-            currentQuestion = pickQuestion();
-            if(!currentQuestion){alert("Out of questions!");return;}
-            selectedAnswer = null;
-
-            const badge=document.getElementById('q-category-badge');
-            if(currentQuestion.cat==='family') badge.innerHTML='<span class="q-category cat-family">👑 PORCH FAMILY</span>';
-            else if(currentQuestion.cat==='task') badge.innerHTML='<span class="q-category cat-task">🎤 CHALLENGE</span>';
-            else badge.innerHTML='<span class="q-category cat-pop">🌟 POP CULTURE</span>';
-
-            document.getElementById('player-answering').innerText = currentPlayerName + "'s Turn!";
-            document.getElementById('question-text').innerText = currentQuestion.q;
-
-            const optGrid = document.getElementById('options-grid');
-            const countdownEl = document.getElementById('countdown-display');
-            const taskJudge = document.getElementById('task-judgment');
-            const answerText = document.getElementById('answer-text');
-            optGrid.innerHTML=''; countdownEl.style.display='none'; countdownEl.className='';
-            taskJudge.style.display='none'; answerText.style.display='none';
-
-            if(currentQuestion.options && currentQuestion.options.length>0) {
-                // Shuffle options for variety
-                const shuffled = [...currentQuestion.options];
-                for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
-
-                shuffled.forEach(opt=>{
-                    const box=document.createElement('div');
-                    box.className='option-box';
-                    box.innerText=opt;
-                    box.onclick=()=>selectAnswer(opt,box);
-                    optGrid.appendChild(box);
-                });
-                optGrid.style.display='grid';
-            } else {
-                // TASK - host judges
-                optGrid.style.display='none';
-                taskJudge.style.display='block';
-            }
-
-            document.getElementById('wheel-container').style.display='none';
-            document.getElementById('question-area').style.display='block';
-        }
-
-        function selectAnswer(answer, element) {
-            if(lockInteraction || selectedAnswer) return;
-            selectedAnswer = answer;
-            lockInteraction = true;
-
-            // Highlight selected
-            Array.from(document.getElementById('options-grid').children).forEach(c => c.classList.add('locked'));
-            element.classList.add('selected');
-
-            playDing();
-
-            // Start 5-second countdown
-            const countdownEl = document.getElementById('countdown-display');
-            countdownEl.style.display = 'block';
-            let count = 5;
-            countdownEl.innerText = count;
-            countdownEl.className = '';
-
-            countdownTimer = setInterval(()=>{
-                count--;
-                if(count > 0) {
-                    countdownEl.innerText = count;
-                    playCountTick();
-                } else {
-                    clearInterval(countdownTimer);
-                    countdownEl.className = 'final';
-                    revealResult(element);
-                }
-            }, 1000);
-        }
-
-        function revealResult(selectedElement) {
-            const countdownEl = document.getElementById('countdown-display');
-            const isCorrect = selectedAnswer.trim() === currentQuestion.a.trim();
-
-            // Show correct answer
-            Array.from(document.getElementById('options-grid').children).forEach(c => {
-                if(c.innerText.trim() === currentQuestion.a.trim()) {
-                    c.classList.add('correct');
-                    c.classList.remove('dimmed');
-                } else {
-                    c.classList.add('dimmed');
-                }
-            });
-
-            if(isCorrect) {
-                selectedElement.classList.remove('selected');
-                selectedElement.classList.add('correct');
-                countdownEl.innerText = '✅ CORRECT!';
-                countdownEl.style.color = 'var(--green)';
-                playFanfare();
-                showEffect("WINNER! 🎉",'great');
-                fireConfetti();
-
-                prizeDoorActive=true;
-                document.getElementById('door-grid-title').innerText="MAKE A DEAL: PICK A DOOR!";
-                document.getElementById('door-grid-title').style.color="var(--gold)";
-                // Add pulse hint to available doors
-                document.querySelectorAll('.door-wrapper:not(.open)').forEach(d=>d.classList.add('pulse-hint'));
-
-                setTimeout(()=>{
-                    document.getElementById('question-area').style.display='none';
-                    document.getElementById('prize-area').style.display='block';
-                    lockInteraction=false;
-                },3000);
-            } else {
-                selectedElement.classList.remove('selected');
-                selectedElement.classList.add('wrong-pick');
-                countdownEl.innerText = '❌ ZONKED!';
-                countdownEl.style.color = 'var(--red)';
-                playBuzzer();
-                document.body.classList.add('shaking');
-                showEffect("ZONKED! ❌",'gag');
-                fireZonk();
-                penaltyBox.push({questionObj:currentQuestion,cooldown:3});
-
-                setTimeout(()=>{
-                    document.body.classList.remove('shaking');
-                    document.getElementById('question-area').style.display='none';
-                    document.getElementById('wheel-container').style.display='block';
-                    document.getElementById('selected-name').innerText="Spin for next!";
-                    countdownEl.style.color = 'var(--gold)';
-                    lockInteraction=false;
-                },3500);
-            }
-        }
-
-        function taskComplete(success) {
-            if(lockInteraction) return;
-            lockInteraction = true;
-            if(success) {
-                playFanfare(); showEffect("NAILED IT! 🎉",'great'); fireConfetti();
-                prizeDoorActive=true;
-                document.getElementById('door-grid-title').innerText="MAKE A DEAL: PICK A DOOR!";
-                document.getElementById('door-grid-title').style.color="var(--gold)";
-                document.querySelectorAll('.door-wrapper:not(.open)').forEach(d=>d.classList.add('pulse-hint'));
-                setTimeout(()=>{
-                    document.getElementById('question-area').style.display='none';
-                    document.getElementById('prize-area').style.display='block';
-                    lockInteraction=false;
-                },3000);
-            } else {
-                playBuzzer(); document.body.classList.add('shaking');
-                showEffect("ZONKED! ❌",'gag'); fireZonk();
-                setTimeout(()=>{
-                    document.body.classList.remove('shaking');
-                    document.getElementById('question-area').style.display='none';
-                    document.getElementById('wheel-container').style.display='block';
-                    document.getElementById('selected-name').innerText="Spin for next!";
-                    lockInteraction=false;
-                },3500);
-            }
-        }
-
-        /* ============ SUSPENSEFUL DOOR OPENING ============ */
-        function openDoor(index, element) {
-            if(!prizeDoorActive || lockInteraction) return;
-            const door = doors[index];
-            if(door.used) return;
-
-            lockInteraction=true; prizeDoorActive=false;
-            // Remove pulse from all doors
-            document.querySelectorAll('.door-wrapper').forEach(d=>d.classList.remove('pulse-hint'));
-
-            // Show suspense overlay with drumroll
-            const overlay = document.getElementById('door-suspense-overlay');
-            const suspText = document.getElementById('door-suspense-text');
-            overlay.style.display = 'flex';
-            suspText.innerText = "DOOR #" + door.id;
-            playDrumroll();
-
-            // Countdown in overlay: 3..2..1..
-            let suspCount = 3;
-            const suspInt = setInterval(()=>{
-                suspCount--;
-                if(suspCount > 0) {
-                    suspText.innerText = suspCount + "...";
-                    playCountTick();
-                } else {
-                    clearInterval(suspInt);
-                    suspText.innerText = "OPEN!";
-                    playThud();
-
-                    // Actually open the door
-                    setTimeout(()=>{
-                        overlay.style.display = 'none';
-                        door.used = true;
-                        element.classList.add('open');
-
-                        setTimeout(()=>{
-                            if(door.type==='great'){
-                                playFanfare(); showEffect("🎁 PRIZE!",'great'); fireConfetti();
-                            } else {
-                                playTrombone(); showEffect("😬 GAG GIFT!",'gag');
-                            }
-                        },800);
-
-                        setTimeout(()=>{
-                            document.getElementById('prize-area').style.display='none';
-                            document.getElementById('wheel-container').style.display='block';
-                            document.getElementById('selected-name').innerText="Spin for next!";
-                            lockInteraction=false;
-                        },4500);
-                    },400);
-                }
-            },800);
-        }
-
-        /* ============ CONFETTI & EFFECTS ============ */
-        function fireConfetti(){
-            if(typeof confetti==='function'){
-                const end=Date.now()+2000;
-                (function frame(){
-                    confetti({particleCount:4,angle:60,spread:60,origin:{x:0,y:0.7},colors:['#ffd700','#ff00ea','#00f3ff','#00ff66']});
-                    confetti({particleCount:4,angle:120,spread:60,origin:{x:1,y:0.7},colors:['#ffd700','#ff00ea','#00f3ff','#00ff66']});
-                    if(Date.now()<end) requestAnimationFrame(frame);
-                })();
-            }
-        }
-        function fireZonk(){
-            if(typeof confetti==='function')
-                confetti({particleCount:80,spread:180,origin:{y:0.5},colors:['#333','#555','#777','#ff3333'],gravity:2,scalar:1.4,ticks:80});
-        }
-        function showEffect(text,type){
-            const o=document.getElementById('effect-overlay'),t=document.getElementById('effect-text');
-            t.innerText=text; o.className=(type==='great'?'effect-great':'effect-gag')+' show';
-            o.style.display='flex';
-            setTimeout(()=>{o.style.display='none';o.className='';},2200);
-        }
-
-        /* ============ GAME 2: FAMILY REOKE ============ */
-        let reokePlayCounts={},reokeNameHistory=[],chosenReokeSong=null,isVolunteerMode=false,currentLeadSinger="",currentDuetPartner="";
-        const itemHeight=90;
-
-        const reokeDb = [
-            {title:"My Girl",artist:"The Temptations",type:"Group",ytId:"9pe4JSIhXg0"},
-            {title:"Ain't No Mountain High Enough",artist:"Marvin & Tammi",type:"Duet",ytId:"0XC39zKT_Dk"},
-            {title:"Superstition",artist:"Stevie Wonder",type:"Solo",ytId:"4ia5KDIXLy4"},
-            {title:"Let's Get It On",artist:"Marvin Gaye",type:"Solo",ytId:"bX_z5VzQ52g"},
-            {title:"Respect",artist:"Aretha Franklin",type:"Solo",ytId:"F2TmbIOfpuk"},
-            {title:"Stand By Me",artist:"Ben E. King",type:"Solo",ytId:"G4b-D2hE5H8"},
-            {title:"I Want You Back",artist:"The Jackson 5",type:"Group",ytId:"hM6o4R-0J2E"},
-            {title:"September",artist:"Earth, Wind & Fire",type:"Group",ytId:"8cK5O4W3T2E"},
-            {title:"Outstanding",artist:"The Gap Band",type:"Group",ytId:"a_mH0pB0fFE"},
-            {title:"Before I Let Go",artist:"Maze ft Frankie Beverly",type:"Solo",ytId:"vI_04_P55P8"},
-            {title:"Waterfalls",artist:"TLC",type:"Group",ytId:"enVeRCtCw8w"},
-            {title:"No Scrubs",artist:"TLC",type:"Group",ytId:"bUIvrsvm9z8"},
-            {title:"End of the Road",artist:"Boyz II Men",type:"Group",ytId:"84L0nU4zD_4"},
-            {title:"Poison",artist:"Bell Biv DeVoe",type:"Group",ytId:"Uq3-53_lqgQ"},
-            {title:"No Diggity",artist:"Blackstreet",type:"Group",ytId:"9mPZ_x_e4wA"},
-            {title:"This Is How We Do It",artist:"Montell Jordan",type:"Solo",ytId:"G7Yh_f_xUfM"},
-            {title:"Say My Name",artist:"Destiny's Child",type:"Group",ytId:"lTfV_YvGbp8"},
-            {title:"Yeah!",artist:"Usher",type:"Solo",ytId:"QO_fKzXyBbw"},
-            {title:"Family Affair",artist:"Mary J. Blige",type:"Solo",ytId:"UaU6tXWv3U0"},
-            {title:"The Boy Is Mine",artist:"Brandy & Monica",type:"Duet",ytId:"Yh_a0y5p728"},
-            {title:"Juicy",artist:"Notorious B.I.G.",type:"Solo",ytId:"d6qJ-zC8PVE"},
-            {title:"California Love",artist:"2Pac",type:"Duet",ytId:"gqK2U-X0YpI"},
-            {title:"Crazy in Love",artist:"Beyonce",type:"Duet",ytId:"Po2wzSJPTBk"},
-            {title:"Pony",artist:"Ginuwine",type:"Solo",ytId:"0L5n1XIFCYI"},
-            {title:"Fallin'",artist:"Alicia Keys",type:"Solo",ytId:"k5FvP3fN4Zk"},
-            {title:"Drop It Like It's Hot",artist:"Snoop Dogg",type:"Solo",ytId:"0bI0R4A31mE"},
-            {title:"I Will Always Love You",artist:"Whitney Houston",type:"Solo",ytId:"aY8e8XoWdYI"},
-            {title:"Man! I Feel Like A Woman",artist:"Shania Twain",type:"Solo",ytId:"fJ9XbHhWj30"},
-            {title:"Wagon Wheel",artist:"Darius Rucker",type:"Solo",ytId:"bO2t2_O0Jfw"},
-            {title:"Sweet Caroline",artist:"Neil Diamond",type:"Solo",ytId:"1vhFnTjia_I"},
-            {title:"I Want It That Way",artist:"Backstreet Boys",type:"Group",ytId:"XQxK-v7QG9U"},
-            {title:"Don't Stop Believin'",artist:"Journey",type:"Group",ytId:"KaqC5FnvAEc"},
-            {title:"I Will Survive",artist:"Gloria Gaynor",type:"Solo",ytId:"ehqhfZvaPNM"},
-            {title:"Tennessee Whiskey",artist:"Chris Stapleton",type:"Solo",ytId:"F4iK00O8GfU"},
-            {title:"Lean on Me",artist:"Bill Withers",type:"Group",ytId:"fOZ-MySzAac"},
-            {title:"Signed, Sealed, Delivered",artist:"Stevie Wonder",type:"Solo",ytId:"pUj9frKY46E"},
-            {title:"Shout",artist:"The Isley Brothers",type:"Group",ytId:"xKwAMrQSe0k"},
-            {title:"Cupid Shuffle",artist:"Cupid",type:"Group",ytId:"h24_zoqu4RU"},
-            {title:"Cha Cha Slide",artist:"DJ Casper",type:"Group",ytId:"wZv62ShoStY"},
-            {title:"Electric Slide",artist:"Marcia Griffiths",type:"Group",ytId:"tH9PBBo6v6k"},
-            {title:"Hit the Road Jack",artist:"Ray Charles",type:"Duet",ytId:"Q8Tiz6INF7I"},
-            {title:"What's Going On",artist:"Marvin Gaye",type:"Solo",ytId:"H-kA3UtBj4M"},
-            {title:"Happy",artist:"Pharrell Williams",type:"Solo",ytId:"ZbZSe6N_BXs"},
-            {title:"Love on Top",artist:"Beyonce",type:"Solo",ytId:"Ob7vObnFUH8"},
-            {title:"Best Part",artist:"Daniel Caesar & H.E.R.",type:"Duet",ytId:"vBy7FaapGRo"},
-            {title:"Killing Me Softly",artist:"Fugees",type:"Group",ytId:"oKOtzIo-uYw"},
-            {title:"Lovely Day",artist:"Bill Withers",type:"Solo",ytId:"bEeaS6fuUoA"},
-            {title:"At Last",artist:"Etta James",type:"Solo",ytId:"S-cbOl96RFM"},
-            {title:"Natural Woman",artist:"Aretha Franklin",type:"Solo",ytId:"dEWuAE4pXew"},
-            {title:"Unbreak My Heart",artist:"Toni Braxton",type:"Solo",ytId:"p2Rch6WvPJE"},
-            {title:"No One",artist:"Alicia Keys",type:"Solo",ytId:"rywUS-ohqeE"},
-            {title:"Let's Stay Together",artist:"Al Green",type:"Solo",ytId:"COiIC3A0ROM"},
-            {title:"If I Ain't Got You",artist:"Alicia Keys",type:"Solo",ytId:"Ju8Hr50Ckwk"},
-            {title:"Uptown Funk",artist:"Bruno Mars",type:"Solo",ytId:"OPf0YbXqDm0"},
-            {title:"Girls Just Want to Have Fun",artist:"Cyndi Lauper",type:"Solo",ytId:"PIb6AZdTr-A"},
-            {title:"Sir Duke",artist:"Stevie Wonder",type:"Solo",ytId:"s6fPN5aQADc"},
-            {title:"I Gotta Feeling",artist:"Black Eyed Peas",type:"Group",ytId:"uSD4vsh1zDA"},
-            {title:"Can't Help Falling in Love",artist:"Elvis Presley",type:"Solo",ytId:"vGJTaP6anOU"},
-            {title:"We Are Family",artist:"Sister Sledge",type:"Group",ytId:"eBpYGRhrsq8"},
-            {title:"Celebration",artist:"Kool & The Gang",type:"Group",ytId:"3GwjfUFyY6M"},
-            {title:"Old Town Road",artist:"Lil Nas X",type:"Solo",ytId:"r7qovpFAGrQ"},
-            {title:"Blinding Lights",artist:"The Weeknd",type:"Solo",ytId:"4NRXx6U8ABQ"},
-            {title:"Levitating",artist:"Dua Lipa",type:"Solo",ytId:"TUVcZfQe-Kw"},
-            {title:"As",artist:"Stevie Wonder",type:"Duet",ytId:"lGKGSrse_Zg"},
-            {title:"Finesse",artist:"Bruno Mars & Cardi B",type:"Duet",ytId:"LsoLEjrDogU"},
-            {title:"Endless Love",artist:"Diana Ross & Lionel Richie",type:"Duet",ytId:"JM_R1R28kLM"},
-            {title:"Summertime",artist:"DJ Jazzy Jeff & Fresh Prince",type:"Duet",ytId:"Kr0tTbTbmVA"},
-            {title:"Bohemian Rhapsody",artist:"Queen",type:"Group",ytId:"fJ9rUzIMcZQ"},
-            {title:"Livin' on a Prayer",artist:"Bon Jovi",type:"Solo",ytId:"lDK9QqIzhwk"},
-            {title:"ABC",artist:"The Jackson 5",type:"Group",ytId:"ho7796-au8Y"},
-            {title:"Proud Mary",artist:"Tina Turner",type:"Solo",ytId:"T3dFUBcGMJU"},
-            {title:"What a Wonderful World",artist:"Louis Armstrong",type:"Solo",ytId:"CWzrABouyeE"},
-            {title:"Ain't No Sunshine",artist:"Bill Withers",type:"Solo",ytId:"tIdIqbv7SPo"},
-            {title:"Purple Rain",artist:"Prince",type:"Solo",ytId:"TvnYmWpD_T8"},
-            {title:"Kiss",artist:"Prince",type:"Solo",ytId:"H9tEvfIsDyo"},
-            {title:"Wobble Baby",artist:"V.I.C.",type:"Group",ytId:"fCOoPNmJbhU"},
-            {title:"Hot In Herre",artist:"Nelly",type:"Solo",ytId:"GeZZr_p6vB8"},
-            {title:"Thriller",artist:"Michael Jackson",type:"Solo",ytId:"sOnqjkJTMaA"},
-            {title:"Billie Jean",artist:"Michael Jackson",type:"Solo",ytId:"Zi_XLOBDo_Y"},
-            {title:"Golden",artist:"Jill Scott",type:"Solo",ytId:"3EaGE_3gSbg"},
-            {title:"Shallow",artist:"Lady Gaga & Bradley Cooper",type:"Duet",ytId:"bo_efYhYU2A"},
-            {title:"Umbrella",artist:"Rihanna",type:"Solo",ytId:"CvBfHwUxHIk"},
-            {title:"Let It Go",artist:"Idina Menzel",type:"Solo",ytId:"L0MK7qz13bU"},
-            {title:"Georgia On My Mind",artist:"Ray Charles",type:"Solo",ytId:"glggureS_Js"},
-            {title:"Chain of Fools",artist:"Aretha Franklin",type:"Solo",ytId:"k9YJ45gkhIg"},
-            {title:"Take Me Home Country Roads",artist:"John Denver",type:"Solo",ytId:"1vrEljMfXYo"},
-            {title:"Build Me Up Buttercup",artist:"The Foundations",type:"Group",ytId:"iol0B-clFFM"},
-            {title:"Under the Boardwalk",artist:"The Drifters",type:"Group",ytId:"EPEqRMVnZNU"},
-        ];
-
-        function setupSlotTrack(trackId,type,finalValue,duration){
-            const track=document.getElementById(trackId); track.innerHTML='';
-            const numItems=Math.floor(duration*10); let html='';
-            for(let i=0;i<numItems;i++){
-                let r='';
-                if(type==='singer'||type==='partner') r=familyNames[Math.floor(Math.random()*familyNames.length)];
-                if(type==='type') r=['Solo','Duet','Group'][Math.floor(Math.random()*3)];
-                if(type==='song') r=reokeDb[Math.floor(Math.random()*reokeDb.length)].title;
-                if(type==='volunteer'){
-                    if(trackId==='track-singer') r="[VOLUNTEER]";
-                    if(trackId==='track-type') r="[YOUR]";
-                    if(trackId==='track-song') r="[JAM]";
-                }
-                html+=`<div class="slot-item">${r}</div>`;
-            }
-            html+=`<div class="slot-item highlight">${finalValue}</div>`;
-            track.innerHTML=html; track.style.transition='none'; track.style.transform='translateY(0px)';
-            track.offsetHeight;
-            return {track,targetY:-(numItems*itemHeight),duration};
-        }
-        function executeSpin(s){
-            s.track.style.transition=`transform ${s.duration}s cubic-bezier(0.12,0.98,0.18,1)`;
-            s.track.style.transform=`translateY(${s.targetY}px)`;
-            setTimeout(playThud,s.duration*1000);
-        }
-        function pullReokeLever(){
-            if(lockInteraction)return; lockInteraction=true;
-            isVolunteerMode=Math.random()<0.10;
-            let finalName,finalType;
-            if(isVolunteerMode){
-                finalName="[VOLUNTEER]";finalType="[YOUR]";
-                chosenReokeSong={title:"[JAM]",artist:"Any Artist",type:"Wildcard",ytId:""};
-                currentLeadSinger="Volunteer";
-            } else {
-                let valid=familyNames.filter(n=>{const p=reokePlayCounts[n]||0;const b=reokeNameHistory.length>0&&reokeNameHistory[reokeNameHistory.length-1]===n;return p<2&&!b;});
-                if(valid.length===0) valid=familyNames.filter(n=>(reokePlayCounts[n]||0)<2);
-                if(valid.length===0){alert("Everyone performed twice! Resetting.");valid=[...familyNames];reokePlayCounts={};}
-                finalName=valid[Math.floor(Math.random()*valid.length)];
-                currentLeadSinger=finalName;
-                chosenReokeSong=reokeDb[Math.floor(Math.random()*reokeDb.length)];
-                finalType=chosenReokeSong.type;
-            }
-            const btn=document.getElementById('pull-lever-btn');btn.disabled=true;btn.innerText="🎰 SPINNING... 🎰";
-            document.getElementById('duet-spinner-container').style.display='none';
-            const s1=setupSlotTrack('track-singer',isVolunteerMode?'volunteer':'singer',finalName,3);
-            const s2=setupSlotTrack('track-type',isVolunteerMode?'volunteer':'type',finalType,4.5);
-            const s3=setupSlotTrack('track-song',isVolunteerMode?'volunteer':'song',chosenReokeSong.title,6.5);
-            executeSpin(s1);executeSpin(s2);executeSpin(s3);
-            let ti=setInterval(playTick,120);setTimeout(()=>clearInterval(ti),6200);
-            setTimeout(()=>{
-                playDing();
-                if(!isVolunteerMode){reokeNameHistory.push(finalName);reokePlayCounts[finalName]=(reokePlayCounts[finalName]||0)+1;}
-                if(!isVolunteerMode&&(finalType==='Duet'||finalType==='Group')){triggerDuetSpinner();}
-                else{showKaraokeActionCard();lockInteraction=false;}
-            },6800);
-        }
-        function triggerDuetSpinner(){
-            document.getElementById('duet-spinner-container').style.display='block';
-            let ap=familyNames.filter(n=>n!==currentLeadSinger);if(ap.length===0)ap=[...familyNames];
-            currentDuetPartner=ap[Math.floor(Math.random()*ap.length)];
-            const sp=setupSlotTrack('track-duet-partner','partner',currentDuetPartner,3);
-            let ti=setInterval(playTick,120);setTimeout(()=>clearInterval(ti),2800);
-            executeSpin(sp);
-            setTimeout(()=>{
-                playDing();reokeNameHistory.push(currentDuetPartner);reokePlayCounts[currentDuetPartner]=(reokePlayCounts[currentDuetPartner]||0)+1;
-                setTimeout(()=>{showKaraokeActionCard();lockInteraction=false;},800);
-            },3200);
-        }
-        function showKaraokeActionCard(){
-            document.getElementById('pull-lever-btn').style.display='none';
-            let ds=currentLeadSinger;if(currentDuetPartner!=="")ds+=" & "+currentDuetPartner;
-            const sb=document.getElementById('yt-karaoke-search-link');
-            document.getElementById('yt-embed-area').style.display='none';
-            document.getElementById('yt-iframe').src='';
-            if(isVolunteerMode){
-                document.getElementById('final-singer-display').innerText="🌟 ANY VOLUNTEER! 🌟";
-                document.getElementById('final-song-display').innerText="Pick Your Own Song!";
-                document.getElementById('final-artist-display').innerText="";
-                sb.style.display='none';document.getElementById('play-video-btn').style.display='none';
-            } else {
-                document.getElementById('final-singer-display').innerText=ds;
-                document.getElementById('final-song-display').innerText=chosenReokeSong.title;
-                document.getElementById('final-artist-display').innerText="by "+chosenReokeSong.artist;
-                document.getElementById('play-video-btn').style.display='inline-block';
-                sb.style.display='inline-block';
-                const q=encodeURIComponent(`${chosenReokeSong.title} ${chosenReokeSong.artist} karaoke`);
-                sb.href=`https://www.youtube.com/results?search_query=${q}`;
-            }
-            document.getElementById('reoke-action-card').style.display='block';
-        }
-        function playEmbeddedVideo(){
-            if(!chosenReokeSong)return;
-            const ea=document.getElementById('yt-embed-area'),fr=document.getElementById('yt-iframe');
-            if(chosenReokeSong.ytId){
-                fr.src=`https://www.youtube.com/embed/${chosenReokeSong.ytId}?autoplay=1&rel=0`;
-                ea.style.display='block';
-                document.getElementById('play-video-btn').innerText='▶ NOW PLAYING';
-                document.getElementById('play-video-btn').disabled=true;
-                ea.scrollIntoView({behavior:'smooth',block:'center'});
-            } else {
-                const q=encodeURIComponent(`${chosenReokeSong.title} ${chosenReokeSong.artist} karaoke`);
-                window.open(`https://www.youtube.com/results?search_query=${q}`,'_blank');
-            }
-        }
-        function resetReokeSlots(){
-            document.getElementById('reoke-action-card').style.display='none';
-            document.getElementById('duet-spinner-container').style.display='none';
-            document.getElementById('yt-embed-area').style.display='none';
-            document.getElementById('yt-iframe').src='';
-            currentLeadSinger="";currentDuetPartner="";isVolunteerMode=false;
-            ['track-singer','track-type','track-song','track-duet-partner'].forEach(id=>{
-                const el=document.getElementById(id);
-                if(el){el.style.transition='none';el.style.transform='translateY(0)';el.innerHTML='<div class="slot-item">?</div>';}
-            });
-            const btn=document.getElementById('pull-lever-btn');
-            btn.style.display='inline-block';btn.disabled=false;btn.innerText="🎰 PULL THE LEVER 🎰";
-            document.getElementById('play-video-btn').innerText='▶ PLAY KARAOKE VIDEO';
-            document.getElementById('play-video-btn').disabled=false;
-        }
-
-        /* ============ INIT ============ */
-        buildQuestionPool();
-    </script>
+/* ============ REOKE ============ */
+let reokeCounts={},reokeHist=[],rSong=null,isVol=false,lead='',partner='';
+const IH=90;
+const rDb=[
+  {t:"My Girl",ar:"The Temptations",ty:"Group",yt:"9pe4JSIhXg0"},{t:"Ain't No Mountain High Enough",ar:"Marvin & Tammi",ty:"Duet",yt:"0XC39zKT_Dk"},{t:"Superstition",ar:"Stevie Wonder",ty:"Solo",yt:"4ia5KDIXLy4"},{t:"Respect",ar:"Aretha Franklin",ty:"Solo",yt:"F2TmbIOfpuk"},{t:"Stand By Me",ar:"Ben E. King",ty:"Solo",yt:"G4b-D2hE5H8"},{t:"I Want You Back",ar:"Jackson 5",ty:"Group",yt:"hM6o4R-0J2E"},{t:"September",ar:"Earth Wind & Fire",ty:"Group",yt:"8cK5O4W3T2E"},{t:"Before I Let Go",ar:"Maze ft Frankie Beverly",ty:"Solo",yt:"vI_04_P55P8"},{t:"Waterfalls",ar:"TLC",ty:"Group",yt:"enVeRCtCw8w"},{t:"No Scrubs",ar:"TLC",ty:"Group",yt:"bUIvrsvm9z8"},{t:"End of the Road",ar:"Boyz II Men",ty:"Group",yt:"84L0nU4zD_4"},{t:"No Diggity",ar:"Blackstreet",ty:"Group",yt:"9mPZ_x_e4wA"},{t:"This Is How We Do It",ar:"Montell Jordan",ty:"Solo",yt:"G7Yh_f_xUfM"},{t:"Say My Name",ar:"Destiny's Child",ty:"Group",yt:"lTfV_YvGbp8"},{t:"Yeah!",ar:"Usher",ty:"Solo",yt:"QO_fKzXyBbw"},{t:"Family Affair",ar:"Mary J. Blige",ty:"Solo",yt:"UaU6tXWv3U0"},{t:"The Boy Is Mine",ar:"Brandy & Monica",ty:"Duet",yt:"Yh_a0y5p728"},{t:"Crazy in Love",ar:"Beyonce",ty:"Duet",yt:"Po2wzSJPTBk"},{t:"Fallin'",ar:"Alicia Keys",ty:"Solo",yt:"k5FvP3fN4Zk"},{t:"I Will Always Love You",ar:"Whitney Houston",ty:"Solo",yt:"aY8e8XoWdYI"},{t:"Sweet Caroline",ar:"Neil Diamond",ty:"Solo",yt:"1vhFnTjia_I"},{t:"Don't Stop Believin'",ar:"Journey",ty:"Group",yt:"KaqC5FnvAEc"},{t:"I Will Survive",ar:"Gloria Gaynor",ty:"Solo",yt:"ehqhfZvaPNM"},{t:"Tennessee Whiskey",ar:"Chris Stapleton",ty:"Solo",yt:"F4iK00O8GfU"},{t:"Lean on Me",ar:"Bill Withers",ty:"Group",yt:"fOZ-MySzAac"},{t:"Shout",ar:"Isley Brothers",ty:"Group",yt:"xKwAMrQSe0k"},{t:"Cupid Shuffle",ar:"Cupid",ty:"Group",yt:"h24_zoqu4RU"},{t:"Cha Cha Slide",ar:"DJ Casper",ty:"Group",yt:"wZv62ShoStY"},{t:"Electric Slide",ar:"Marcia Griffiths",ty:"Group",yt:"tH9PBBo6v6k"},{t:"Hit the Road Jack",ar:"Ray Charles",ty:"Duet",yt:"Q8Tiz6INF7I"},{t:"Happy",ar:"Pharrell",ty:"Solo",yt:"ZbZSe6N_BXs"},{t:"Love on Top",ar:"Beyonce",ty:"Solo",yt:"Ob7vObnFUH8"},{t:"Best Part",ar:"Daniel Caesar & H.E.R.",ty:"Duet",yt:"vBy7FaapGRo"},{t:"Killing Me Softly",ar:"Fugees",ty:"Group",yt:"oKOtzIo-uYw"},{t:"Lovely Day",ar:"Bill Withers",ty:"Solo",yt:"bEeaS6fuUoA"},{t:"At Last",ar:"Etta James",ty:"Solo",yt:"S-cbOl96RFM"},{t:"Natural Woman",ar:"Aretha Franklin",ty:"Solo",yt:"dEWuAE4pXew"},{t:"No One",ar:"Alicia Keys",ty:"Solo",yt:"rywUS-ohqeE"},{t:"Let's Stay Together",ar:"Al Green",ty:"Solo",yt:"COiIC3A0ROM"},{t:"Uptown Funk",ar:"Bruno Mars",ty:"Solo",yt:"OPf0YbXqDm0"},{t:"We Are Family",ar:"Sister Sledge",ty:"Group",yt:"eBpYGRhrsq8"},{t:"Celebration",ar:"Kool & The Gang",ty:"Group",yt:"3GwjfUFyY6M"},{t:"Old Town Road",ar:"Lil Nas X",ty:"Solo",yt:"r7qovpFAGrQ"},{t:"Blinding Lights",ar:"The Weeknd",ty:"Solo",yt:"4NRXx6U8ABQ"},{t:"Endless Love",ar:"Diana Ross & Lionel Richie",ty:"Duet",yt:"JM_R1R28kLM"},{t:"Shallow",ar:"Lady Gaga & Bradley Cooper",ty:"Duet",yt:"bo_efYhYU2A"},{t:"Bohemian Rhapsody",ar:"Queen",ty:"Group",yt:"fJ9rUzIMcZQ"},{t:"ABC",ar:"Jackson 5",ty:"Group",yt:"ho7796-au8Y"},{t:"Proud Mary",ar:"Tina Turner",ty:"Solo",yt:"T3dFUBcGMJU"},{t:"What a Wonderful World",ar:"Louis Armstrong",ty:"Solo",yt:"CWzrABouyeE"},{t:"Ain't No Sunshine",ar:"Bill Withers",ty:"Solo",yt:"tIdIqbv7SPo"},{t:"Purple Rain",ar:"Prince",ty:"Solo",yt:"TvnYmWpD_T8"},{t:"Thriller",ar:"Michael Jackson",ty:"Solo",yt:"sOnqjkJTMaA"},{t:"Billie Jean",ar:"Michael Jackson",ty:"Solo",yt:"Zi_XLOBDo_Y"},{t:"Golden",ar:"Jill Scott",ty:"Solo",yt:"3EaGE_3gSbg"},{t:"Umbrella",ar:"Rihanna",ty:"Solo",yt:"CvBfHwUxHIk"},{t:"Let It Go",ar:"Idina Menzel",ty:"Solo",yt:"L0MK7qz13bU"},{t:"Georgia On My Mind",ar:"Ray Charles",ty:"Solo",yt:"glggureS_Js"},{t:"Chain of Fools",ar:"Aretha Franklin",ty:"Solo",yt:"k9YJ45gkhIg"},{t:"Wobble Baby",ar:"V.I.C.",ty:"Group",yt:"fCOoPNmJbhU"},{t:"Hot In Herre",ar:"Nelly",ty:"Solo",yt:"GeZZr_p6vB8"},{t:"Build Me Up Buttercup",ar:"The Foundations",ty:"Group",yt:"iol0B-clFFM"},{t:"Under the Boardwalk",ar:"The Drifters",ty:"Group",yt:"EPEqRMVnZNU"},{t:"Summertime",ar:"DJ Jazzy Jeff & Fresh Prince",ty:"Duet",yt:"Kr0tTbTbmVA"},{t:"Finesse",ar:"Bruno Mars & Cardi B",ty:"Duet",yt:"LsoLEjrDogU"},{t:"As",ar:"Stevie Wonder",ty:"Duet",yt:"lGKGSrse_Zg"},{t:"I Gotta Feeling",ar:"Black Eyed Peas",ty:"Group",yt:"uSD4vsh1zDA"},{t:"Can't Help Falling in Love",ar:"Elvis Presley",ty:"Solo",yt:"vGJTaP6anOU"},{t:"Girls Just Want to Have Fun",ar:"Cyndi Lauper",ty:"Solo",yt:"PIb6AZdTr-A"},{t:"Levitating",ar:"Dua Lipa",ty:"Solo",yt:"TUVcZfQe-Kw"},{t:"Kiss",ar:"Prince",ty:"Solo",yt:"H9tEvfIsDyo"},{t:"Take Me Home Country Roads",ar:"John Denver",ty:"Solo",yt:"1vrEljMfXYo"},{t:"Livin' on a Prayer",ar:"Bon Jovi",ty:"Solo",yt:"lDK9QqIzhwk"},
+];
+function mkTrack(tid,ty,val,dur){
+  const tr=document.getElementById(tid);tr.innerHTML='';const n=Math.floor(dur*10);let h='';
+  for(let i=0;i<n;i++){let r='';
+    if(ty==='s'||ty==='d')r=names[Math.floor(Math.random()*names.length)];
+    if(ty==='t')r=['Solo','Duet','Group'][Math.floor(Math.random()*3)];
+    if(ty==='g')r=rDb[Math.floor(Math.random()*rDb.length)].t;
+    if(ty==='v'){r=tid.includes('singer')?'[VOLUNTEER]':tid.includes('type')?'[YOUR]':'[JAM]';}
+    h+=`<div class="slot-item">${r}</div>`;
+  }
+  h+=`<div class="slot-item hl">${val}</div>`;
+  tr.innerHTML=h;tr.style.transition='none';tr.style.transform='translateY(0)';tr.offsetHeight;
+  return{tr,y:-(n*IH),dur};
+}
+function runSpin(s){s.tr.style.transition=`transform ${s.dur}s cubic-bezier(0.12,0.98,0.18,1)`;s.tr.style.transform=`translateY(${s.y}px)`;setTimeout(sfxThud,s.dur*1000);}
+function pullLever(){
+  if(lock)return;lock=true;isVol=Math.random()<0.1;
+  let fn,ft;
+  if(isVol){fn='[VOLUNTEER]';ft='[YOUR]';rSong={t:'[JAM]',ar:'Any',ty:'Wild',yt:''};lead='Volunteer';}
+  else{
+    let v=names.filter(n=>{const p=reokeCounts[n]||0;return p<2&&reokeHist[reokeHist.length-1]!==n;});
+    if(!v.length)v=names.filter(n=>(reokeCounts[n]||0)<2);
+    if(!v.length){v=[...names];reokeCounts={};}
+    fn=v[Math.floor(Math.random()*v.length)];lead=fn;
+    rSong=rDb[Math.floor(Math.random()*rDb.length)];ft=rSong.ty;
+  }
+  const b=document.getElementById('lever-btn');b.disabled=true;b.innerText='🎰 SPINNING... 🎰';
+  document.getElementById('duet-box').style.display='none';partner='';
+  const s1=mkTrack('tr-singer',isVol?'v':'s',fn,3);
+  const s2=mkTrack('tr-type',isVol?'v':'t',ft,4.5);
+  const s3=mkTrack('tr-song',isVol?'v':'g',rSong.t,6.5);
+  runSpin(s1);runSpin(s2);runSpin(s3);
+  let ti=setInterval(sfxTick,110);setTimeout(()=>clearInterval(ti),6100);
+  setTimeout(()=>{sfxDing();
+    if(!isVol){reokeHist.push(fn);reokeCounts[fn]=(reokeCounts[fn]||0)+1;}
+    if(!isVol&&(ft==='Duet'||ft==='Group'))doDuet();
+    else{showReokeResult();lock=false;}
+  },6800);
+}
+function doDuet(){
+  document.getElementById('duet-box').style.display='block';
+  let a=names.filter(n=>n!==lead);if(!a.length)a=[...names];
+  partner=a[Math.floor(Math.random()*a.length)];
+  const sp=mkTrack('tr-duet','d',partner,3);
+  let ti=setInterval(sfxTick,110);setTimeout(()=>clearInterval(ti),2700);
+  runSpin(sp);setTimeout(()=>{sfxDing();reokeHist.push(partner);reokeCounts[partner]=(reokeCounts[partner]||0)+1;
+    setTimeout(()=>{showReokeResult();lock=false;},700);
+  },3200);
+}
+function showReokeResult(){
+  document.getElementById('lever-btn').style.display='none';
+  let ds=lead;if(partner)ds+=' & '+partner;
+  const ea=document.getElementById('yt-area');ea.style.display='none';document.getElementById('yt-frame').src='';
+  if(isVol){
+    document.getElementById('r-singer').innerText='🌟 ANY VOLUNTEER! 🌟';
+    document.getElementById('r-song').innerText='Pick Your Own Song!';
+    document.getElementById('r-artist').innerText='';
+    document.getElementById('yt-link').style.display='none';document.getElementById('play-btn').style.display='none';
+  } else {
+    document.getElementById('r-singer').innerText=ds;
+    document.getElementById('r-song').innerText=rSong.t;
+    document.getElementById('r-artist').innerText='by '+rSong.ar;
+    document.getElementById('play-btn').style.display='inline-block';
+    document.getElementById('yt-link').style.display='inline-block';
+    document.getElementById('yt-link').href=`https://www.youtube.com/results?search_query=${encodeURIComponent(rSong.t+' '+rSong.ar+' karaoke')}`;
+  }
+  document.getElementById('reoke-result').style.display='block';
+}
+function playVideo(){
+  if(!rSong)return;
+  if(rSong.yt){document.getElementById('yt-frame').src=`https://www.youtube.com/embed/${rSong.yt}?autoplay=1&rel=0`;
+    document.getElementById('yt-area').style.display='block';
+    document.getElementById('play-btn').innerText='▶ NOW PLAYING';document.getElementById('play-btn').disabled=true;
+    document.getElementById('yt-area').scrollIntoView({behavior:'smooth',block:'center'});
+  } else window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(rSong.t+' '+rSong.ar+' karaoke')}`,'_blank');
+}
+function resetReoke(){
+  document.getElementById('reoke-result').style.display='none';
+  document.getElementById('duet-box').style.display='none';
+  document.getElementById('yt-area').style.display='none';document.getElementById('yt-frame').src='';
+  lead='';partner='';isVol=false;
+  ['tr-singer','tr-type','tr-song','tr-duet'].forEach(id=>{const e=document.getElementById(id);if(e){e.style.transition='none';e.style.transform='translateY(0)';e.innerHTML='<div class="slot-item">?</div>';}});
+  const b=document.getElementById('lever-btn');b.style.display='inline-block';b.disabled=false;b.innerText='🎰 PULL THE LEVER 🎰';
+  document.getElementById('play-btn').innerText='▶ PLAY KARAOKE';document.getElementById('play-btn').disabled=false;
+}
+</script>
 </body>
 </html>
