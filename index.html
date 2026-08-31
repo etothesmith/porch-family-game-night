@@ -1132,7 +1132,8 @@ function rgLoop(now){
   if(ns!==stageIdx){ stageIdx=ns; flash('📍 '+STAGES[ns].name); sfxDing(); }
   if(dist>=RG.GOAL || runT>=RG.RUN_SECONDS+8) return finish(dist>=RG.GOAL);
 
-  hud(); draw(v);
+  hud();
+  try { draw(v); } catch(err){ console.error('draw() failed:',err); }
   rgRaf=requestAnimationFrame(rgLoop);
 }
 
@@ -1208,6 +1209,36 @@ function draw(v){
   drawHero(X,g);
   if(stageIdx>=2){ const vg=X.createRadialGradient(RG.W/2,RG.H/2,RG.H*.4,RG.W/2,RG.H/2,RG.H*.95);
     vg.addColorStop(0,'transparent'); vg.addColorStop(1,'rgba(0,0,10,.45)'); X.fillStyle=vg; X.fillRect(0,0,RG.W,RG.H); }
+}
+function farProp(X,d,st,g){
+  if(st.prop==='city'){
+    X.fillStyle='rgba(20,25,45,0.55)';
+    const h=70+((d.t*100)%90); X.fillRect(d.x,g-h,54,h);
+    X.fillStyle='rgba(255,220,120,0.25)';
+    for(let r=0;r<h/18;r++) X.fillRect(d.x+8,g-h+8+r*18,10,8);
+  } else {
+    X.fillStyle='rgba(255,255,255,0.55)';
+    X.beginPath(); X.ellipse(d.x,70+d.t*40,52,17,0,0,Math.PI*2); X.fill();
+  }
+}
+function nearProp(X,d,st,g){
+  if(st.prop==='tree'){
+    X.fillStyle='#3E2A18'; X.fillRect(d.x+16,g-52,10,52);
+    X.fillStyle='#2F5C24'; X.beginPath(); X.arc(d.x+21,g-64,26,0,Math.PI*2); X.fill();
+  } else if(st.prop==='house'){
+    X.fillStyle='#B58A5E'; X.fillRect(d.x,g-58,64,58);
+    X.fillStyle='#7C3B2A'; X.beginPath(); X.moveTo(d.x-6,g-58); X.lineTo(d.x+32,g-86); X.lineTo(d.x+70,g-58); X.closePath(); X.fill();
+    X.fillStyle='#FFE9A8'; X.fillRect(d.x+12,g-42,16,14); X.fillRect(d.x+38,g-42,16,14);
+  } else if(st.prop==='city'){
+    X.fillStyle='#2A3550'; X.fillRect(d.x,g-96,58,96);
+    X.fillStyle='rgba(255,225,140,0.6)';
+    for(let r=0;r<5;r++) for(let c=0;c<2;c++) if((r+c+((d.t*10)|0))%2) X.fillRect(d.x+10+c*24,g-86+r*17,14,10);
+  } else {
+    X.fillStyle='#C94F5A'; X.beginPath(); X.moveTo(d.x,g); X.lineTo(d.x+34,g-56); X.lineTo(d.x+68,g); X.closePath(); X.fill();
+    X.fillStyle='#FFD86B'; X.fillRect(d.x+28,g-22,14,22);
+    X.strokeStyle='rgba(255,240,180,0.7)'; X.lineWidth=2;
+    X.beginPath(); X.moveTo(d.x-20,g-64); X.quadraticCurveTo(d.x+34,g-80,d.x+88,g-64); X.stroke();
+  }
 }
 function drawTok(X,k){
   const T=TIER[k.tier], bob=Math.sin(k.t*.12)*4;
