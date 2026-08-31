@@ -119,26 +119,63 @@ const HAZ = {
   leaves :{w:56,h:12, ground:true,  verb:'slow'},
   pigeons:{w:44,h:26, ground:false, verb:'duck', air:96},
 };
-const TIER = { path:{pts:50,r:11,col:'#FFD34D'}, risk:{pts:200,r:12,col:'#FF7BD5'}, combo:{pts:100,r:11,col:'#6EE7F9'} };
+const TIER = {
+  path :{pts:50, r:11, col:'#FFD34D', art:'greens',  fx:'heal'  },
+  risk :{pts:200,r:12, col:'#FF7BD5', art:'pie',     fx:'points'},
+  combo:{pts:100,r:11, col:'#6EE7F9', art:'chicken', fx:'speed' },
+};
+// Gumbo shows up rarely as a standalone shield pickup
+const GUMBO_ODDS = 0.14;
 
 /* ---------- asset load ---------- */
 const IMG={}; 
-function loadArt(){ CHARS.forEach(c=>{ for(let i=0;i<c.frames;i++) px(`${c.key}_run${i}`,`sprites/${c.key}_run${i}.png`); px(`${c.key}_face`,`sprites/${c.key}_face.png`); }); }
+function loadArt(){
+  CHARS.forEach(c=>{ for(let i=0;i<c.frames;i++) px(`${c.key}_run${i}`,`sprites/${c.key}_run${i}.png`); px(`${c.key}_face`,`sprites/${c.key}_face.png`); });
+  ['chicken','gumbo','greens','pie','pothole','cart','hay','leaves','pigeons'].forEach(k=>px('g_'+k,'sprites/game/'+k+'.png'));
+  ['uncle','tupper','elder','auntie','cousin'].forEach(k=>px('v_'+k,'sprites/game/v_'+k+'.png'));
+}
 function px(k,src){ const im=new Image(); im.onload=()=>{IMG[k]=im; if(typeof rgRefresh==='function') rgRefresh();}; im.onerror=()=>{}; im.src=src; }
 loadArt();
 
+/* ---------- the reunion's five obstacles-in-human-form ---------- */
+const VILLAINS = [
+  { key:'uncle',  name:'Unbothered Uncle',  w:74, h:86, atk:'nope',
+    blurb:'Sits dead still. Will not move. Jump him or leaf him.' },
+  { key:'tupper', name:'Tupperware Taker',  w:74, h:86, atk:'lunge',
+    blurb:'Lunges for your plate — she speeds up as she nears.' },
+  { key:'elder',  name:'Long Story Elder',  w:78, h:88, atk:'aura',
+    blurb:'Interrupt Aura slows you to a crawl inside its ring.' },
+  { key:'auntie', name:'Pinching Auntie',   w:82, h:80, atk:'pinch',
+    blurb:'Face-pinch lunge. Stuns you where you stand.' },
+  { key:'cousin', name:'Fix My Phone Cousin',w:82,h:82, atk:'quiz',
+    blurb:'Throws question marks that scramble your controls.' },
+];
+
 /* ---------- object pools (zero alloc in loop) ---------- */
-const POOL_H=40, POOL_K=48;
+const POOL_H=40, POOL_K=48, POOL_V=6, POOL_L=14, POOL_Q=10;
 const hz = Array.from({length:POOL_H},()=>({on:false,x:0,y:0,w:0,h:0,type:'',verb:''}));
 const tk = Array.from({length:POOL_K},()=>({on:false,x:0,y:0,tier:'path',got:false,t:0}));
 function takeH(){ for(let i=0;i<POOL_H;i++) if(!hz[i].on) return hz[i]; return null; }
 function takeK(){ for(let i=0;i<POOL_K;i++) if(!tk[i].on) return tk[i]; return null; }
-function clearPools(){ for(let i=0;i<POOL_H;i++) hz[i].on=false; for(let i=0;i<POOL_K;i++) tk[i].on=false; }
+const vl = Array.from({length:POOL_V},()=>({on:false,x:0,y:0,w:0,h:0,key:'',atk:'',hp:2,t:0,vx:0,stunned:0}));
+const lf = Array.from({length:POOL_L},()=>({on:false,x:0,y:0,vx:0,spin:0}));
+const qm = Array.from({length:POOL_Q},()=>({on:false,x:0,y:0,vx:0,t:0}));
+function takeV(){ for(let i=0;i<POOL_V;i++) if(!vl[i].on) return vl[i]; return null; }
+function takeL(){ for(let i=0;i<POOL_L;i++) if(!lf[i].on) return lf[i]; return null; }
+function takeQ(){ for(let i=0;i<POOL_Q;i++) if(!qm[i].on) return qm[i]; return null; }
+function clearPools(){
+  for(let i=0;i<POOL_H;i++) hz[i].on=false;
+  for(let i=0;i<POOL_K;i++) tk[i].on=false;
+  for(let i=0;i<POOL_V;i++) vl[i].on=false;
+  for(let i=0;i<POOL_L;i++) lf[i].on=false;
+  for(let i=0;i<POOL_Q;i++) qm[i].on=false;
+}
 
 /* ---------- state ---------- */
 let rgSel=0,rgCv,rgX,rgOn=false,rgRaf=null,rgLast=0;
 let P,eli,deco,stageIdx,dist,score,hp,combo,comboT,runT;
 let tShield,tSpeed,tSlow,tAura,cdAura,iFr,puppy,trail;
+let ammo,cool,stun,scramble,vTimer,villKills;
 let cursorPx,lastChunk,bestScore=0,peakCombo=0,tokensGot=0;
 
 /* ---------- formulas ---------- */
@@ -224,6 +261,7 @@ function rgStart(){
   eli={on:false,x:0,y:0,variant:0,life:0,shot:null,cool:480};
   stageIdx=0;dist=0;score=0;hp=3;combo=1;comboT=0;runT=0;
   tShield=0;tSpeed=0;tSlow=0;tAura=0;cdAura=0;iFr=0;puppy=null;
+  ammo=5;cool=0;stun=0;scramble=0;vTimer=260;villKills=0;
   peakCombo=1;tokensGot=0;
   cursorPx=RG.W+120; lastChunk=null;
   if(CHARS[rgSel].perk==='steady') hp=4;
@@ -236,8 +274,17 @@ function rgStart(){
 }
 
 /* ---------- input: buffer + coyote ---------- */
-function rgJump(){ if(rgOn) P.buffer=RG.BUFFER; }        // remember the press
+function rgJump(){ if(!rgOn||stun>0) return; if(scramble>0){ P.duck=true; setTimeout(()=>{P.duck=false;},260); return; } P.buffer=RG.BUFFER; }        // remember the press
 function rgDuck(on){ if(rgOn) P.duck=on; }
+function rgThrow(){
+  if(!rgOn || stun>0) return;
+  if(ammo<=0 || cool>0){ tone(180,'square',0.07,0.10); return; }
+  const L=takeL(); if(!L) return;
+  ammo--; cool=12;
+  L.on=true; L.x=P.x+40; L.y=P.y-(P.duck?26:38); L.vx=11.5; L.spin=0;
+  tone(720,'triangle',0.09,0.16);
+}
+
 function rgAura(){
   if(!rgOn||CHARS[rgSel].perk!=='aura'||cdAura>0||tAura>0) return;
   tAura=170; cdAura=560; sfxDing(); puppy={x:P.x-52,y:RG.H-RG.GROUND_OFF,b:0}; flash('✨ SOOTHING AURA');
@@ -290,18 +337,76 @@ function rgFrame(now){
   if(CHARS[rgSel].perk==='swift') trail.push({x:P.x+20,y:P.y-30,a:1});
   trail.forEach(t=>t.a-=.045*dt); trail=trail.filter(t=>t.a>0);
 
-  /* --- Eli --- */
-  eli.cool-=dt;
-  if(eli.cool<=0&&!eli.on){ eli.on=true;eli.x=RG.W+50;eli.y=g-70;eli.variant=(Math.random()*3)|0;eli.life=260;eli.shot=null;eli.cool=560+Math.random()*260; }
-  if(eli.on){ eli.x-=v*.62*dt; eli.life-=dt;
-    if(eli.life<=0||eli.x<-90) eli.on=false;
-    if(!eli.shot&&eli.x<RG.W-120&&Math.random()<.02*dt){ eli.shot={x:eli.x-6,y:eli.y+16,w:18,h:14}; tone(240,'sawtooth',.16,.18); }
+  /* --- villains: five distinct behaviours --- */
+  vTimer -= dt;
+  if(vTimer<=0){
+    const sv = takeV();
+    if(sv){
+      const pick = VILLAINS[(Math.random()*VILLAINS.length)|0];
+      sv.on=true; sv.key=pick.key; sv.atk=pick.atk; sv.w=pick.w; sv.h=pick.h;
+      sv.x=RG.W+60; sv.y=g-pick.h; sv.hp=(pick.atk==='nope')?3:2; sv.t=0; sv.vx=0; sv.stunned=0;
+      flash('\u26A0 '+pick.name);
+    }
+    vTimer = 300 + Math.random()*220;
   }
-  if(eli.shot){ eli.shot.x-=(v+4.2)*dt; if(eli.shot.x<-30) eli.shot=null; }
+  for(let i=0;i<POOL_V;i++){
+    const V=vl[i]; if(!V.on) continue;
+    V.t+=dt;
+    if(V.stunned>0){ V.stunned-=dt; V.x-=v*dt; }
+    else{
+      if(V.atk==='nope'){ V.x-=v*dt; }
+      else if(V.atk==='lunge'){
+        const d=V.x-(P.x+22);
+        V.vx = d<300 ? Math.min(V.vx+0.16*dt, 4.2) : 0;
+        V.x -= (v+V.vx)*dt;
+      }
+      else if(V.atk==='aura'){ V.x-=v*0.82*dt; }
+      else if(V.atk==='pinch'){
+        const d=V.x-(P.x+22);
+        V.x -= (v + (d<230 ? 5.0 : 0))*dt;
+      }
+      else if(V.atk==='quiz'){
+        V.x-=v*0.7*dt;
+        if(V.x<RG.W-140 && Math.random()<0.018*dt){
+          const q=takeQ();
+          if(q){ q.on=true; q.x=V.x; q.y=V.y+22; q.vx=v+3.6; q.t=0; tone(430,'square',0.1,0.14); }
+        }
+      }
+    }
+    if(V.x<-120) V.on=false;
+  }
+  var inAura=false;
+  for(let i=0;i<POOL_V;i++){
+    const V=vl[i];
+    if(V.on && V.atk==='aura' && V.stunned<=0 && Math.abs((V.x+V.w/2)-(P.x+22))<150) inAura=true;
+  }
+  if(inAura && tSlow<=0) tSlow=6;
+
+  /* --- leaves in flight --- */
+  for(let i=0;i<POOL_L;i++){
+    const L=lf[i]; if(!L.on) continue;
+    L.x+=L.vx*dt; L.spin+=0.35*dt;
+    if(L.x>RG.W+40){ L.on=false; continue; }
+    for(let j=0;j<POOL_V;j++){
+      const V=vl[j]; if(!V.on||V.stunned>0) continue;
+      if(L.x>V.x&&L.x<V.x+V.w&&L.y>V.y&&L.y<V.y+V.h){
+        L.on=false; V.hp--; sfxTick();
+        if(V.hp<=0){ V.stunned=150; V.vx=0; score+=250*combo; villKills++; flash('\uD83C\uDF42 Got em!'); sfxDing(); }
+        break;
+      }
+    }
+  }
+  /* --- question marks in flight --- */
+  for(let i=0;i<POOL_Q;i++){
+    const Q=qm[i]; if(!Q.on) continue;
+    Q.x-=Q.vx*dt; Q.t+=dt;
+    if(Q.x<-30) Q.on=false;
+  }
 
   /* --- timers --- */
   if(tShield>0)tShield-=dt; if(tSpeed>0)tSpeed-=dt; if(tSlow>0)tSlow-=dt;
   if(cdAura>0)cdAura-=dt; if(iFr>0)iFr-=dt;
+  if(cool>0)cool-=dt; if(stun>0)stun-=dt; if(scramble>0)scramble-=dt;
   if(tAura>0){ tAura-=dt;
     for(let i=0;i<POOL_H;i++){ const o=hz[i]; if(o.on&&Math.abs((o.x+o.w/2)-(P.x+22))<120){o.on=false;score+=30*combo;} }
     if(eli.shot) eli.shot=null;
@@ -320,8 +425,23 @@ function rgFrame(now){
       o.on=false;
     }
   }
-  if(eli.shot&&!safe){ const s=eli.shot;
-    if(bx+bw>s.x&&bx<s.x+s.w&&by+bh>s.y&&by<s.y+s.h){ hurt(); eli.shot=null; } }
+  // villain body contact
+  for(let i=0;i<POOL_V;i++){
+    const V=vl[i]; if(!V.on||safe) continue;
+    if(V.stunned>0) continue;
+    if(bx+bw>V.x&&bx<V.x+V.w&&by+bh>V.y&&by<V.y+V.h){
+      if(V.atk==='pinch'){ stun=48; flash('Face pinch!'); }
+      hurt(); V.stunned=90;
+    }
+  }
+  // question marks scramble the controls
+  for(let i=0;i<POOL_Q;i++){
+    const Q=qm[i]; if(!Q.on||safe) continue;
+    if(bx+bw>Q.x-11&&bx<Q.x+11&&by+bh>Q.y-11&&by<Q.y+11){
+      Q.on=false; scramble=110; flash('Controls scrambled!'); hurt();
+    }
+  }
+
   for(let i=0;i<POOL_K;i++){
     const k=tk[i]; if(!k.on||k.got) continue;
     if(bx+bw>k.x-14&&bx<k.x+14&&by+bh>k.y-14&&by<k.y+14){ k.got=true; k.on=false; grabToken(k.tier); }
@@ -354,6 +474,7 @@ function shake(){ const c=document.getElementById('rg-canvas'); if(!c)return;
   c.style.transform='translateX(-6px)'; setTimeout(()=>c.style.transform='translateX(6px)',60); setTimeout(()=>c.style.transform='',120); }
 function hud(){
   document.getElementById('rg-hp').textContent='❤️'.repeat(Math.max(0,hp));
+  const am=document.getElementById('rg-ammo'); if(am) am.textContent='🍂 '+ammo;
   document.getElementById('rg-dist').textContent=Math.floor(dist)+'m';
   document.getElementById('rg-score').textContent=score.toLocaleString();
   document.getElementById('rg-combo').textContent='x'+combo;
@@ -376,7 +497,7 @@ function finish(won){
     ? `<strong>${CHARS[rgSel].name}</strong> made it to the reunion!`
     : `<strong>${CHARS[rgSel].name}</strong> got ${Math.floor(dist)}m of ${RG.GOAL}m.`)
     + `<br>Score <strong>${score.toLocaleString()}</strong> · Best ${bestScore.toLocaleString()}`
-    + `<br><span style="font-size:.85em;color:#8b93a3">${tokensGot} tokens · peak combo x${peakCombo}</span>`;
+    + `<br><span style="font-size:.85em;color:#8b93a3">${tokensGot} pickups · peak combo x${peakCombo} · ${villKills} relatives dodged</span>`;
   if(won&&typeof fireConfetti==='function') fireConfetti();
   won?sfxFanfare():sfxSad();
 }
@@ -404,7 +525,9 @@ function draw(v){
   for(let i=0;i<POOL_H;i++) if(hz[i].on) drawHaz(X,hz[i]);
   for(let i=0;i<POOL_K;i++) if(tk[i].on) drawTok(X,tk[i]);
   trail.forEach(t=>{X.fillStyle=`rgba(230,200,255,${t.a*.5})`;X.fillRect(t.x,t.y,5,5);});
-  if(eli.on) drawEli(X,eli);
+  for(let i=0;i<POOL_V;i++) if(vl[i].on) drawVillain(X,vl[i]);
+  for(let i=0;i<POOL_L;i++) if(lf[i].on) drawLeaf(X,lf[i]);
+  for(let i=0;i<POOL_Q;i++) if(qm[i].on) drawQm(X,qm[i]);
   if(puppy){ const b=Math.abs(Math.sin(puppy.b))*5;
     X.fillStyle='#D2A679';X.fillRect(puppy.x,g-16-b,22,11);X.fillRect(puppy.x+18,g-22-b,10,9);
     X.fillStyle='#8B6544';X.fillRect(puppy.x+17,g-25-b,4,5);X.fillRect(puppy.x+24,g-25-b,4,5);X.fillRect(puppy.x-4,g-19-b,5,4);
@@ -445,6 +568,13 @@ function nearProp(X,d,st,g){
 }
 function drawTok(X,k){
   const T=TIER[k.tier], bob=Math.sin(k.t*.12)*4;
+  const im=IMG['g_'+T.art];
+  if(im){
+    const h=34, w=im.width*(h/im.height);
+    X.save(); X.shadowColor=T.col; X.shadowBlur=14;
+    X.drawImage(im,k.x-w/2,k.y+bob-h/2,w,h); X.restore();
+    return;
+  }
   X.save(); X.shadowColor=T.col; X.shadowBlur=14;
   X.fillStyle=T.col; X.beginPath(); X.arc(k.x,k.y+bob,T.r,0,7); X.fill();
   X.fillStyle='rgba(255,255,255,.85)'; X.beginPath(); X.arc(k.x-3,k.y+bob-3,T.r*.32,0,7); X.fill();
@@ -453,6 +583,12 @@ function drawTok(X,k){
     X.beginPath(); X.arc(k.x,k.y+bob,T.r+5,0,7); X.stroke(); }
 }
 function drawHaz(X,o){
+  const im=IMG['g_'+o.type];
+  if(im){
+    const w=o.w+16, h=im.height*(w/im.width);
+    X.drawImage(im,o.x-8,o.y+o.h-h,w,h);
+    return;
+  }
   if(o.type==='pothole'){ X.fillStyle='#1a1a1a';X.beginPath();X.ellipse(o.x+o.w/2,o.y+8,o.w/2,9,0,0,7);X.fill();
     X.fillStyle='#000';X.beginPath();X.ellipse(o.x+o.w/2,o.y+8,o.w/2-6,5,0,0,7);X.fill(); }
   else if(o.type==='cart'){ X.fillStyle='#9aa4ad';X.fillRect(o.x,o.y+8,o.w,26);
@@ -481,6 +617,37 @@ function drawEli(X,e){
     X.strokeStyle='#c0392b';X.strokeRect(e.shot.x,e.shot.y,e.shot.w,e.shot.h);
     X.fillStyle='#c0392b';X.font='9px Outfit';X.fillText('TKT',e.shot.x+2,e.shot.y+10); }
 }
+function drawVillain(X,V){
+  const im=IMG['v_'+V.key];
+  const bob=V.stunned>0?0:Math.sin(V.t*0.10)*3;
+  X.save();
+  if(V.stunned>0){ X.globalAlpha=0.55; X.translate(V.x+V.w/2,V.y+V.h/2); X.rotate(0.42); X.translate(-(V.x+V.w/2),-(V.y+V.h/2)); }
+  if(V.atk==='aura' && V.stunned<=0){
+    const gr=X.createRadialGradient(V.x+V.w/2,V.y+V.h/2,0,V.x+V.w/2,V.y+V.h/2,150);
+    gr.addColorStop(0,'rgba(120,90,220,0.20)'); gr.addColorStop(1,'transparent');
+    X.fillStyle=gr; X.beginPath(); X.arc(V.x+V.w/2,V.y+V.h/2,150,0,7); X.fill();
+  }
+  if(im) X.drawImage(im,V.x,V.y+bob,V.w,V.h);
+  else { X.fillStyle='#5A3B1E'; X.fillRect(V.x,V.y+bob,V.w,V.h); }
+  X.restore();
+  if(V.stunned<=0){
+    for(let i=0;i<V.hp;i++){ X.fillStyle='#FF5252'; X.fillRect(V.x+i*9,V.y-9,7,4); }
+  }
+}
+function drawLeaf(X,L){
+  const im=IMG['g_leaves'];
+  X.save(); X.translate(L.x,L.y); X.rotate(L.spin);
+  if(im){ const h=20,w=im.width*(h/im.height); X.drawImage(im,-w/2,-h/2,w,h); }
+  else { X.fillStyle='#B85C2E'; X.fillRect(-7,-5,14,10); }
+  X.restore();
+}
+function drawQm(X,Q){
+  X.save(); X.font='bold 22px Outfit'; X.fillStyle='#F59E0B';
+  X.strokeStyle='#7C2D12'; X.lineWidth=3;
+  const yy=Q.y+Math.sin(Q.t*0.16)*5;
+  X.strokeText('?',Q.x,yy); X.fillText('?',Q.x,yy);
+  X.restore();
+}
 function drawHero(X,g){
   const c=CHARS[rgSel];
   if(tAura>0){ const gr=X.createRadialGradient(P.x+22,P.y-32,0,P.x+22,P.y-32,72);
@@ -505,6 +672,7 @@ document.addEventListener('keydown',e=>{
   if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();rgJump();}
   if(e.code==='ArrowDown'){e.preventDefault();rgDuck(true);}
   if(e.code==='ShiftLeft'||e.code==='ShiftRight'){e.preventDefault();rgAura();}
+  if(e.code==='KeyF'||e.code==='KeyX'){e.preventDefault();rgThrow();}
 });
 document.addEventListener('keyup',e=>{ if(e.code==='ArrowDown') rgDuck(false); });
 
@@ -541,7 +709,20 @@ const RG_CSS = `
 #rg-flash{position:absolute;top:13%;left:0;width:100%;text-align:center;pointer-events:none;
   font-family:'Fredoka',sans-serif;font-size:clamp(1.2rem,5vw,2rem);color:#fff;
   text-shadow:0 3px 0 rgba(0,0,0,.55),0 0 22px rgba(255,215,0,.75);opacity:0;transition:opacity .35s;}
-.rg-ctrls{display:flex;gap:8px;margin-top:10px;}
+.rg-ctrls{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.rg-btn.leaf{background:linear-gradient(135deg,#C9873A,#8E5A22);}
+@media(min-width:820px){            /* desktop: bigger stage, roomier roster */
+  .rg-roster{grid-template-columns:repeat(6,1fr);}
+  .rg-portrait{height:96px;} .rg-portrait img{max-height:96px;}
+  #rg-canvas{max-height:62vh;object-fit:contain;}
+  .rg-ctrls .rg-btn{font-size:16px;padding:15px 12px;}
+}
+@media(max-width:480px){            /* phone: compact HUD, thumb-friendly buttons */
+  .rg-hud{font-size:12px;gap:4px;}
+  .rg-ctrls .rg-btn{font-size:14px;padding:15px 6px;}
+  .rg-portrait{height:62px;} .rg-portrait img{max-height:62px;}
+  .rg-name{font-size:12px;} .rg-role{font-size:9px;} .rg-perk{font-size:9px;}
+}
 .rg-ctrls .rg-btn{font-size:15px;padding:14px 10px;}
 .rg-legend{font-size:12px;color:#777;line-height:1.85;}
 .rg-legend b{color:#333;}
@@ -561,7 +742,9 @@ const RG_HTML = `
     <div class="rg-legend">
       <b>Tap the canvas</b> or press <b>Space</b> to jump<br>
       <b>Hold DUCK</b> (or ↓) to slide under pigeons<br>
-      Grab tokens to build your <b>combo</b> — a hit resets it<br>
+      <b>THROW</b> (or F) to fling leaves at the relatives blocking your way<br>
+      Run through leaf piles to restock — two leaves each<br>
+      Grab soul food to build your <b>combo</b> — a hit resets it<br>
       Reach <b>4,000m</b> to make it to the reunion
     </div>
   </div>
@@ -569,7 +752,7 @@ const RG_HTML = `
 <div id="rg-play" style="display:none">
   <div class="rg-journey"><i id="rg-bar"></i></div>
   <div class="rg-hud">
-    <span id="rg-hp">❤️❤️❤️</span><span id="rg-stage">The Neighborhood</span>
+    <span id="rg-hp">❤️❤️❤️</span><span id="rg-ammo">🍂 5</span><span id="rg-stage">The Neighborhood</span>
     <span id="rg-combo">x1</span><span id="rg-dist">0m</span><span id="rg-score">0</span>
   </div>
   <div class="rg-stagebox">
@@ -581,6 +764,7 @@ const RG_HTML = `
   <div class="rg-ctrls">
     <button class="rg-btn amber" id="rg-jump" style="flex:2">⬆️ JUMP</button>
     <button class="rg-btn go" id="rg-duckb" style="flex:1">⬇️ DUCK</button>
+    <button class="rg-btn leaf" id="rg-throw" style="flex:1">🍂 THROW</button>
     <button class="rg-btn go" id="rg-aura" style="flex:1;display:none">✨ AURA</button>
   </div>
   <div id="rg-over" style="display:none" class="rg-card-panel">
@@ -596,6 +780,8 @@ function wire(){
   document.getElementById('rg-again').onclick  = ()=>rgStart();
   document.getElementById('rg-change').onclick = ()=>rgShowSelect();
   document.getElementById('rg-jump').onclick   = ()=>rgJump();
+  const th=document.getElementById('rg-throw');
+  if(th){ th.onclick=()=>rgThrow(); th.ontouchstart=ev=>{ev.preventDefault();rgThrow();}; }
   document.getElementById('rg-aura').onclick   = ()=>rgAura();
   const d=document.getElementById('rg-duckb');
   d.onmousedown=()=>rgDuck(true); d.onmouseup=()=>rgDuck(false); d.onmouseleave=()=>rgDuck(false);
