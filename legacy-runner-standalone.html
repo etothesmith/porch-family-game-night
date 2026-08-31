@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porch Family Weekend 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<style>
+:root{--gold:#ffd700;--gold-dk:#b8860b;--gold-lt:#ffe766;--cyan:#00f3ff;--pink:#ff2d95;--green:#00ff88;--red:#ff4444;--bg:#04040e;--panel:rgba(8,8,28,0.92);--glass:rgba(255,255,255,0.08);--warm:#f5e6d0;--cream:#faf6ef;--bark:#3a2518;--wine:#5c1a2a;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body,html{width:100%;height:100%;font-family:'Outfit',sans-serif;background:var(--bg);color:#fff;overflow-x:hidden;}
+a{color:var(--cyan);text-decoration:none;}
+h1,h2,h3,.btn,.door-num,.slot-item{font-family:'Bebas Neue',sans-serif;letter-spacing:2px;}
+
+/* === CANVAS BG === */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* === APP NAV BAR === */
+.navbar{position:fixed;top:0;left:0;width:100%;height:56px;background:rgba(4,4,14,0.95);backdrop-filter:blur(12px);z-index:700;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:2px solid rgba(255,215,0,0.2);}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);cursor:pointer;}
+.nav-menu-btn{background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;padding:8px;display:none;}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+.nav-link{font-size:0.85rem;font-weight:700;color:#aaa;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all 0.2s;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
+.nav-link:hover,.nav-link.active{color:#fff;background:rgba(255,255,255,0.08);}
+.nav-link .nav-emoji{margin-right:4px;}
+@media(max-width:768px){
+  .nav-links{position:fixed;top:56px;left:0;width:100%;background:rgba(4,4,14,0.98);flex-direction:column;padding:10px;gap:2px;display:none;z-index:699;border-bottom:2px solid rgba(255,215,0,0.15);}
+  .nav-links.open{display:flex;}
+  .nav-link{padding:12px 16px;font-size:1rem;width:100%;text-align:left;border-radius:10px;}
+  .nav-menu-btn{display:block;}
+}
+
+/* === PAGES === */
+.page{display:none;min-height:100vh;padding:72px 16px 40px;position:relative;z-index:5;}
+.page.active{display:block;}
+.page-inner{max-width:800px;margin:0 auto;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.2rem);margin-bottom:8px;line-height:1.1;}
+.section-sub{color:#888;font-size:1rem;margin-bottom:24px;}
+.card{background:var(--panel);border:1px solid var(--glass);border-radius:16px;padding:20px;margin-bottom:14px;backdrop-filter:blur(10px);}
+.card h3{color:var(--gold);font-size:1.8rem;margin-bottom:6px;}
+
+/* === BUTTONS === */
+.btn{padding:12px 24px;font-size:1.4rem;border:none;border-radius:10px;cursor:pointer;margin:6px;text-transform:uppercase;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,0.3),0 6px 16px rgba(0,0,0,0.2);transition:transform 0.08s,filter 0.2s;-webkit-tap-highlight-color:transparent;}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,0.3);}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.btn:hover:not(:disabled){filter:brightness(1.12);}
+.btn-gold{background:linear-gradient(135deg,#ffd700,#c9a100,#e6be00);color:#1a1000;font-weight:900;}
+.btn-green{background:linear-gradient(135deg,#00c853,#007e33);}
+.btn-red{background:linear-gradient(135deg,#e53935,#b71c1c);}
+.btn-cyan{background:linear-gradient(135deg,#0288d1,#01579b);}
+.btn-pink{background:linear-gradient(135deg,#c2185b,#880e4f);}
+.btn-sm{font-size:1rem;padding:8px 16px;}
+.btn-full{width:100%;display:block;text-align:center;}
+.glass{background:var(--panel);border:1px solid var(--glass);border-radius:20px;padding:24px;backdrop-filter:blur(16px);width:100%;max-width:900px;margin:0 auto;}
+
+/* === HOME PAGE === */
+.hero{text-align:center;padding:30px 0 20px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,8vw,5rem);line-height:1;
+  background:linear-gradient(135deg,#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-family:'Bebas Neue';font-size:clamp(1.1rem,3vw,1.6rem);color:var(--gold);letter-spacing:8px;margin:4px 0 6px;}
+.hero-date{color:#999;font-size:clamp(0.9rem,2vw,1.1rem);margin-bottom:6px;}
+.hero-loc{color:#777;font-size:0.9rem;line-height:1.5;}
+.hero-loc a{color:var(--cyan);}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;}
+.menu-card{background:var(--panel);border:1px solid var(--glass);border-radius:16px;padding:20px 14px;cursor:pointer;transition:all 0.25s;text-align:center;-webkit-tap-highlight-color:transparent;}
+.menu-card:hover{border-color:rgba(255,215,0,0.3);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.4);}
+.menu-card .mc-emoji{font-size:2rem;display:block;margin-bottom:6px;}
+.mc-sprite{display:block;margin:0 auto 6px;image-rendering:pixelated;}
+.menu-card .mc-label{font-family:'Bebas Neue';font-size:1.4rem;color:#ddd;letter-spacing:2px;}
+.menu-card .mc-desc{font-size:0.8rem;color:#777;margin-top:4px;}
+@media(max-width:500px){.menu-grid{grid-template-columns:1fr;}}
+
+/* === SCHEDULE === */
+.day-block{margin-bottom:20px;}
+.day-header{font-family:'Bebas Neue';font-size:2rem;color:var(--gold);margin-bottom:8px;letter-spacing:3px;padding-bottom:6px;border-bottom:1px solid rgba(255,215,0,0.15);}
+.sched-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.sched-time{min-width:80px;color:var(--cyan);font-weight:800;font-size:0.9rem;}
+.sched-desc{color:#ccc;font-size:0.95rem;line-height:1.4;}
+.sched-desc strong{color:#fff;}
+
+/* === HISTORY / TIMELINE === */
+.timeline{position:relative;padding-left:28px;}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold),var(--pink),var(--cyan),var(--gold));}
+.tl-era{margin-bottom:28px;position:relative;}
+.tl-dot{position:absolute;left:-24px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--gold);border:3px solid var(--bg);box-shadow:0 0 8px rgba(255,215,0,0.3);}
+.tl-era h3{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);margin-bottom:6px;}
+.tl-entry{margin-bottom:10px;font-size:0.95rem;color:#bbb;line-height:1.5;}
+.tl-entry strong{color:var(--cyan);font-weight:700;}
+
+/* === QUIZ === */
+.quiz-opt{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);color:#fff;padding:12px;border-radius:12px;font-size:1rem;text-align:center;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:8px;}
+.quiz-opt:hover:not(.locked){background:rgba(0,243,255,0.08);border-color:rgba(0,243,255,0.3);}
+.quiz-opt.correct{background:rgba(0,255,136,0.2)!important;border-color:var(--green)!important;}
+.quiz-opt.incorrect{background:rgba(255,68,68,0.2)!important;border-color:var(--red)!important;}
+.quiz-opt.locked{pointer-events:none;cursor:default;}
+.quiz-score{font-family:'Bebas Neue';font-size:2.5rem;color:var(--gold);}
+.quiz-progress{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:16px;}
+.quiz-bar{height:100%;background:linear-gradient(90deg,var(--cyan),var(--pink));border-radius:3px;transition:width 0.4s;}
+
+/* === ADDRESS BOOK === */
+.addr-card{display:flex;gap:14px;align-items:flex-start;}
+.addr-icon{font-size:1.8rem;min-width:40px;text-align:center;}
+.addr-info h4{color:var(--gold);font-family:'Bebas Neue';font-size:1.3rem;margin-bottom:2px;}
+.addr-info p{color:#aaa;font-size:0.9rem;line-height:1.4;}
+.addr-info a{color:var(--cyan);font-weight:600;}
+
+/* === DAILY MENU === */
+.menu-day{margin-bottom:20px;}
+.menu-meal{margin-bottom:12px;}
+.menu-meal h4{color:var(--pink);font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:2px;}
+.menu-meal p{color:#bbb;font-size:0.95rem;line-height:1.5;}
+
+/* === PASSWORD GATE === */
+.pw-gate{text-align:center;padding:40px 20px;}
+.pw-input{font-size:1.2rem;padding:12px 18px;border-radius:12px;background:rgba(255,255,255,0.04);color:#fff;border:2px solid rgba(255,255,255,0.12);font-family:'Outfit';width:100%;max-width:300px;text-align:center;}
+.pw-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 15px rgba(255,215,0,0.1);}
+.pw-error{color:var(--red);font-size:0.9rem;margin-top:8px;display:none;}
+
+/* === GAME AREA (nested inside games page) === */
+.game-zone{display:none;}
+.game-zone.active{display:block;}
+.name-input{width:100%;font-size:1.1rem;padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);color:#fff;border:2px solid rgba(255,255,255,0.1);font-family:'Outfit';resize:vertical;}
+.name-input:focus{outline:none;border-color:var(--cyan);}
+
+/* WHEEL */
+.wheel-housing{position:relative;display:inline-block;padding:18px;border-radius:50%;background:conic-gradient(from 0deg,#1a1a1a,#2a2a2a,#1a1a1a,#2a2a2a);box-shadow:0 0 0 5px var(--gold),0 0 0 9px #1a1a1a,0 0 40px rgba(255,215,0,0.15);}
+#canvas-wheel{border-radius:50%;display:block;}
+#wheel-ptr{position:absolute;top:2px;left:50%;transform:translateX(-50%);z-index:20;width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-top:36px solid var(--gold);filter:drop-shadow(0 3px 6px rgba(0,0,0,0.8));transition:transform 0.06s;}
+#wheel-ptr.bounce{transform:translateX(-50%) rotate(10deg);}
+.wheel-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;z-index:15;background:radial-gradient(circle,#fff,#999);border:3px solid var(--gold);}
+#who-next{font-size:clamp(1.6rem,4vw,2.4rem);margin-top:10px;color:var(--gold);font-family:'Bebas Neue';min-height:40px;}
+
+/* QUESTION */
+.badge{display:inline-block;padding:3px 12px;border-radius:16px;font-size:0.75rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.badge-fam{background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.2);}
+.badge-pop{background:rgba(0,243,255,0.12);color:var(--cyan);border:1px solid rgba(0,243,255,0.2);}
+.badge-task{background:rgba(255,45,149,0.12);color:var(--pink);border:1px solid rgba(255,45,149,0.2);}
+#opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;}
+.opt{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);color:#fff;padding:12px 8px;border-radius:12px;font-size:clamp(0.9rem,1.6vw,1.1rem);text-align:center;font-weight:700;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
+.opt:hover:not(.locked){background:rgba(0,243,255,0.08);border-color:rgba(0,243,255,0.25);}
+.opt.picked{background:rgba(0,243,255,0.2)!important;border-color:var(--cyan)!important;box-shadow:0 0 15px rgba(0,243,255,0.2)!important;}
+.opt.right{background:rgba(0,255,136,0.2)!important;border-color:var(--green)!important;box-shadow:0 0 20px rgba(0,255,136,0.2)!important;}
+.opt.wrong-pick{background:rgba(255,68,68,0.2)!important;border-color:var(--red)!important;}
+.opt.dim{opacity:0.15;}.opt.locked{pointer-events:none;}
+@media(max-width:600px){#opts-grid{grid-template-columns:1fr;}}
+#countdown{font-family:'Bebas Neue';font-size:clamp(3rem,8vw,5rem);color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,0.3);margin:8px 0;min-height:60px;display:none;animation:pulse 1s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+#countdown.done{animation:none;}
+
+/* DOORS */
+.door-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px;}
+.door-w{perspective:1000px;width:72px;height:100px;cursor:pointer;position:relative;transition:transform 0.2s;}
+.door-w:hover:not(.open){transform:scale(1.06);}
+.door-w.glow{animation:doorGlow 0.7s ease-in-out infinite alternate;}
+@keyframes doorGlow{0%{filter:none;}100%{filter:drop-shadow(0 0 10px rgba(255,215,0,0.4));}}
+.door-bg{width:100%;height:100%;position:absolute;inset:0;background:linear-gradient(180deg,#0a0a20,#12123a);border:2px solid #222;border-radius:8px;box-shadow:inset 0 0 15px rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;}
+.door-reveal{opacity:0;transition:opacity 0.4s ease 0.7s;text-align:center;}
+.door-reveal .emoji{font-size:1.8rem;display:block;}.door-reveal .label{font-family:'Bebas Neue';font-size:1rem;}
+.door-face{width:100%;height:100%;position:absolute;inset:0;background:linear-gradient(160deg,#c9a100,#a68500 50%,#c9a100);border:2px solid var(--gold);border-radius:8px;transform-origin:left;transition:transform 1.2s cubic-bezier(0.4,0,0.2,1);display:flex;justify-content:center;align-items:center;box-shadow:3px 0 10px rgba(0,0,0,0.5),inset 0 0 12px rgba(255,255,255,0.1);z-index:5;}
+.door-num{font-size:2rem;color:#3a2800;z-index:6;}
+.knob{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:9px;height:9px;background:radial-gradient(circle at 35% 35%,#fff,#777);border-radius:50%;z-index:6;}
+.door-w.open .door-face{transform:rotateY(-125deg);}
+.door-w.open .door-reveal{opacity:1;}
+
+/* SETUP DOORS */
+.setup-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0;}
+.setup-door{width:60px;height:80px;border-radius:8px;cursor:pointer;border:3px solid #333;transition:all 0.2s;display:flex;flex-direction:column;justify-content:center;align-items:center;-webkit-tap-highlight-color:transparent;}
+.setup-door .sd-num{font-family:'Bebas Neue';font-size:1.5rem;color:#666;pointer-events:none;}
+.setup-door .sd-lbl{font-size:0.6rem;font-weight:800;letter-spacing:1px;pointer-events:none;text-transform:uppercase;}
+.setup-door.prize{background:rgba(0,255,136,0.1);border-color:var(--green);}.setup-door.prize .sd-num{color:var(--green);}.setup-door.prize .sd-lbl{color:var(--green);}
+.setup-door.gag{background:rgba(255,68,68,0.1);border-color:var(--red);}.setup-door.gag .sd-num{color:var(--red);}.setup-door.gag .sd-lbl{color:var(--red);}
+.setup-door.unset{background:rgba(255,255,255,0.02);}
+
+/* SUSPENSE & FX */
+#suspense{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:800;justify-content:center;align-items:center;backdrop-filter:blur(10px);}
+#suspense-txt{font-family:'Bebas Neue';font-size:clamp(3rem,8vw,6rem);color:var(--gold);text-shadow:0 0 30px rgba(255,215,0,0.4);}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:999;display:none;justify-content:center;align-items:center;font-family:'Bebas Neue';text-transform:uppercase;}
+#fx.show{display:flex;animation:fxPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards;}
+@keyframes fxPop{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
+#fx-txt{font-size:clamp(3.5rem,11vw,7rem);text-shadow:5px 5px 0 rgba(0,0,0,0.5),0 0 40px currentColor;}
+.fx-win{background:radial-gradient(circle,rgba(0,200,80,0.93),rgba(0,80,30,0.93));color:#fff;}
+.fx-lose{background:radial-gradient(circle,rgba(200,20,20,0.93),rgba(80,0,0,0.93));color:#fff;}
+@keyframes shake{0%,100%{transform:translate(0) rotate(0);}15%{transform:translate(-10px,-6px) rotate(-2deg);}35%{transform:translate(10px,4px) rotate(2deg);}55%{transform:translate(-6px,8px) rotate(-1deg);}75%{transform:translate(8px,-4px) rotate(1deg);}}
+.shaking{animation:shake 0.5s ease both;}
+
+/* SLOT MACHINE */
+.slot-housing{background:linear-gradient(180deg,#18183a,#0c0c28);border:3px solid #2a2a4a;border-radius:20px;padding:20px;box-shadow:inset 0 0 25px rgba(0,0,0,0.4),0 15px 40px rgba(0,0,0,0.6);display:inline-block;position:relative;margin-top:20px;}
+.slot-housing::before{content:'🎰 FAMILY REOKE 🎰';position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),var(--gold-dk));color:#1a1000;font-family:'Bebas Neue';font-size:1rem;padding:2px 16px;border-radius:8px;letter-spacing:2px;white-space:nowrap;}
+.slots-row{display:flex;gap:6px;}
+.slot-win{height:80px;background:linear-gradient(180deg,#e8e8e8,#fff 20%,#fff 80%,#e0e0e0);border:2px solid #1a1a1a;border-radius:8px;overflow:hidden;position:relative;}
+.slot-win::after{content:'';position:absolute;top:50%;left:0;width:100%;height:2px;background:rgba(255,0,0,0.15);transform:translateY(-50%);pointer-events:none;z-index:11;}
+.slot-track{display:flex;flex-direction:column;}
+.slot-item{height:80px;display:flex;justify-content:center;align-items:center;color:#111;font-size:1.3rem;text-align:center;font-family:'Bebas Neue';border-bottom:1px solid #ddd;padding:0 6px;}
+.slot-item.hl{background:linear-gradient(135deg,var(--gold-lt),var(--gold));color:#1a1000;font-weight:900;}
+#win-singer{width:180px;}#win-type{width:100px;}#win-song{width:280px;}
+#duet-box{display:none;margin-top:12px;padding:12px;background:rgba(255,45,149,0.06);border-radius:12px;border:2px dashed rgba(255,45,149,0.2);}
+#win-duet{width:220px;margin:0 auto;}
+#reoke-result{display:none;margin-top:12px;}
+.song-card{background:rgba(0,0,0,0.3);padding:16px;border-radius:12px;border:1px solid rgba(0,243,255,0.1);margin-bottom:12px;}
+.yt-box{position:relative;width:100%;max-width:560px;margin:10px auto;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;border:2px solid rgba(255,255,255,0.06);background:#000;}
+.yt-box iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+@media(max-width:900px){.slots-row{flex-direction:column;align-items:center;}.slot-win{width:90%!important;max-width:320px;}.slot-housing{width:95%;padding:16px 10px;}}
+
+/* === RACE TO THE REUNION === */
+.rg-wrap{max-width:940px;}
+.rg-roster{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:720px){.rg-roster{grid-template-columns:repeat(2,1fr);}}
+.rg-card{background:rgba(255,255,255,0.035);border:2px solid rgba(255,255,255,0.09);border-radius:16px;
+  padding:12px 10px;cursor:pointer;transition:all .18s;text-align:center;-webkit-tap-highlight-color:transparent;}
+.rg-card:hover{border-color:rgba(255,215,0,0.35);background:rgba(255,215,0,0.05);transform:translateY(-2px);}
+.rg-card.sel{border-color:var(--gold);background:rgba(255,215,0,0.09);box-shadow:0 0 22px rgba(255,215,0,0.14);}
+.rg-portrait{height:92px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
+.rg-portrait img{max-height:92px;max-width:100%;image-rendering:pixelated;border-radius:10px;}
+.rg-name{font-family:'Bebas Neue';font-size:1.25rem;color:var(--gold);letter-spacing:1px;}
+.rg-role{font-size:.7rem;color:#8b93a3;line-height:1.25;margin-bottom:4px;}
+.rg-perk{font-size:.72rem;color:#b9c2d0;line-height:1.35;}
+.rg-legend{font-size:.85rem;color:#aab2c0;line-height:1.9;}
+.rg-legend b{color:#fff;}
+.rg-journey{height:8px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;margin-bottom:8px;}
+.rg-journey-fill{height:100%;width:0%;border-radius:4px;transition:width .2s;
+  background:linear-gradient(90deg,var(--cyan),var(--gold),var(--pink));}
+.rg-hud{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
+  font-family:'Bebas Neue';font-size:1.15rem;letter-spacing:2px;color:var(--gold);padding:0 4px 8px;}
+.rg-hud span{white-space:nowrap;}
+.rg-stage-box{position:relative;}
+#rg-canvas{width:100%;display:block;border-radius:14px;border:2px solid rgba(255,215,0,0.18);
+  background:#7EC0EE;image-rendering:pixelated;cursor:pointer;transition:transform .06s;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);}
+#rg-flash{position:absolute;top:14%;left:0;width:100%;text-align:center;pointer-events:none;
+  font-family:'Bebas Neue';font-size:clamp(1.4rem,3.6vw,2.4rem);letter-spacing:3px;color:#fff;
+  text-shadow:0 3px 0 rgba(0,0,0,.6),0 0 26px rgba(255,215,0,.7);opacity:0;transition:opacity .35s;}
+.rg-controls{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap;}
+.rg-controls .btn{font-size:1.25rem;padding:14px 18px;}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo" onclick="goTo('home')">PORCH FAMILY 2026</div>
+  <button class="nav-menu-btn" onclick="toggleNav()">☰</button>
+  <div class="nav-links" id="nav-links">
+    <div class="nav-link active" onclick="goTo('home')"><span class="nav-emoji">🏠</span>Home</div>
+    <div class="nav-link" onclick="goTo('schedule')"><span class="nav-emoji">📅</span>Schedule</div>
+    <div class="nav-link" onclick="goTo('history')"><span class="nav-emoji">📜</span>History</div>
+    <div class="nav-link" onclick="goTo('quiz')"><span class="nav-emoji">🧠</span>Quiz</div>
+    <div class="nav-link" onclick="goTo('games')"><span class="nav-emoji">🎮</span>Games</div>
+    <div class="nav-link" onclick="goTo('runner')"><span class="nav-emoji">🏃</span>Runner</div>
+    <div class="nav-link" onclick="goTo('addresses')"><span class="nav-emoji">📍</span>Places</div>
+    <div class="nav-link" onclick="goTo('menu')"><span class="nav-emoji">🍽️</span>Menu</div>
+    <div class="nav-link" onclick="goTo('directory')"><span class="nav-emoji">📞</span>Contacts</div>
+  </div>
+</nav>
+
+<!-- ===================== HOME ===================== -->
+<div id="pg-home" class="page active">
+<div class="page-inner">
+  <div class="hero">
+    <div class="hero-title">Porch Family<br>Weekend</div>
+    <div class="hero-sub">LABOR DAY 2026</div>
+    <div class="hero-date">September 4–7, 2026 · Chattanooga, TN</div>
+    <div class="hero-loc">📍 <a href="https://maps.google.com/?q=Drury+Plaza+Hotel+Hamilton+Place+Chattanooga" target="_blank">Drury Plaza Hotel Hamilton Place</a><br>7301 Shallowford Rd, Chattanooga, TN 37421</div>
+    <div style="margin-top:12px;"><a href="https://porchfamilyreunion.com" target="_blank" style="color:var(--gold);font-weight:700;font-size:1rem;">🌐 porchfamilyreunion.com</a></div>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card" onclick="goTo('schedule')"><canvas class="mc-sprite" id="mc-s" width="48" height="48"></canvas><div class="mc-label">SCHEDULE</div><div class="mc-desc">Daily events & times</div></div>
+    <div class="menu-card" onclick="goTo('history')"><canvas class="mc-sprite" id="mc-h" width="48" height="48"></canvas><div class="mc-label">OUR HISTORY</div><div class="mc-desc">The Porch family legacy</div></div>
+    <div class="menu-card" onclick="goTo('quiz')"><canvas class="mc-sprite" id="mc-q" width="48" height="48"></canvas><div class="mc-label">FAMILY QUIZ</div><div class="mc-desc">Test your knowledge</div></div>
+    <div class="menu-card" onclick="goTo('games')"><canvas class="mc-sprite" id="mc-g" width="48" height="48"></canvas><div class="mc-label">GAME NIGHT</div><div class="mc-desc">Porch of a Deal & Reoke</div></div>
+    <div class="menu-card" onclick="goTo('runner')"><canvas class="mc-sprite" id="mc-r" width="48" height="48"></canvas><div class="mc-label">RACE TO THE REUNION</div><div class="mc-desc">Endless runner game!</div></div>
+    <div class="menu-card" onclick="goTo('addresses')"><canvas class="mc-sprite" id="mc-a" width="48" height="48"></canvas><div class="mc-label">PLACES</div><div class="mc-desc">Venues & addresses</div></div>
+    <div class="menu-card" onclick="goTo('menu')"><canvas class="mc-sprite" id="mc-m" width="48" height="48"></canvas><div class="mc-label">DAILY MENU</div><div class="mc-desc">What's cooking</div></div>
+    <div class="menu-card" onclick="goTo('directory')"><canvas class="mc-sprite" id="mc-d" width="48" height="48"></canvas><div class="mc-label">CONTACTS</div><div class="mc-desc">Key people to reach</div></div>
+  </div>
+  <p style="text-align:center;color:#555;font-size:0.8rem;margin-top:28px;font-style:italic;">"One generation plants the tree, another gets the shade."</p>
+</div>
+</div>
+
+<!-- ===================== SCHEDULE ===================== -->
+<div id="pg-schedule" class="page"><div class="page-inner">
+  <div class="section-title" style="color:var(--gold);">📅 Weekend Schedule</div>
+  <div class="section-sub">September 4–7, 2026 · All times Eastern</div>
+
+  <div class="day-block"><div class="day-header">FRIDAY, SEPTEMBER 4</div>
+    <div class="sched-item"><div class="sched-time">5:00 PM</div><div class="sched-desc"><strong>Check-In & Welcome</strong><br>Drury Plaza Hotel Hamilton Place. Get settled and say hello!</div></div>
+    <div class="sched-item"><div class="sched-time">6:30 PM</div><div class="sched-desc"><strong>Welcome Dinner</strong><br>Kickoff dinner — see the Daily Menu for details.</div></div>
+    <div class="sched-item"><div class="sched-time">8:00 PM</div><div class="sched-desc"><strong>Family Game Night</strong><br>Porch of a Deal & Family Reoke! 🎰</div></div>
+  </div>
+
+  <div class="day-block"><div class="day-header">SATURDAY, SEPTEMBER 5</div>
+    <div class="sched-item"><div class="sched-time">8:00 AM</div><div class="sched-desc"><strong>Breakfast</strong><br>Hotel breakfast buffet.</div></div>
+    <div class="sched-item"><div class="sched-time">10:00 AM</div><div class="sched-desc"><strong>Family Activities</strong><br>TBA — check back for updates!</div></div>
+    <div class="sched-item"><div class="sched-time">12:30 PM</div><div class="sched-desc"><strong>Lunch</strong><br>See Daily Menu.</div></div>
+    <div class="sched-item"><div class="sched-time">3:00 PM</div><div class="sched-desc"><strong>Free Time / Explore Chattanooga</strong></div></div>
+    <div class="sched-item"><div class="sched-time">6:00 PM</div><div class="sched-desc"><strong>Family Dinner</strong><br>See Daily Menu.</div></div>
+  </div>
+
+  <div class="day-block"><div class="day-header">SUNDAY, SEPTEMBER 6</div>
+    <div class="sched-item"><div class="sched-time">8:00 AM</div><div class="sched-desc"><strong>Breakfast</strong></div></div>
+    <div class="sched-item"><div class="sched-time">10:00 AM</div><div class="sched-desc"><strong>Family Program / History Presentation</strong></div></div>
+    <div class="sched-item"><div class="sched-time">12:00 PM</div><div class="sched-desc"><strong>Family Cookout</strong><br>The big one! See Daily Menu.</div></div>
+    <div class="sched-item"><div class="sched-time">4:00 PM</div><div class="sched-desc"><strong>Family Photo</strong></div></div>
+    <div class="sched-item"><div class="sched-time">7:00 PM</div><div class="sched-desc"><strong>Evening Fellowship</strong></div></div>
+  </div>
+
+  <div class="day-block"><div class="day-header">MONDAY, SEPTEMBER 7</div>
+    <div class="sched-item"><div class="sched-time">8:00 AM</div><div class="sched-desc"><strong>Farewell Breakfast</strong></div></div>
+    <div class="sched-item"><div class="sched-time">12:00 PM</div><div class="sched-desc"><strong>Checkout</strong><br>Safe travels, family! See you next time. ❤️</div></div>
+  </div>
+</div></div>
+
+<!-- ===================== HISTORY ===================== -->
+<div id="pg-history" class="page"><div class="page-inner">
+  <div class="section-title" style="color:var(--gold);">📜 Our Family History</div>
+  <div class="section-sub">From Benin to Virginia, from Georgia to today</div>
+  <div class="card" style="margin-bottom:24px;">
+    <p style="color:#bbb;line-height:1.7;font-size:0.95rem;">The Porch Family's story stretches from the culturally rich heritage of Benin, Nigeria and the people of the Fulani tribe to its roots in America. While our lineage can be traced as far back as Virginia through Thomas and James Porch, our family legacy here is most fully celebrated through <strong style="color:var(--gold);">Frank Porch (1870s–1950s)</strong> and <strong style="color:var(--gold);">Katherine "Carrie" Hall (1880–c.1913)</strong> of Pike County, Georgia. Together they built the foundation of the generations we honor today.</p>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-era"><div class="tl-dot"></div><h3>Pre-Colonization · Benin & Nigeria</h3>
+      <div class="tl-entry">Our ancestors lived in the land of Benin and among the <strong>Fulani tribe</strong>, where they served as chiefs, queens, warriors, and healers. Through the transatlantic slave trade, our family line was carried to America.</div>
+    </div>
+    <div class="tl-era"><div class="tl-dot"></div><h3>1700s · Virginia & North Carolina</h3>
+      <div class="tl-entry"><strong>1749</strong> — James Porch is born in the Colony of Virginia, one of the earliest known Porch ancestors.</div>
+      <div class="tl-entry"><strong>1754</strong> — Hugh Hall is born in Ireland; he later marries Mary Reid (b.1761, NC).</div>
+      <div class="tl-entry"><strong>1772</strong> — Thomas Porch, son of James, is born in Virginia.</div>
+      <div class="tl-entry"><strong>1786</strong> — Alexander Hall, son of Hugh and Mary, is born in NC. He will later migrate to Georgia.</div>
+    </div>
+    <div class="tl-era"><div class="tl-dot"></div><h3>1800s · Georgia</h3>
+      <div class="tl-entry"><strong>1800</strong> — Henley Jones Sammons is born; he later fathers children with Philis Sammons (b.1809), a woman enslaved in Georgia. Together they raise Violet Sammons.</div>
+      <div class="tl-entry"><strong>1801</strong> — Elizabeth Brown is born; she will later marry Alexander Hall.</div>
+      <div class="tl-entry"><strong>1823</strong> — John Thomas Hall, son of Alexander & Elizabeth, is born.</div>
+      <div class="tl-entry"><strong>1833</strong> — Jerry Porch is born in Virginia. He later migrates to Georgia and marries Jane Dorsey (b.1836, GA).</div>
+      <div class="tl-entry"><strong>1840</strong> — Violet Sammons is born to Henley and Philis.</div>
+      <div class="tl-entry"><strong>1846</strong> — William "Pop Bill" Hall is born, son of John Thomas Hall & Martha Jones Sammons.</div>
+      <div class="tl-entry"><strong>1853</strong> — Frank Porch Sr. is born in Monroe County, son of Jerry & Jane Dorsey.</div>
+      <div class="tl-entry"><strong>1870s</strong> — <strong>Frank Porch Jr.</strong> is born, son of Frank Sr.</div>
+      <div class="tl-entry"><strong>1880</strong> — <strong>Katherine "Carrie" Hall</strong> is born, daughter of William "Pop Bill" Hall & Violet Sammons.</div>
+      <div class="tl-entry"><strong>Late 1800s–Early 1900s</strong> — Frank Porch marries Katherine Hall. They raise five children: <strong>Mattie, Frankie Lee, Lucy, Alberta,</strong> and <strong>James</strong>.</div>
+    </div>
+    <div class="tl-era"><div class="tl-dot"></div><h3>1900s · Tennessee, Georgia, Texas, Illinois</h3>
+      <div class="tl-entry">Their children establish new branches: the <strong>Morelands, Dennises, Hartsfields, Walkers,</strong> and the continuing <strong>Porch line</strong>. The family legacy spreads from Georgia into new states and new generations.</div>
+    </div>
+    <div class="tl-era"><div class="tl-dot"></div><h3>2000s–Today</h3>
+      <div class="tl-entry">From Benin to Virginia, from Tennessee & Illinois to Georgia, from Frank & Katherine's porch to ours today — the family story is one of <strong>endurance, resilience, and love</strong>.</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ===================== QUIZ ===================== -->
+<div id="pg-quiz" class="page"><div class="page-inner">
+  <div class="section-title" style="color:var(--cyan);">🧠 Family Quiz</div>
+  <div class="section-sub">Test your Porch family knowledge! Play anytime, as many times as you want.</div>
+  <div id="quiz-container" class="card">
+    <div class="quiz-progress"><div class="quiz-bar" id="quiz-bar" style="width:0%"></div></div>
+    <div id="quiz-status" style="color:#888;font-size:0.85rem;margin-bottom:10px;"></div>
+    <div id="quiz-q" style="font-size:1.1rem;font-weight:700;margin-bottom:14px;line-height:1.5;"></div>
+    <div id="quiz-opts"></div>
+    <div id="quiz-feedback" style="margin-top:12px;font-weight:700;font-size:1.1rem;display:none;"></div>
+    <div id="quiz-next-wrap" style="text-align:center;margin-top:14px;display:none;">
+      <button class="btn btn-cyan btn-sm" onclick="nextQuizQ()">NEXT QUESTION →</button>
+    </div>
+  </div>
+  <div id="quiz-final" class="card" style="display:none;text-align:center;">
+    <div class="quiz-score" id="quiz-score-display"></div>
+    <p style="color:#aaa;margin:8px 0 16px;" id="quiz-score-msg"></p>
+    <button class="btn btn-gold" onclick="startQuiz()">PLAY AGAIN</button>
+  </div>
+</div></div>
+
+<!-- ===================== GAMES (PASSWORD PROTECTED) ===================== -->
+<div id="pg-games" class="page"><div class="page-inner">
+  <!-- PASSWORD GATE -->
+  <div id="game-gate" class="pw-gate">
+    <div class="section-title" style="color:var(--pink);">🎮 Game Night</div>
+    <div class="section-sub">Enter the password to access Game Night.</div>
+    <input type="password" class="pw-input" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+    <br><br>
+    <button class="btn btn-gold" onclick="checkPw()">ENTER</button>
+    <div class="pw-error" id="pw-error">Wrong password. Try again!</div>
+  </div>
+
+  <!-- GAME CONTENT (hidden until password) -->
+  <div id="game-content" style="display:none;">
+    <!-- GAME PICKER -->
+    <div id="game-picker" class="game-zone active" style="text-align:center;">
+      <div class="section-title" style="color:var(--gold);">🎮 Game Night</div>
+      <div class="section-sub">Choose your game! Host: enter players first.</div>
+      <textarea id="name-input" class="name-input" rows="2" placeholder="Uncle John, Aunt Mary, Cousin Tim...">Uncle John, Aunt Mary, Cousin Tim, Grandma, Grandpa, Sarah, Mike, Lisa</textarea>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px;">
+        <button class="btn btn-gold" onclick="initDeal()">PORCH OF A DEAL</button>
+        <button class="btn btn-pink" onclick="initReoke()">FAMILY REOKE</button>
+      </div>
+    </div>
+
+    <!-- DEAL: DOOR SETUP (FIRST, before rules) -->
+    <div id="deal-setup" class="game-zone" style="text-align:center;">
+      <div class="section-title" style="color:var(--gold);">HOST: Set Up Doors</div>
+      <p style="color:#888;font-size:0.9rem;">Tap each door: <span style="color:var(--green);font-weight:800;">PRIZE</span> → <span style="color:var(--red);font-weight:800;">GAG</span> → unset. Players can't see this!</p>
+      <div style="color:#999;font-size:1.1rem;margin:6px 0;">Prizes: <span style="color:var(--green);font-weight:900;" id="prize-count">0</span> | Gags: <span style="color:var(--red);font-weight:900;" id="gag-count">0</span></div>
+      <div class="setup-grid" id="setup-grid"></div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0;">
+        <button class="btn btn-cyan btn-sm" onclick="autoFill('even')">10/10</button>
+        <button class="btn btn-cyan btn-sm" onclick="autoFill('nice')">14P/6G</button>
+        <button class="btn btn-cyan btn-sm" onclick="autoFill('mean')">6P/14G</button>
+      </div>
+      <button class="btn btn-gold" id="setup-go-btn" onclick="showDealRules()" disabled>NEXT: SEE THE RULES →</button>
+      <p id="setup-warn" style="color:var(--red);font-size:0.8rem;">Assign all 20 doors first.</p>
+    </div>
+
+    <!-- DEAL: RULES (shown AFTER setup) -->
+    <div id="deal-rules" class="game-zone">
+      <div class="card" style="max-width:700px;margin:0 auto;text-align:left;">
+        <h2 style="color:var(--gold);text-align:center;font-size:2rem;">HOW TO PLAY</h2>
+        <ul style="color:#bbb;line-height:1.8;padding-left:18px;">
+          <li><strong style="color:var(--cyan);">SPIN</strong> — The wheel picks a player.</li>
+          <li><strong style="color:var(--cyan);">ANSWER</strong> — Tap your answer. A 5-second countdown locks it in.</li>
+          <li><strong style="color:var(--cyan);">CORRECT</strong> — Pick a door for a prize or gag!</li>
+          <li><strong style="color:var(--cyan);">WRONG</strong> — ZONKED! Back to the wheel.</li>
+        </ul>
+        <div style="text-align:center;margin-top:16px;">
+          <button class="btn btn-green" onclick="startDealGame()">START THE GAME!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEAL: GAME -->
+    <div id="deal-game" class="game-zone" style="text-align:center;">
+      <button class="btn btn-cyan btn-sm" onclick="backToGames()" style="float:left;">⬅ Back</button>
+      <h2 style="color:var(--gold);font-size:clamp(2rem,5vw,3rem);clear:both;">PORCH OF A DEAL</h2>
+
+      <div id="wheel-area">
+        <div class="wheel-housing">
+          <div id="wheel-ptr"></div>
+          <canvas id="canvas-wheel" width="320" height="320"></canvas>
+          <div class="wheel-hub"></div>
+        </div><br>
+        <button class="btn btn-gold" style="font-size:clamp(1.3rem,3vw,1.8rem);margin-top:10px;" onclick="spinWheel()" id="spin-btn">SPIN THE WHEEL</button>
+        <div id="who-next">Who's next?</div>
+      </div>
+
+      <div id="q-area" class="glass" style="display:none;">
+        <div id="q-badge"></div>
+        <h2 style="color:var(--cyan);font-size:clamp(1.4rem,3vw,2rem);margin:4px 0 0;">TRIVIA TIME</h2>
+        <div id="player-turn" style="color:var(--gold);font-size:1.2rem;font-family:'Bebas Neue';"></div>
+        <div id="q-text" style="font-size:clamp(0.95rem,2vw,1.2rem);margin:10px 0;font-weight:600;line-height:1.5;color:#ddd;"></div>
+        <div id="opts-grid"></div>
+        <div id="countdown"></div>
+        <div id="task-btns" style="display:none;margin-top:10px;">
+          <p style="color:#888;font-size:0.85rem;">Host: Did they complete it?</p>
+          <button class="btn btn-green btn-sm" onclick="judgeTask(true)">NAILED IT!</button>
+          <button class="btn btn-red btn-sm" onclick="judgeTask(false)">NOT QUITE!</button>
+        </div>
+      </div>
+
+      <div id="doors-area" class="glass" style="display:none;">
+        <h2 id="doors-title" style="color:var(--gold);font-size:clamp(1.4rem,3vw,2rem);">PICK A DOOR!</h2>
+        <div class="door-grid" id="door-grid"></div>
+      </div>
+    </div>
+
+    <!-- REOKE: RULES + GAME -->
+    <div id="reoke-rules" class="game-zone">
+      <div class="card" style="max-width:700px;margin:0 auto;text-align:left;">
+        <h2 style="color:var(--pink);text-align:center;font-size:2rem;">FAMILY REOKE</h2>
+        <ul style="color:#bbb;line-height:1.8;padding-left:18px;">
+          <li><strong style="color:var(--cyan);">PULL THE LEVER</strong> — Slot machine picks Singer, Type, and Song.</li>
+          <li><strong style="color:var(--cyan);">DUET/GROUP</strong> — Machine spins again for a partner!</li>
+          <li><strong style="color:var(--cyan);">WILDCARD</strong> — Rare [VOLUNTEER] = anyone picks their own song.</li>
+        </ul>
+        <div style="text-align:center;margin-top:16px;"><button class="btn btn-green" onclick="startReokeGame()">LET'S GO!</button></div>
+      </div>
+    </div>
+
+    <div id="reoke-game" class="game-zone" style="text-align:center;">
+      <button class="btn btn-cyan btn-sm" onclick="backToGames()" style="float:left;">⬅ Back</button>
+      <h2 style="color:var(--pink);font-size:clamp(2rem,5vw,3rem);clear:both;">FAMILY REOKE</h2>
+      <div class="slot-housing">
+        <div class="slots-row">
+          <div class="slot-win" id="win-singer"><div class="slot-track" id="tr-singer"><div class="slot-item">?</div></div></div>
+          <div class="slot-win" id="win-type"><div class="slot-track" id="tr-type"><div class="slot-item">?</div></div></div>
+          <div class="slot-win" id="win-song"><div class="slot-track" id="tr-song"><div class="slot-item">?</div></div></div>
+        </div>
+      </div>
+      <div id="duet-box"><h3 style="color:var(--pink);font-size:1.4rem;">DUET PARTNER:</h3><div class="slot-win" id="win-duet"><div class="slot-track" id="tr-duet"><div class="slot-item">?</div></div></div></div>
+      <div><button class="btn btn-gold" id="lever-btn" style="font-size:clamp(1.3rem,3vw,1.8rem);margin-top:8px;" onclick="pullLever()">🎰 PULL THE LEVER 🎰</button></div>
+      <div id="reoke-result" class="glass">
+        <h2 style="color:var(--cyan);font-size:1.8rem;margin-top:0;">IT'S SHOWTIME!</h2>
+        <div class="song-card">
+          <div style="font-size:1rem;color:#666;">PERFORMING</div>
+          <div id="r-singer" style="font-size:clamp(1.4rem,3.5vw,2rem);color:var(--gold);font-family:'Bebas Neue';"></div>
+          <div style="margin:8px auto;width:40%;border-top:1px solid rgba(255,255,255,0.06);"></div>
+          <div id="r-song" style="font-size:clamp(1.1rem,2.5vw,1.5rem);font-weight:800;"></div>
+          <div id="r-artist" style="font-size:1rem;color:var(--pink);font-style:italic;"></div>
+        </div>
+        <div id="yt-area" class="yt-box" style="display:none;"><iframe id="yt-frame" src="" allow="autoplay;encrypted-media" allowfullscreen></iframe></div>
+        <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
+          <button id="play-btn" class="btn btn-green btn-sm" onclick="playVideo()">▶ PLAY KARAOKE</button>
+          <a id="yt-link" href="#" target="_blank"><button class="btn btn-cyan btn-sm">🔍 YouTube</button></a>
+        </div><br>
+        <button class="btn btn-red btn-sm" onclick="resetReoke()">DONE / NEXT</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ===================== ADDRESSES ===================== -->
+<div id="pg-addresses" class="page"><div class="page-inner">
+  <div class="section-title" style="color:var(--cyan);">📍 Places & Venues</div>
+  <div class="section-sub">Tap an address to open in Maps</div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">🏨</div><div class="addr-info"><h4>Drury Plaza Hotel Hamilton Place</h4><p><a href="https://maps.google.com/?q=7301+Shallowford+Rd+Chattanooga+TN+37421" target="_blank">7301 Shallowford Rd, Chattanooga, TN 37421</a><br>Main hotel — check-in Friday 5 PM</p></div></div></div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">🍖</div><div class="addr-info"><h4>Saturday Dinner Venue</h4><p>TBA — check back for updates<br><span style="color:#555;">Address will be added soon</span></p></div></div></div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">⛪</div><div class="addr-info"><h4>Sunday Gathering</h4><p>TBA — check back for updates<br><span style="color:#555;">Address will be added soon</span></p></div></div></div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">🌳</div><div class="addr-info"><h4>Family Cookout Location</h4><p>TBA — check back for updates<br><span style="color:#555;">Address will be added soon</span></p></div></div></div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">📸</div><div class="addr-info"><h4>Photo Location</h4><p>TBA — check back for updates<br><span style="color:#555;">Address will be added soon</span></p></div></div></div>
+</div></div>
+
+<!-- ===================== DAILY MENU ===================== -->
+<div id="pg-menu" class="page"><div class="page-inner">
+  <div class="section-title" style="color:var(--pink);">🍽️ Daily Menu</div>
+  <div class="section-sub">What's cooking this weekend</div>
+  <div class="card menu-day"><div class="day-header">FRIDAY</div>
+    <div class="menu-meal"><h4>DINNER — 6:30 PM</h4><p>Menu coming soon — check back for updates!</p></div>
+  </div>
+  <div class="card menu-day"><div class="day-header">SATURDAY</div>
+    <div class="menu-meal"><h4>BREAKFAST — 8:00 AM</h4><p>Hotel breakfast buffet</p></div>
+    <div class="menu-meal"><h4>LUNCH — 12:30 PM</h4><p>Menu coming soon</p></div>
+    <div class="menu-meal"><h4>DINNER — 6:00 PM</h4><p>Menu coming soon</p></div>
+  </div>
+  <div class="card menu-day"><div class="day-header">SUNDAY</div>
+    <div class="menu-meal"><h4>BREAKFAST — 8:00 AM</h4><p>Hotel breakfast buffet</p></div>
+    <div class="menu-meal"><h4>FAMILY COOKOUT — 12:00 PM</h4><p>The big spread! Menu coming soon.</p></div>
+  </div>
+  <div class="card menu-day"><div class="day-header">MONDAY</div>
+    <div class="menu-meal"><h4>FAREWELL BREAKFAST — 8:00 AM</h4><p>Menu coming soon</p></div>
+  </div>
+</div></div>
+
+<!-- ===================== DIRECTORY ===================== -->
+<div id="pg-directory" class="page"><div class="page-inner">
+  <div class="section-title" style="color:var(--green);">📞 Key Contacts</div>
+  <div class="section-sub">Important people to reach during the weekend</div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">👑</div><div class="addr-info"><h4>Event Coordinator</h4><p>Name TBA<br><a href="tel:+10000000000">(000) 000-0000</a></p></div></div></div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">🏨</div><div class="addr-info"><h4>Hotel Front Desk</h4><p>Drury Plaza Hotel Hamilton Place<br><a href="tel:+14238555800">(423) 855-5800</a></p></div></div></div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">🍳</div><div class="addr-info"><h4>Food Coordinator</h4><p>Name TBA<br><a href="tel:+10000000000">(000) 000-0000</a></p></div></div></div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">🚐</div><div class="addr-info"><h4>Transportation</h4><p>Name TBA<br><a href="tel:+10000000000">(000) 000-0000</a></p></div></div></div>
+  <div class="card"><div class="addr-card"><div class="addr-icon">🆘</div><div class="addr-info"><h4>Emergency Contact</h4><p>Name TBA<br><a href="tel:+10000000000">(000) 000-0000</a></p></div></div></div>
+</div></div>
+
+
+<!-- ===================== RACE TO THE REUNION ===================== -->
+<div id="pg-runner" class="page"><div class="page-inner rg-wrap">
+  <div class="section-title" style="color:var(--gold);">🏁 Race to the Reunion</div>
+  <div class="section-sub">Four legs of the journey. 4,000 meters. Get to Chattanooga before Cousin Eli stops you.</div>
+
+  <!-- ROSTER -->
+  <div id="rg-select">
+    <div id="rg-roster" class="rg-roster"></div>
+    <div style="text-align:center;margin-top:14px;">
+      <button class="btn btn-gold" id="rg-go" onclick="rgStart()" disabled>START THE RACE</button>
+    </div>
+    <div class="card" style="margin-top:16px;text-align:left;">
+      <h3 style="color:var(--cyan);font-size:1.4rem;">CONTROLS &amp; RULES</h3>
+      <div class="rg-legend">
+        <div><b>TAP / SPACE / ↑</b> — Jump (tap twice for a double jump)</div>
+        <div><b>↓</b> — Duck under pigeons</div>
+        <div><b>SHIFT</b> — Aunt Alberta's Soothing Aura</div>
+      </div>
+      <div class="rg-legend" style="margin-top:10px;">
+        <div>🍗 Speed Boost &nbsp; 🍲 Invincible &nbsp; 🥬 +1 Heart &nbsp; 🥧 Big Points</div>
+        <div>Every pickup raises your <b style="color:var(--gold);">combo</b> — getting hit resets it.</div>
+        <div>🕳️ 🛒 🌾 jump over &nbsp;·&nbsp; 🐦 duck under &nbsp;·&nbsp; 🍂 slows you down</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAY -->
+  <div id="rg-play" style="display:none;">
+    <div class="rg-journey"><div class="rg-journey-fill" id="rg-bar"></div></div>
+    <div class="rg-hud">
+      <span id="rg-hp">❤️❤️❤️</span>
+      <span id="rg-stage">The Neighborhood</span>
+      <span><b id="rg-combo">x1</b></span>
+      <span id="rg-dist">0m</span>
+      <span id="rg-score">0</span>
+    </div>
+    <div class="rg-stage-box">
+      <canvas id="rg-canvas" width="900" height="460" onclick="rgJump()"></canvas>
+      <div id="rg-flash"></div>
+    </div>
+    <div class="rg-controls">
+      <button class="btn btn-gold" onclick="rgJump()" style="flex:2;min-width:160px;">⬆️ JUMP</button>
+      <button class="btn btn-cyan" onmousedown="rgDuck(true)" onmouseup="rgDuck(false)"
+        ontouchstart="rgDuck(true)" ontouchend="rgDuck(false)" style="flex:1;min-width:100px;">⬇️ DUCK</button>
+      <button class="btn btn-pink" id="rg-aura" onclick="rgAura()" style="display:none;flex:1;min-width:100px;">✨ AURA</button>
+    </div>
+
+    <div id="rg-over" style="display:none;">
+      <div class="card" style="text-align:center;margin-top:14px;">
+        <h2 id="rg-over-title" style="color:var(--gold);font-size:2.2rem;">RACE OVER</h2>
+        <p id="rg-over-msg" style="color:#bbb;line-height:1.6;"></p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-gold" onclick="rgStart()">RUN IT BACK</button>
+          <button class="btn btn-cyan btn-sm" onclick="rgShowSelect()">CHANGE RUNNER</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- OVERLAYS -->
+<div id="suspense"><div id="suspense-txt"></div></div>
+<div id="fx"><div id="fx-txt"></div></div>
+
+
+<script>
+/* ============ CANVAS BG ============ */
+const bgC=document.getElementById('bg-canvas'),bgX=bgC.getContext('2d');let parts=[];
+function resizeBg(){bgC.width=window.innerWidth;bgC.height=window.innerHeight;}
+window.addEventListener('resize',resizeBg);resizeBg();
+for(let i=0;i<50;i++)parts.push({x:Math.random()*bgC.width,y:Math.random()*bgC.height,r:Math.random()*1.5+0.3,vx:(Math.random()-0.5)*0.2,vy:(Math.random()-0.5)*0.2,a:Math.random()*0.2+0.03,h:Math.random()<0.5?45:200});
+function drawBg(){bgX.clearRect(0,0,bgC.width,bgC.height);
+  const g=bgX.createRadialGradient(bgC.width*0.3,bgC.height*0.2,0,bgC.width*0.3,bgC.height*0.2,bgC.height*0.6);
+  g.addColorStop(0,'rgba(80,0,150,0.04)');g.addColorStop(1,'transparent');bgX.fillStyle=g;bgX.fillRect(0,0,bgC.width,bgC.height);
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=bgC.width;if(p.x>bgC.width)p.x=0;if(p.y<0)p.y=bgC.height;if(p.y>bgC.height)p.y=0;
+    bgX.beginPath();bgX.arc(p.x,p.y,p.r,0,Math.PI*2);bgX.fillStyle=`hsla(${p.h},70%,65%,${p.a})`;bgX.fill();});
+  requestAnimationFrame(drawBg);}
+drawBg();
+
+/* ============ AUDIO ============ */
+let aC=null;function initA(){if(!aC)aC=new(window.AudioContext||window.webkitAudioContext)();if(aC.state==='suspended')aC.resume();}
+function tone(f,t,d,v=0.3){try{initA();const o=aC.createOscillator(),g=aC.createGain();o.type=t;o.frequency.setValueAtTime(f,aC.currentTime);g.gain.setValueAtTime(v,aC.currentTime);g.gain.exponentialRampToValueAtTime(0.001,aC.currentTime+d);o.connect(g);g.connect(aC.destination);o.start();o.stop(aC.currentTime+d);}catch(e){}}
+function sfxDing(){tone(880,'sine',0.5);setTimeout(()=>tone(1100,'sine',0.35,0.2),60);}
+function sfxBuzz(){tone(150,'sawtooth',0.7,0.4);}
+function sfxTick(){tone(1800,'triangle',0.04,0.06);}
+function sfxThud(){tone(80,'square',0.1,0.3);}
+function sfxCount(){tone(600,'sine',0.15,0.2);}
+function sfxDrum(){for(let i=0;i<16;i++)setTimeout(()=>tone(180+Math.random()*100,'triangle',0.06,0.1),i*75);}
+function sfxFanfare(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,'square',i===3?0.7:0.18,0.25),i*160));}
+function sfxSad(){[300,280,260,240].forEach((f,i)=>setTimeout(()=>tone(f,'sawtooth',i===3?1:0.3,0.25),i*300));}
+
+/* ============ NAV ============ */
+function toggleNav(){document.getElementById('nav-links').classList.toggle('open');}
+function goTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pg-'+page).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l=>{if(l.textContent.toLowerCase().includes(page==='home'?'home':page))l.classList.add('active');});
+  document.getElementById('nav-links').classList.remove('open');
+  window.scrollTo(0,0);
+}
+
+/* ============ PASSWORD ============ */
+let gameUnlocked=false;
+function checkPw(){
+  const v=document.getElementById('pw-input').value.trim().toLowerCase();
+  if(v==='porchgamenight'){gameUnlocked=true;document.getElementById('game-gate').style.display='none';document.getElementById('game-content').style.display='block';initA();}
+  else{document.getElementById('pw-error').style.display='block';}
+}
+
+/* ============ GAME NAV ============ */
+let names=[],lock=false,curPlayer='';
+let dealCounts={},dealHist=[],penBox=[],curQ=null,doors=[],doorActive=false,doorSetup=[];
+function parseNames(){names=document.getElementById('name-input').value.split(',').map(n=>n.trim()).filter(n=>n);if(!names.length){alert("Enter at least one name!");return false;}names.forEach(n=>{dealCounts[n]=dealCounts[n]||0;reokeCounts[n]=reokeCounts[n]||0;});return true;}
+function showZone(id){document.querySelectorAll('.game-zone').forEach(z=>{z.classList.remove('active');z.style.display='none';});const el=document.getElementById(id);el.style.display='block';el.classList.add('active');}
+function backToGames(){showZone('game-picker');document.getElementById('yt-frame').src='';}
+function initDeal(){if(!parseNames())return;buildSetupGrid();showZone('deal-setup');}
+function initReoke(){if(!parseNames())return;showZone('reoke-rules');}
+
+/* ============ DOOR SETUP ============ */
+function buildSetupGrid(){doorSetup=Array(20).fill('');const g=document.getElementById('setup-grid');g.innerHTML='';
+  for(let i=0;i<20;i++){const d=document.createElement('div');d.className='setup-door unset';d.dataset.i=i;
+    d.innerHTML=`<span class="sd-num">${i+1}</span><span class="sd-lbl"></span>`;d.onclick=()=>togSetup(i,d);g.appendChild(d);}
+  updSetupCount();}
+function togSetup(i,el){if(doorSetup[i]==='')doorSetup[i]='prize';else if(doorSetup[i]==='prize')doorSetup[i]='gag';else doorSetup[i]='';
+  el.className='setup-door '+(doorSetup[i]||'unset');el.querySelector('.sd-lbl').textContent=doorSetup[i]==='prize'?'PRIZE':doorSetup[i]==='gag'?'GAG':'';updSetupCount();}
+function autoFill(m){let p=m==='even'?10:m==='nice'?14:6;let a=Array(p).fill('prize').concat(Array(20-p).fill('gag'));
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}doorSetup=a;
+  document.querySelectorAll('.setup-door').forEach((el,i)=>{el.className='setup-door '+doorSetup[i];el.querySelector('.sd-lbl').textContent=doorSetup[i]==='prize'?'PRIZE':'GAG';});updSetupCount();}
+function updSetupCount(){const p=doorSetup.filter(d=>d==='prize').length,g=doorSetup.filter(d=>d==='gag').length;
+  document.getElementById('prize-count').textContent=p;document.getElementById('gag-count').textContent=g;
+  const ok=doorSetup.every(d=>d!=='');document.getElementById('setup-go-btn').disabled=!ok;document.getElementById('setup-warn').style.display=ok?'none':'block';}
+function showDealRules(){showZone('deal-rules');}
+function startDealGame(){buildGameDoors();showZone('deal-game');drawWheel();}
+function startReokeGame(){showZone('reoke-game');}
+
+/* ============ BUILD GAME DOORS ============ */
+const prizeE=['🏆','🎁','💎','🌟','👑','💰','🎯','✨','🥇','🎊'],gagE=['🤡','🧦','🪣','💀','🧹','😬','🪤','🐸','🧻','🎃'];
+let pi=0,gi=0;
+function buildGameDoors(){const g=document.getElementById('door-grid');g.innerHTML='';doors=[];pi=0;gi=0;
+  for(let i=0;i<20;i++){const ty=doorSetup[i];const em=ty==='prize'?prizeE[pi++%10]:gagE[gi++%10];
+    doors.push({id:i+1,type:ty,used:false,emoji:em});
+    const w=document.createElement('div');w.className='door-w';w.onclick=()=>openDoor(i,w);
+    const bg=document.createElement('div');bg.className='door-bg';
+    const rv=document.createElement('div');rv.className='door-reveal';
+    rv.innerHTML=ty==='prize'?`<span class="emoji">${em}</span><span class="label" style="color:var(--green);">WIN!</span>`:`<span class="emoji">${em}</span><span class="label" style="color:var(--red);">GAG!</span>`;
+    bg.appendChild(rv);const fc=document.createElement('div');fc.className='door-face';
+    fc.innerHTML=`<span class="door-num">${i+1}</span><div class="knob"></div>`;
+    w.appendChild(bg);w.appendChild(fc);g.appendChild(w);}}
+
+/* ============ WHEEL ============ */
+const cv=document.getElementById('canvas-wheel'),cx=cv.getContext('2d');let rot=0,spinning=false;
+const wCol=["#c2185b","#0277bd","#00897b","#f9a825","#7b1fa2","#ef6c00","#00838f","#d81b60","#00c853","#ff8f00","#1565c0","#e53935"];
+function drawWheel(){const n=names.length;if(!n)return;const sa=2*Math.PI/n,r=cv.width/2-2,mx=cv.width/2,my=cv.height/2;
+  cx.clearRect(0,0,cv.width,cv.height);cx.save();cx.translate(mx,my);cx.rotate(rot);
+  for(let i=0;i<n;i++){cx.beginPath();cx.moveTo(0,0);cx.arc(0,0,r,i*sa,(i+1)*sa);cx.fillStyle=wCol[i%wCol.length];cx.fill();cx.lineWidth=1.5;cx.strokeStyle='rgba(0,0,0,0.3)';cx.stroke();
+    cx.save();cx.rotate(i*sa+sa/2);cx.textAlign='right';cx.fillStyle='#fff';cx.font=`800 ${Math.min(18,Math.floor(130/n)+9)}px 'Outfit',sans-serif`;cx.shadowColor='rgba(0,0,0,0.6)';cx.shadowBlur=3;cx.fillText(names[i],r-14,4);cx.restore();}
+  cx.restore();}
+function nameAt(){const n=names.length;if(!n)return'';const sa=2*Math.PI/n;let a=(-rot-Math.PI/2)%(2*Math.PI);if(a<0)a+=2*Math.PI;return names[Math.floor(a/sa)%n];}
+function spinWheel(){if(spinning||lock)return;let v=[];names.forEach((nm,i)=>{const c=dealCounts[nm]||0;const rc=dealHist.slice(-Math.min(6,Math.max(1,Math.floor(names.length/2))));if(c<2&&!rc.includes(nm))v.push(i);});
+  if(!v.length)names.forEach((nm,i)=>{if((dealCounts[nm]||0)<2)v.push(i);});if(!v.length){document.getElementById('who-next').innerText="ALL PLAYED!";return;}
+  const wi=v[Math.floor(Math.random()*v.length)];document.getElementById('spin-btn').disabled=true;document.getElementById('who-next').innerText="SPINNING...";spinning=true;lock=true;
+  const n=names.length,sa=2*Math.PI/n,jit=(Math.random()-0.5)*sa*0.5,target=-Math.PI/2-wi*sa-sa/2+jit,extra=(7+Math.random()*3)*2*Math.PI,end=target-extra,start=rot,delta=end-start;
+  let t0=null;const dur=5500+Math.random()*1500;let lastTk=start;const ptr=document.getElementById('wheel-ptr');
+  function ease(t){return 1-Math.pow(1-t,5);}
+  function anim(ts){if(!t0)t0=ts;const p=Math.min((ts-t0)/dur,1);rot=start+delta*ease(p);drawWheel();
+    if(Math.abs(rot-lastTk)>=sa*0.8){sfxTick();lastTk=rot;ptr.classList.add('bounce');setTimeout(()=>ptr.classList.remove('bounce'),50);}
+    if(p<1)requestAnimationFrame(anim);
+    else{rot=start+delta;drawWheel();spinning=false;curPlayer=nameAt();document.getElementById('who-next').innerText=curPlayer;sfxDing();dealHist.push(curPlayer);dealCounts[curPlayer]=(dealCounts[curPlayer]||0)+1;
+      setTimeout(()=>{document.getElementById('spin-btn').disabled=false;showQ();lock=false;},1800);}}
+  requestAnimationFrame(anim);}
+
+/* ============ QUESTIONS ============ */
+const Qs=[
+{q:"What is the actual name of the man called 'Grandpa'?",o:["Frank Hall","Frank Porch","James Porch","Jerry Porch"],a:"Frank Porch",c:"f"},{q:"What is 'Grandpa's' wife's actual name?",o:["Mabel Earlene Simmons","Bertha McGill","Lena Moreland","Katherine Hall"],a:"Katherine Hall",c:"f"},{q:"Frank and Katherine's son was named?",o:["James Porch","Frank Porch III","Sam Porch","Eddie Kang Porch"],a:"James Porch",c:"f"},{q:"How many children did Frank and Katherine have?",o:["3","4","5","6"],a:"5",c:"f"},{q:"About what year was Frank Porch born?",o:["1778","1878","1978","1900"],a:"1878",c:"f"},{q:"What Georgia county was Frank Porch from?",o:["Coweta","Henry","Monroe","Pike County"],a:"Pike County",c:"f"},{q:"This stew was always at Frank's birthday.",o:["Brummich (Brunswick) Stew","Oxtail Stew","Onion Stew","Beef Stew"],a:"Brummich (Brunswick) Stew",c:"f"},{q:"Correct birth order of Frank's children?",o:["Frankie, Mattie, Lucy, Alberta, James","Mattie, Lucy, Alberta, James, Frankie","Mattie, Frankie, Lucy, Alberta, James","James, Mattie, Frankie, Lucy, Alberta"],a:"Mattie, Frankie, Lucy, Alberta, James",c:"f"},{q:"Frank was raised by which paternal grandparents?",o:["Lucy and Ricky Porch","Jane and Jerry Porch","Will and Mattie Porch","Mary and Felton Smith"],a:"Jane and Jerry Porch",c:"f"},{q:"How many Hartsfield children did Frankie and Elias have?",o:["7","10","9","8"],a:"8",c:"f"},{q:"How many Dennis children did Lucy and Robert have?",o:["6","7","8","9"],a:"6",c:"f"},{q:"How many surviving Moreland children?",o:["4","5","6","7"],a:"4",c:"f"},{q:"What street did Aunt Alberta live on?",o:["Oakland Avenue","Main Street","Elm Street","Maple Drive"],a:"Oakland Avenue",c:"f"},{q:"What street did the Hartsfields live on?",o:["Cooley Street","Oakland Avenue","Heaton Street","Broad Street"],a:"Cooley Street",c:"f"},{q:"Aunt Alberta's cat was named?",o:["Fluffy","Monkey","Tiger","Sugar"],a:"Monkey",c:"f"},{q:"Aunt Alberta & Uncle Bud's gift for Moreland kids?",o:["Skates","A Pony","Blue Suede Shoes","Bicycles"],a:"Bicycles",c:"f"},{q:"Aunt Alberta's favorite board game?",o:["Monopoly","Sorry","Checkers","Backgammon"],a:"Monopoly",c:"f"},{q:"Aunt Alberta's favorite food?",o:["Fried Catfish","Neck Bones","Fried Chicken","Pinto Beans and Cornbread"],a:"Neck Bones",c:"f"},{q:"Aunt Alberta's favorite spectator sport?",o:["Baseball","Wrestling","Boxing","Football"],a:"Wrestling",c:"f"},{q:"Our maternal DNA links to which Nigerian tribe?",o:["Yoruba","Igbo","Hausa","Fulani"],a:"Fulani",c:"f"},{q:"Aunt Frankie's favorite fruit?",o:["Peaches","Watermelon","Plums","Apples"],a:"Watermelon",c:"f"},{q:"What tobacco did Aunt Alberta chew?",o:["Red Man","Day's Work","Copenhagen","Old Mule"],a:"Day's Work",c:"f"},{q:"Elias Hartsfield's primary workplace?",o:["Eureka Foundry","Mueller","Sisken Steel","Combustion"],a:"Combustion",c:"f"},{q:"How many of Mattie & Will's children didn't survive?",o:["2","4","6","8"],a:"6",c:"f"},{q:"First year of the Porch Family Reunion?",o:["1959","1969","1979","1989"],a:"1979",c:"f"},{q:"The matriarch who traveled from Virginia?",o:["Rhoda","Martha","Bessie","Hattie"],a:"Rhoda",c:"f"},{q:"'One generation plants the tree, another gets the ___.'",o:["Shade","Fruit","Harvest","Blessing"],a:"Shade",c:"f"},{q:"Frank's two children before Katherine?",o:["James & Willie Mae","Bonnie & Clyde","Jane & Jerry","Arthur & Nora"],a:"Arthur & Nora",c:"f"},{q:"Tool for mixing cream into butter?",o:["Butter Churn","Ice Cream Maker","Wash Tub","Grain Mill"],a:"Butter Churn",c:"f"},{q:"Building for curing meat with smoke?",o:["Smokehouse","Greenhouse","Root Cellar","Tool Shed"],a:"Smokehouse",c:"f"},{q:"Clip for securing laundry to a line?",o:["Clothespin","Paperclip","Safety Pin","Hairpin"],a:"Clothespin",c:"f"},{q:"Decorated pole danced around at spring festivals?",o:["Maypole","Totem Pole","Tetherball Pole","Festivus Pole"],a:"Maypole",c:"f"},{q:"Instrument played by plucking against teeth?",o:["Jaw Harp","Harmonica","Kazoo","Ocarina"],a:"Jaw Harp",c:"f"},{q:"Small flute of military marching bands?",o:["Fife","Piccolo","Recorder","Pennywhistle"],a:"Fife",c:"f"},{q:"Underground structure for storing vegetables?",o:["Root Cellar","Bunker","Storm Shelter","Cistern"],a:"Root Cellar",c:"f"},
+{q:"Band, 4-H Club, Glee Club, basketball at Howard High. Who Am I?",o:["Mama Tine","Aunt Jean","Aunt Freddie","Uncle James"],a:"Mama Tine",c:"f"},{q:"Beech school, rock baseball, Jitterbugging at Henry's Place. Who am I?",o:["Aunt Jean","Mama Tine","Aunt Alberta","Aunt Frankie"],a:"Aunt Jean",c:"f"},{q:"W.J. Davenport Honor Society, 'The Stallion,' met husband at bus station. Who?",o:["Aunt Freddie","Mama Tine","Aunt Jean","Aunt Alberta"],a:"Aunt Freddie",c:"f"},{q:"Howard High '62, Scouts, camping in Cherokee, stolen car crash. Who?",o:["Uncle James","Uncle Bud","Frank Porch","Elias"],a:"Uncle James",c:"f"},{q:"Hunting, fishing, Jack Yates High, Dodgers & Cowboys fan. Who?",o:["Norah","Uncle James","Uncle Bud","Frank Porch"],a:"Norah",c:"f"},{q:"'Nell,' civil rights activist, Woolworth sit-in photo in museum. Who?",o:["Aunt Frankie","Aunt Alberta","Aunt Jean","Mama Tine"],a:"Aunt Frankie",c:"f"},
+{q:"What 1951 TV show featured the Ricardos?",o:["I Love Lucy","The Honeymooners","Father Knows Best","Leave It to Beaver"],a:"I Love Lucy",c:"p"},{q:"MLK's 'I Have a Dream' was at what 1963 event?",o:["March on Washington","Selma March","Million Man March","Freedom Rides"],a:"March on Washington",c:"p"},{q:"Motown group that sang 'My Girl'?",o:["The Temptations","The Four Tops","The Supremes","The Miracles"],a:"The Temptations",c:"p"},{q:"1971-79 show with Fred Sanford in a junkyard?",o:["All in the Family","Good Times","The Jeffersons","Sanford and Son"],a:"Sanford and Son",c:"p"},{q:"1977 miniseries tracing a family from slavery?",o:["Roots","Eyes on the Prize","North and South","12 Years a Slave"],a:"Roots",c:"p"},{q:"Bob Barker hosted this for 35 years?",o:["The Price Is Right","Wheel of Fortune","Jeopardy!","Family Feud"],a:"The Price Is Right",c:"p"},{q:"1984 sitcom with the Huxtable family?",o:["The Cosby Show","A Different World","Family Matters","227"],a:"The Cosby Show",c:"p"},{q:"Fresh Prince moved FROM what city?",o:["Philadelphia","New York","Baltimore","Atlanta"],a:"Philadelphia",c:"p"},{q:"1992 Whitney Houston & Kevin Costner movie?",o:["The Bodyguard","Waiting to Exhale","Sparkle","The Preacher's Wife"],a:"The Bodyguard",c:"p"},{q:"This cartoon sponge debuted in 1999.",o:["SpongeBob","Hey Arnold!","CatDog","Rugrats"],a:"SpongeBob",c:"p"},{q:"Marvel movie with Wakanda?",o:["Black Panther","Blade","Luke Cage","Hancock"],a:"Black Panther",c:"p"},{q:"What blue hedgehog got movies?",o:["Sonic","Crash","Mega Man","Pac-Man"],a:"Sonic",c:"p"},{q:"Magical family in 'Encanto'?",o:["The Madrigals","The Riveras","The Garcias","The Castillos"],a:"The Madrigals",c:"p"},{q:"Best-selling block-building game ever?",o:["Minecraft","Roblox","Fortnite","Terraria"],a:"Minecraft",c:"p"},{q:"Disney movie with Polynesian teen saving her island?",o:["Moana","Frozen","Tangled","Brave"],a:"Moana",c:"p"},{q:"First African American woman in space?",o:["Mae Jemison","Katherine Johnson","Dorothy Vaughan","Mary Jackson"],a:"Mae Jemison",c:"p"},{q:"Inventor of traffic light & gas mask?",o:["Garrett Morgan","G.W. Carver","Elijah McCoy","Lewis Latimer"],a:"Garrett Morgan",c:"p"},{q:"Board game with Boardwalk & Park Place?",o:["Monopoly","Life","Clue","Risk"],a:"Monopoly",c:"p"},{q:"Card game — shout its name with one card left?",o:["UNO","Go Fish","Spades","War"],a:"UNO",c:"p"},{q:"June 19th holiday celebrating end of slavery?",o:["Juneteenth","Emancipation Day","Freedom Day","Liberation Day"],a:"Juneteenth",c:"p"},
+{q:"TASK: Sing the National Anthem!",o:[],a:"!",c:"t"},{q:"TASK: Name 5 family middle names in 15 seconds!",o:[],a:"!",c:"t"},{q:"TASK: Do an impression of a family member!",o:[],a:"!",c:"t"},{q:"TASK: Name 3 dishes always at the cookout!",o:[],a:"!",c:"t"},{q:"TASK: Your favorite family memory in 30 seconds!",o:[],a:"!",c:"t"},
+];
+let qPool=[],asked=new Set();
+function buildPool(){qPool=[];Qs.forEach(q=>{if(q.c==='f')qPool.push(q,q,q);else qPool.push(q);});for(let i=qPool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[qPool[i],qPool[j]]=[qPool[j],qPool[i]];}}
+function pickQ(){let p=qPool.filter(q=>!asked.has(q.q));if(!p.length){asked.clear();p=[...qPool];}const c=p[Math.floor(Math.random()*p.length)];asked.add(c.q);return c;}
+buildPool();
+
+let selAns=null,cdTimer=null;
+function showQ(){penBox=penBox.filter(p=>{p.cd--;return p.cd>0;});curQ=pickQ();selAns=null;
+  document.getElementById('q-badge').innerHTML=curQ.c==='f'?'<span class="badge badge-fam">👑 PORCH FAMILY</span>':curQ.c==='t'?'<span class="badge badge-task">🎤 CHALLENGE</span>':'<span class="badge badge-pop">🌟 POP CULTURE</span>';
+  document.getElementById('player-turn').innerText=curPlayer+"'s Turn!";document.getElementById('q-text').innerText=curQ.q;
+  const og=document.getElementById('opts-grid'),cd=document.getElementById('countdown'),tb=document.getElementById('task-btns');
+  og.innerHTML='';cd.style.display='none';cd.className='';cd.style.color='var(--gold)';tb.style.display='none';
+  if(curQ.o.length){const sh=[...curQ.o];for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]];}
+    sh.forEach(op=>{const b=document.createElement('div');b.className='opt';b.innerText=op;b.onclick=()=>pickAns(op,b);og.appendChild(b);});og.style.display='grid';}
+  else{og.style.display='none';tb.style.display='block';}
+  document.getElementById('wheel-area').style.display='none';document.getElementById('q-area').style.display='block';}
+function pickAns(ans,el){if(lock||selAns)return;selAns=ans;lock=true;
+  document.querySelectorAll('#opts-grid .opt').forEach(c=>c.classList.add('locked'));el.classList.add('picked');sfxDing();
+  const cd=document.getElementById('countdown');cd.style.display='block';let n=5;cd.innerText=n;
+  cdTimer=setInterval(()=>{n--;if(n>0){cd.innerText=n;sfxCount();}else{clearInterval(cdTimer);cd.className='done';reveal(el);}},1000);}
+function reveal(selEl){const cd=document.getElementById('countdown');const ok=selAns.trim()===curQ.a.trim();
+  document.querySelectorAll('#opts-grid .opt').forEach(c=>{if(c.innerText.trim()===curQ.a.trim()){c.classList.add('right');c.classList.remove('dim');}else c.classList.add('dim');});
+  if(ok){selEl.classList.remove('picked');selEl.classList.add('right');cd.innerText='✅ CORRECT!';cd.style.color='var(--green)';sfxFanfare();showFx("WINNER! 🎉",'win');fireConfetti();
+    doorActive=true;document.querySelectorAll('.door-w:not(.open)').forEach(d=>d.classList.add('glow'));
+    setTimeout(()=>{document.getElementById('q-area').style.display='none';document.getElementById('doors-area').style.display='block';lock=false;},3000);
+  }else{selEl.classList.remove('picked');selEl.classList.add('wrong-pick');cd.innerText='❌ ZONKED!';cd.style.color='var(--red)';sfxBuzz();document.body.classList.add('shaking');showFx("ZONKED! ❌",'lose');fireZonk();
+    setTimeout(()=>{document.body.classList.remove('shaking');document.getElementById('q-area').style.display='none';document.getElementById('wheel-area').style.display='block';document.getElementById('who-next').innerText="Spin for next!";cd.style.color='var(--gold)';lock=false;},3500);}}
+function judgeTask(ok){if(lock)return;lock=true;if(ok){sfxFanfare();showFx("NAILED IT! 🎉",'win');fireConfetti();doorActive=true;document.querySelectorAll('.door-w:not(.open)').forEach(d=>d.classList.add('glow'));
+    setTimeout(()=>{document.getElementById('q-area').style.display='none';document.getElementById('doors-area').style.display='block';lock=false;},3000);
+  }else{sfxBuzz();document.body.classList.add('shaking');showFx("ZONKED! ❌",'lose');fireZonk();
+    setTimeout(()=>{document.body.classList.remove('shaking');document.getElementById('q-area').style.display='none';document.getElementById('wheel-area').style.display='block';document.getElementById('who-next').innerText="Spin for next!";lock=false;},3500);}}
+
+function openDoor(i,el){if(!doorActive||lock)return;const d=doors[i];if(d.used)return;lock=true;doorActive=false;
+  document.querySelectorAll('.door-w').forEach(w=>w.classList.remove('glow'));
+  const ov=document.getElementById('suspense'),tx=document.getElementById('suspense-txt');ov.style.display='flex';tx.innerText="DOOR #"+d.id;sfxDrum();
+  let c=3;const si=setInterval(()=>{c--;if(c>0){tx.innerText=c+"...";sfxCount();}
+    else{clearInterval(si);tx.innerText="OPEN!";sfxThud();
+      setTimeout(()=>{ov.style.display='none';d.used=true;el.classList.add('open');
+        setTimeout(()=>{if(d.type==='prize'){sfxFanfare();showFx("🎁 PRIZE!",'win');fireConfetti();}else{sfxSad();showFx("😬 GAG GIFT!",'lose');}},700);
+        setTimeout(()=>{document.getElementById('doors-area').style.display='none';document.getElementById('wheel-area').style.display='block';document.getElementById('who-next').innerText="Spin for next!";lock=false;},4200);},400);}},850);}
+
+function fireConfetti(){if(typeof confetti==='function'){const e=Date.now()+2000;(function f(){confetti({particleCount:4,angle:60,spread:55,origin:{x:0,y:0.7},colors:['#ffd700','#ff2d95','#00f3ff','#00ff88']});confetti({particleCount:4,angle:120,spread:55,origin:{x:1,y:0.7},colors:['#ffd700','#ff2d95','#00f3ff','#00ff88']});if(Date.now()<e)requestAnimationFrame(f);})();}}
+function fireZonk(){if(typeof confetti==='function')confetti({particleCount:60,spread:150,origin:{y:0.5},colors:['#333','#555','#ff4444'],gravity:2,scalar:1.2,ticks:60});}
+function showFx(t,ty){const o=document.getElementById('fx'),x=document.getElementById('fx-txt');x.innerText=t;o.className=(ty==='win'?'fx-win':'fx-lose')+' show';o.style.display='flex';setTimeout(()=>{o.style.display='none';o.className='';},2200);}
+
+/* ============ REOKE ============ */
+let reokeCounts={},reokeHist=[],rSong=null,isVol=false,lead='',partner='';const IH=80;
+const rDb=[{t:"My Girl",ar:"The Temptations",ty:"Group",yt:"9pe4JSIhXg0"},{t:"Ain't No Mountain High Enough",ar:"Marvin & Tammi",ty:"Duet",yt:"0XC39zKT_Dk"},{t:"Superstition",ar:"Stevie Wonder",ty:"Solo",yt:"4ia5KDIXLy4"},{t:"Respect",ar:"Aretha Franklin",ty:"Solo",yt:"F2TmbIOfpuk"},{t:"Stand By Me",ar:"Ben E. King",ty:"Solo",yt:"G4b-D2hE5H8"},{t:"I Want You Back",ar:"Jackson 5",ty:"Group",yt:"hM6o4R-0J2E"},{t:"September",ar:"Earth Wind & Fire",ty:"Group",yt:"8cK5O4W3T2E"},{t:"Before I Let Go",ar:"Maze ft Frankie Beverly",ty:"Solo",yt:"vI_04_P55P8"},{t:"Waterfalls",ar:"TLC",ty:"Group",yt:"enVeRCtCw8w"},{t:"End of the Road",ar:"Boyz II Men",ty:"Group",yt:"84L0nU4zD_4"},{t:"No Diggity",ar:"Blackstreet",ty:"Group",yt:"9mPZ_x_e4wA"},{t:"This Is How We Do It",ar:"Montell Jordan",ty:"Solo",yt:"G7Yh_f_xUfM"},{t:"Say My Name",ar:"Destiny's Child",ty:"Group",yt:"lTfV_YvGbp8"},{t:"Yeah!",ar:"Usher",ty:"Solo",yt:"QO_fKzXyBbw"},{t:"Family Affair",ar:"Mary J. Blige",ty:"Solo",yt:"UaU6tXWv3U0"},{t:"The Boy Is Mine",ar:"Brandy & Monica",ty:"Duet",yt:"Yh_a0y5p728"},{t:"Crazy in Love",ar:"Beyonce",ty:"Duet",yt:"Po2wzSJPTBk"},{t:"Fallin'",ar:"Alicia Keys",ty:"Solo",yt:"k5FvP3fN4Zk"},{t:"I Will Always Love You",ar:"Whitney Houston",ty:"Solo",yt:"aY8e8XoWdYI"},{t:"Sweet Caroline",ar:"Neil Diamond",ty:"Solo",yt:"1vhFnTjia_I"},{t:"Don't Stop Believin'",ar:"Journey",ty:"Group",yt:"KaqC5FnvAEc"},{t:"I Will Survive",ar:"Gloria Gaynor",ty:"Solo",yt:"ehqhfZvaPNM"},{t:"Tennessee Whiskey",ar:"Chris Stapleton",ty:"Solo",yt:"F4iK00O8GfU"},{t:"Lean on Me",ar:"Bill Withers",ty:"Group",yt:"fOZ-MySzAac"},{t:"Shout",ar:"Isley Brothers",ty:"Group",yt:"xKwAMrQSe0k"},{t:"Cupid Shuffle",ar:"Cupid",ty:"Group",yt:"h24_zoqu4RU"},{t:"Cha Cha Slide",ar:"DJ Casper",ty:"Group",yt:"wZv62ShoStY"},{t:"Electric Slide",ar:"Marcia Griffiths",ty:"Group",yt:"tH9PBBo6v6k"},{t:"Hit the Road Jack",ar:"Ray Charles",ty:"Duet",yt:"Q8Tiz6INF7I"},{t:"Happy",ar:"Pharrell",ty:"Solo",yt:"ZbZSe6N_BXs"},{t:"Love on Top",ar:"Beyonce",ty:"Solo",yt:"Ob7vObnFUH8"},{t:"Best Part",ar:"Daniel Caesar & H.E.R.",ty:"Duet",yt:"vBy7FaapGRo"},{t:"Killing Me Softly",ar:"Fugees",ty:"Group",yt:"oKOtzIo-uYw"},{t:"At Last",ar:"Etta James",ty:"Solo",yt:"S-cbOl96RFM"},{t:"Natural Woman",ar:"Aretha Franklin",ty:"Solo",yt:"dEWuAE4pXew"},{t:"Uptown Funk",ar:"Bruno Mars",ty:"Solo",yt:"OPf0YbXqDm0"},{t:"We Are Family",ar:"Sister Sledge",ty:"Group",yt:"eBpYGRhrsq8"},{t:"Celebration",ar:"Kool & The Gang",ty:"Group",yt:"3GwjfUFyY6M"},{t:"Old Town Road",ar:"Lil Nas X",ty:"Solo",yt:"r7qovpFAGrQ"},{t:"Blinding Lights",ar:"The Weeknd",ty:"Solo",yt:"4NRXx6U8ABQ"},{t:"Endless Love",ar:"Diana Ross & Lionel Richie",ty:"Duet",yt:"JM_R1R28kLM"},{t:"Shallow",ar:"Lady Gaga & Bradley Cooper",ty:"Duet",yt:"bo_efYhYU2A"},{t:"Bohemian Rhapsody",ar:"Queen",ty:"Group",yt:"fJ9rUzIMcZQ"},{t:"ABC",ar:"Jackson 5",ty:"Group",yt:"ho7796-au8Y"},{t:"Proud Mary",ar:"Tina Turner",ty:"Solo",yt:"T3dFUBcGMJU"},{t:"Thriller",ar:"Michael Jackson",ty:"Solo",yt:"sOnqjkJTMaA"},{t:"Billie Jean",ar:"Michael Jackson",ty:"Solo",yt:"Zi_XLOBDo_Y"},{t:"Purple Rain",ar:"Prince",ty:"Solo",yt:"TvnYmWpD_T8"},{t:"Umbrella",ar:"Rihanna",ty:"Solo",yt:"CvBfHwUxHIk"},{t:"Let It Go",ar:"Idina Menzel",ty:"Solo",yt:"L0MK7qz13bU"},{t:"Georgia On My Mind",ar:"Ray Charles",ty:"Solo",yt:"glggureS_Js"},{t:"Wobble Baby",ar:"V.I.C.",ty:"Group",yt:"fCOoPNmJbhU"},{t:"Finesse",ar:"Bruno Mars & Cardi B",ty:"Duet",yt:"LsoLEjrDogU"},{t:"Summertime",ar:"DJ Jazzy Jeff & Fresh Prince",ty:"Duet",yt:"Kr0tTbTbmVA"},{t:"Can't Help Falling in Love",ar:"Elvis Presley",ty:"Solo",yt:"vGJTaP6anOU"},{t:"Levitating",ar:"Dua Lipa",ty:"Solo",yt:"TUVcZfQe-Kw"},{t:"Build Me Up Buttercup",ar:"The Foundations",ty:"Group",yt:"iol0B-clFFM"},];
+function mkTrack(tid,ty,val,dur){const tr=document.getElementById(tid);tr.innerHTML='';const n=Math.floor(dur*10);let h='';
+  for(let i=0;i<n;i++){let r='';if(ty==='s'||ty==='d')r=names[Math.floor(Math.random()*names.length)];if(ty==='t')r=['Solo','Duet','Group'][Math.floor(Math.random()*3)];if(ty==='g')r=rDb[Math.floor(Math.random()*rDb.length)].t;if(ty==='v'){r=tid.includes('singer')?'[VOLUNTEER]':tid.includes('type')?'[YOUR]':'[JAM]';}h+=`<div class="slot-item">${r}</div>`;}
+  h+=`<div class="slot-item hl">${val}</div>`;tr.innerHTML=h;tr.style.transition='none';tr.style.transform='translateY(0)';tr.offsetHeight;return{tr,y:-(n*IH),dur};}
+function runSpin(s){s.tr.style.transition=`transform ${s.dur}s cubic-bezier(0.12,0.98,0.18,1)`;s.tr.style.transform=`translateY(${s.y}px)`;setTimeout(sfxThud,s.dur*1000);}
+function pullLever(){if(lock)return;lock=true;isVol=Math.random()<0.1;let fn,ft;
+  if(isVol){fn='[VOLUNTEER]';ft='[YOUR]';rSong={t:'[JAM]',ar:'Any',ty:'Wild',yt:''};lead='Volunteer';}
+  else{let v=names.filter(n=>{const p=reokeCounts[n]||0;return p<2&&reokeHist[reokeHist.length-1]!==n;});if(!v.length)v=names.filter(n=>(reokeCounts[n]||0)<2);if(!v.length){v=[...names];reokeCounts={};}
+    fn=v[Math.floor(Math.random()*v.length)];lead=fn;rSong=rDb[Math.floor(Math.random()*rDb.length)];ft=rSong.ty;}
+  const b=document.getElementById('lever-btn');b.disabled=true;b.innerText='🎰 SPINNING... 🎰';document.getElementById('duet-box').style.display='none';partner='';
+  const s1=mkTrack('tr-singer',isVol?'v':'s',fn,3),s2=mkTrack('tr-type',isVol?'v':'t',ft,4.5),s3=mkTrack('tr-song',isVol?'v':'g',rSong.t,6.5);
+  runSpin(s1);runSpin(s2);runSpin(s3);let ti=setInterval(sfxTick,100);setTimeout(()=>clearInterval(ti),6000);
+  setTimeout(()=>{sfxDing();if(!isVol){reokeHist.push(fn);reokeCounts[fn]=(reokeCounts[fn]||0)+1;}
+    if(!isVol&&(ft==='Duet'||ft==='Group'))doDuet();else{showRR();lock=false;}},6800);}
+function doDuet(){document.getElementById('duet-box').style.display='block';let a=names.filter(n=>n!==lead);if(!a.length)a=[...names];partner=a[Math.floor(Math.random()*a.length)];
+  const sp=mkTrack('tr-duet','d',partner,3);let ti=setInterval(sfxTick,100);setTimeout(()=>clearInterval(ti),2700);runSpin(sp);
+  setTimeout(()=>{sfxDing();reokeHist.push(partner);reokeCounts[partner]=(reokeCounts[partner]||0)+1;setTimeout(()=>{showRR();lock=false;},600);},3200);}
+function showRR(){document.getElementById('lever-btn').style.display='none';let ds=lead;if(partner)ds+=' & '+partner;
+  document.getElementById('yt-area').style.display='none';document.getElementById('yt-frame').src='';
+  if(isVol){document.getElementById('r-singer').innerText='🌟 VOLUNTEER! 🌟';document.getElementById('r-song').innerText='Pick Your Own!';document.getElementById('r-artist').innerText='';document.getElementById('yt-link').style.display='none';document.getElementById('play-btn').style.display='none';}
+  else{document.getElementById('r-singer').innerText=ds;document.getElementById('r-song').innerText=rSong.t;document.getElementById('r-artist').innerText='by '+rSong.ar;document.getElementById('play-btn').style.display='inline-block';document.getElementById('yt-link').style.display='inline-block';document.getElementById('yt-link').href=`https://www.youtube.com/results?search_query=${encodeURIComponent(rSong.t+' '+rSong.ar+' karaoke')}`;}
+  document.getElementById('reoke-result').style.display='block';}
+function playVideo(){if(!rSong)return;if(rSong.yt){document.getElementById('yt-frame').src=`https://www.youtube.com/embed/${rSong.yt}?autoplay=1&rel=0`;document.getElementById('yt-area').style.display='block';document.getElementById('play-btn').innerText='▶ NOW PLAYING';document.getElementById('play-btn').disabled=true;document.getElementById('yt-area').scrollIntoView({behavior:'smooth',block:'center'});}
+  else window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(rSong.t+' '+rSong.ar+' karaoke')}`,'_blank');}
+function resetReoke(){document.getElementById('reoke-result').style.display='none';document.getElementById('duet-box').style.display='none';document.getElementById('yt-area').style.display='none';document.getElementById('yt-frame').src='';lead='';partner='';isVol=false;
+  ['tr-singer','tr-type','tr-song','tr-duet'].forEach(id=>{const e=document.getElementById(id);if(e){e.style.transition='none';e.style.transform='translateY(0)';e.innerHTML='<div class="slot-item">?</div>';}});
+  const b=document.getElementById('lever-btn');b.style.display='inline-block';b.disabled=false;b.innerText='🎰 PULL THE LEVER 🎰';document.getElementById('play-btn').innerText='▶ PLAY KARAOKE';document.getElementById('play-btn').disabled=false;}
+
+/* ============ FAMILY QUIZ (open, no password) ============ */
+const quizQs=[
+  // Secretly includes some Porch of a Deal questions!
+  {q:"What Georgia county was Frank Porch from?",o:["Coweta","Henry","Monroe","Pike County"],a:"Pike County"},
+  {q:"What was the first year of the Porch Family Reunion?",o:["1959","1969","1979","1989"],a:"1979"},
+  {q:"How many children did Frank and Katherine have?",o:["3","4","5","6"],a:"5"},
+  {q:"Aunt Alberta's favorite food?",o:["Fried Catfish","Neck Bones","Fried Chicken","Cornbread"],a:"Neck Bones"},
+  {q:"Our maternal DNA links to which Nigerian tribe?",o:["Yoruba","Igbo","Hausa","Fulani"],a:"Fulani"},
+  {q:"Complete: 'One generation plants the tree, another gets the ___.'",o:["Shade","Fruit","Harvest","Blessing"],a:"Shade"},
+  // General family/pop questions
+  {q:"What Motown group sang 'My Girl'?",o:["The Temptations","The Four Tops","The Supremes","The Miracles"],a:"The Temptations"},
+  {q:"Who was the first African American woman in space?",o:["Mae Jemison","Katherine Johnson","Dorothy Vaughan","Mary Jackson"],a:"Mae Jemison"},
+  {q:"What holiday on June 19th celebrates the end of slavery?",o:["Juneteenth","Emancipation Day","Freedom Day","Liberation Day"],a:"Juneteenth"},
+  {q:"What 1977 miniseries traced a family from slavery?",o:["Roots","Eyes on the Prize","North and South","12 Years a Slave"],a:"Roots"},
+  {q:"Best-selling block-building video game?",o:["Minecraft","Roblox","Fortnite","Terraria"],a:"Minecraft"},
+  {q:"Disney movie with a Polynesian teen?",o:["Moana","Frozen","Tangled","Brave"],a:"Moana"},
+  {q:"Bob Barker hosted this for 35 years?",o:["The Price Is Right","Wheel of Fortune","Jeopardy!","Family Feud"],a:"The Price Is Right"},
+  {q:"What card game — shout its name with one card left?",o:["UNO","Go Fish","Spades","War"],a:"UNO"},
+  {q:"Inventor of the traffic light and gas mask?",o:["Garrett Morgan","G.W. Carver","Elijah McCoy","Lewis Latimer"],a:"Garrett Morgan"},
+];
+let quizIdx=0,quizScore=0,quizLocked=false;
+function startQuiz(){quizIdx=0;quizScore=0;quizLocked=false;
+  // Shuffle
+  for(let i=quizQs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[quizQs[i],quizQs[j]]=[quizQs[j],quizQs[i]];}
+  document.getElementById('quiz-final').style.display='none';document.getElementById('quiz-container').style.display='block';showQuizQ();}
+function showQuizQ(){if(quizIdx>=quizQs.length){endQuiz();return;}quizLocked=false;
+  const q=quizQs[quizIdx];document.getElementById('quiz-bar').style.width=((quizIdx/quizQs.length)*100)+'%';
+  document.getElementById('quiz-status').textContent=`Question ${quizIdx+1} of ${quizQs.length}`;
+  document.getElementById('quiz-q').textContent=q.q;
+  const og=document.getElementById('quiz-opts');og.innerHTML='';
+  const sh=[...q.o];for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]];}
+  sh.forEach(op=>{const d=document.createElement('div');d.className='quiz-opt';d.textContent=op;d.onclick=()=>quizPick(op,d);og.appendChild(d);});
+  document.getElementById('quiz-feedback').style.display='none';document.getElementById('quiz-next-wrap').style.display='none';}
+function quizPick(ans,el){if(quizLocked)return;quizLocked=true;const q=quizQs[quizIdx];const ok=ans===q.a;
+  document.querySelectorAll('.quiz-opt').forEach(o=>{o.classList.add('locked');if(o.textContent===q.a)o.classList.add('correct');});
+  if(ok){quizScore++;el.classList.add('correct');}else el.classList.add('incorrect');
+  const fb=document.getElementById('quiz-feedback');fb.style.display='block';fb.style.color=ok?'var(--green)':'var(--red)';
+  fb.textContent=ok?'✅ Correct!':`❌ The answer was: ${q.a}`;
+  document.getElementById('quiz-next-wrap').style.display='block';}
+function nextQuizQ(){quizIdx++;showQuizQ();}
+function endQuiz(){document.getElementById('quiz-container').style.display='none';document.getElementById('quiz-final').style.display='block';
+  const pct=Math.round((quizScore/quizQs.length)*100);
+  document.getElementById('quiz-score-display').textContent=`${quizScore} / ${quizQs.length} (${pct}%)`;
+  document.getElementById('quiz-score-msg').textContent=pct>=80?'Amazing! You really know your family!':pct>=50?'Good job! Keep studying that family history!':'Keep learning — the family story is worth knowing!';}
+startQuiz();
+
+/* ===========================================================
+   RACE TO THE REUNION — level grammar
+   Chunks are authored in BEATS, not pixels. At 120BPM one beat
+   is 0.5s, so rhythm stays constant in TIME while pixel spacing
+   scales with velocity automatically. Hazards sit on EVEN beats
+   only (2-beat min spacing = validated safe at all speeds).
+   =========================================================== */
+const BPM = 120, BEAT_FRAMES = 30;      // 0.5s @60fps
+
+/* h = hazard {b:beat, t:type}   k = token {b:beat, y:height, tier}
+   tiers: 'path' breadcrumb on the safe line | 'risk' beside a hazard | 'combo' streak
+   diff 1..5 gates which chunks unlock as the run heats up            */
+const CHUNKS = [
+  // ---- diff 1 : teach ----
+  { id:'breather', beats:8, diff:1, h:[], k:[{b:2,y:0,tier:'path'},{b:3,y:0,tier:'path'},{b:4,y:0,tier:'path'}] },
+  { id:'first-hop', beats:8, diff:1, h:[{b:4,t:'pothole'}],
+    k:[{b:3,y:40,tier:'path'},{b:4,y:95,tier:'path'},{b:5,y:40,tier:'path'}] },
+  { id:'first-duck', beats:8, diff:1, h:[{b:4,t:'pigeons'}],
+    k:[{b:3,y:0,tier:'path'},{b:4,y:0,tier:'path'},{b:5,y:0,tier:'path'}] },
+
+  // ---- diff 2 : establish cadence ----
+  { id:'two-step', beats:10, diff:2, h:[{b:2,t:'pothole'},{b:6,t:'cart'}],
+    k:[{b:2,y:95,tier:'path'},{b:4,y:0,tier:'combo'},{b:6,y:95,tier:'path'}] },
+  { id:'hay-run', beats:10, diff:2, h:[{b:4,t:'hay'},{b:8,t:'hay'}],
+    k:[{b:4,y:95,tier:'path'},{b:6,y:30,tier:'combo'},{b:8,y:95,tier:'path'}] },
+  { id:'low-sweep', beats:10, diff:2, h:[{b:4,t:'pigeons'},{b:8,t:'pothole'}],
+    k:[{b:5,y:0,tier:'path'},{b:6,y:0,tier:'path'},{b:8,y:95,tier:'path'}] },
+
+  // ---- diff 3 : mix verbs ----
+  { id:'jump-duck-jump', beats:12, diff:3, h:[{b:2,t:'cart'},{b:6,t:'pigeons'},{b:10,t:'pothole'}],
+    k:[{b:2,y:95,tier:'path'},{b:6,y:0,tier:'path'},{b:10,y:95,tier:'path'},{b:8,y:55,tier:'risk'}] },
+  { id:'stutter', beats:12, diff:3, h:[{b:4,t:'pothole'},{b:6,t:'pothole'},{b:10,t:'hay'}],
+    k:[{b:5,y:110,tier:'risk'},{b:8,y:0,tier:'combo'},{b:10,y:95,tier:'path'}] },
+  { id:'leaf-trap', beats:12, diff:3, h:[{b:4,t:'leaves'},{b:8,t:'cart'}],
+    k:[{b:4,y:80,tier:'risk'},{b:6,y:40,tier:'combo'},{b:8,y:95,tier:'path'}] },
+
+  // ---- diff 4 : pressure ----
+  { id:'triple-hop', beats:14, diff:4, h:[{b:2,t:'hay'},{b:6,t:'hay'},{b:10,t:'hay'}],
+    k:[{b:2,y:95,tier:'path'},{b:6,y:95,tier:'path'},{b:10,y:95,tier:'path'},{b:12,y:30,tier:'combo'}] },
+  { id:'high-low', beats:14, diff:4, h:[{b:2,t:'pigeons'},{b:4,t:'pothole'},{b:8,t:'pigeons'},{b:12,t:'cart'}],
+    k:[{b:4,y:100,tier:'risk'},{b:6,y:0,tier:'combo'},{b:12,y:95,tier:'path'}] },
+  { id:'gauntlet', beats:14, diff:4, h:[{b:2,t:'cart'},{b:6,t:'leaves'},{b:8,t:'pothole'},{b:12,t:'hay'}],
+    k:[{b:2,y:95,tier:'path'},{b:8,y:105,tier:'risk'},{b:12,y:95,tier:'path'}] },
+
+  // ---- diff 5 : payoff ----
+  { id:'finale-rush', beats:16, diff:5, h:[{b:2,t:'hay'},{b:4,t:'pigeons'},{b:8,t:'cart'},{b:10,t:'pothole'},{b:14,t:'hay'}],
+    k:[{b:2,y:95,tier:'path'},{b:6,y:45,tier:'combo'},{b:10,y:100,tier:'risk'},{b:14,y:95,tier:'path'}] },
+  { id:'reward-lane', beats:12, diff:5, h:[{b:4,t:'pothole'},{b:12,t:'cart'}],
+    k:[{b:5,y:60,tier:'combo'},{b:6,y:95,tier:'combo'},{b:7,y:110,tier:'combo'},{b:8,y:95,tier:'combo'},{b:9,y:60,tier:'combo'}] },
+];
+
+/* ============================================================
+   RACE TO THE REUNION — v3
+   Chunk-stitched · beat-grid · pooled · coyote-time
+   ============================================================ */
+const RG = {
+  W:900, H:460, GROUND_OFF:78,
+  GRAV:0.446, JUMP_V:-9.91,        // derived: 0.74s airtime, 110px apex
+  VMIN:4.2, VMAX:11.0, RAMP_M:42, RAMP_K:2,
+  T_READ:24, D_CLEAR:90,           // MinGap(v) = v*T_READ + D_CLEAR
+  BEAT:30,                         // 120 BPM @60fps
+  COYOTE:6, BUFFER:7,              // 0.10s / 0.12s
+  RUN_SECONDS:90, GOAL:4000,
+  DUCK_H:38
+};
+
+const CHARS = [
+  {key:'freddie', name:"Aunt Freddie",  role:"Balanced Tea Tray Runner",    perk:'steady',  blurb:"Starts with an extra heart.",              frames:2},
+  {key:'norah',   name:"Uncle Norah",   role:"Precision Gadget Navigator",  perk:'magnet',  blurb:"Pulls nearby tokens toward you.",          frames:2},
+  {key:'james',   name:"Uncle James",   role:"Dapper Keepsake Collector",   perk:'keepsake',blurb:"Risk tokens pay double.",                  frames:2},
+  {key:'jean',    name:"Aunt Jean",     role:"Radiant Memory Trail Runner", perk:'swift',   blurb:"Higher jump, longer coyote time.",         frames:2},
+  {key:'mildred', name:"Aunt Mildred",  role:"Efficient Cook-off Contender",perk:'combo',   blurb:"Combo climbs twice as fast.",              frames:2},
+  {key:'alberta', name:"Aunt Alberta",  role:"The Peaceful Pacifier",       perk:'aura',    blurb:"Soothing Aura clears hazards nearby.",     frames:6},
+];
+
+const STAGES = [
+  {name:"The Neighborhood", at:0,    sky:['#7EC0EE','#BFE3F5'], gnd:'#5D8A3C', road:'#6b6b6b', accent:'#4A7A2E', prop:'house'},
+  {name:"Country Road",     at:1100, sky:['#F6B65C','#FCE0A8'], gnd:'#7A8B3C', road:'#7a6a55', accent:'#5E6E2A', prop:'tree'},
+  {name:"Into Chattanooga", at:2300, sky:['#4E5A96','#B58BA6'], gnd:'#3F4A5A', road:'#555',    accent:'#2E3742', prop:'city'},
+  {name:"Reunion Grounds",  at:3400, sky:['#2B2350','#6A4B8A'], gnd:'#3B5030', road:'#4a4a4a', accent:'#2A3A22', prop:'tent'},
+];
+
+const HAZ = {
+  pothole:{w:46,h:14, ground:true,  verb:'jump'},
+  cart   :{w:40,h:44, ground:false, verb:'jump'},
+  hay    :{w:46,h:40, ground:false, verb:'jump'},
+  leaves :{w:56,h:12, ground:true,  verb:'slow'},
+  pigeons:{w:44,h:26, ground:false, verb:'duck', air:96},
+};
+const TIER = { path:{pts:50,r:11,col:'#FFD34D'}, risk:{pts:200,r:12,col:'#FF7BD5'}, combo:{pts:100,r:11,col:'#6EE7F9'} };
+
+/* ---------- asset load ---------- */
+const IMG={}; 
+function loadArt(){ CHARS.forEach(c=>{ for(let i=0;i<c.frames;i++) px(`${c.key}_run${i}`,`sprites/${c.key}_run${i}.png`); px(`${c.key}_face`,`sprites/${c.key}_face.png`); }); }
+function px(k,src){ const im=new Image(); im.onload=()=>{IMG[k]=im; if(typeof rgRefresh==='function') rgRefresh();}; im.onerror=()=>{}; im.src=src; }
+loadArt();
+
+/* ---------- object pools (zero alloc in loop) ---------- */
+const POOL_H=40, POOL_K=48;
+const hz = Array.from({length:POOL_H},()=>({on:false,x:0,y:0,w:0,h:0,type:'',verb:''}));
+const tk = Array.from({length:POOL_K},()=>({on:false,x:0,y:0,tier:'path',got:false,t:0}));
+function takeH(){ for(let i=0;i<POOL_H;i++) if(!hz[i].on) return hz[i]; return null; }
+function takeK(){ for(let i=0;i<POOL_K;i++) if(!tk[i].on) return tk[i]; return null; }
+function clearPools(){ for(let i=0;i<POOL_H;i++) hz[i].on=false; for(let i=0;i<POOL_K;i++) tk[i].on=false; }
+
+/* ---------- state ---------- */
+let rgSel=0,rgCv,rgX,rgOn=false,rgRaf=null,rgLast=0;
+let P,eli,deco,stageIdx,dist,score,hp,combo,comboT,runT;
+let tShield,tSpeed,tSlow,tAura,cdAura,iFr,puppy,trail;
+let cursorPx,lastChunk,bestScore=0,peakCombo=0,tokensGot=0;
+
+/* ---------- formulas ---------- */
+const velAt = t => RG.VMIN + (RG.VMAX-RG.VMIN)*Math.pow(t,RG.RAMP_K)/(Math.pow(t,RG.RAMP_K)+Math.pow(RG.RAMP_M,RG.RAMP_K));
+const minGap = v => v*RG.T_READ + RG.D_CLEAR;
+const diffAt = t => Math.min(5, 1 + Math.floor(t/18));      // 1→5 across 90s
+
+/* ---------- chunk stitching ---------- */
+function pickChunk(t){
+  const d = diffAt(t);
+  // weight toward current tier, allow one below for breathing room
+  let pool = CHUNKS.filter(c=>c.diff<=d && c.diff>=Math.max(1,d-1));
+  if(!pool.length) pool = CHUNKS.filter(c=>c.diff<=d);
+  if(lastChunk && pool.length>1) pool = pool.filter(c=>c.id!==lastChunk);
+  return pool[(Math.random()*pool.length)|0];
+}
+function stitch(v,t){
+  const c = pickChunk(t); lastChunk = c.id;
+  const g = RG.H-RG.GROUND_OFF;
+  const beatPx = v*RG.BEAT;                 // rhythm constant in time, scales in space
+  const gapOK = Math.max(beatPx*2, minGap(v));   // never violate MinGap
+  const unit  = gapOK/2;                    // one beat of horizontal room
+  c.h.forEach(h=>{
+    const s=takeH(); if(!s) return; const d=HAZ[h.t];
+    s.on=true; s.type=h.t; s.verb=d.verb; s.w=d.w; s.h=d.h;
+    s.x = cursorPx + h.b*unit;
+    s.y = d.ground ? g-d.h+6 : (d.air ? g-d.air : g-d.h);
+  });
+  c.k.forEach(k=>{
+    const s=takeK(); if(!s) return;
+    s.on=true; s.tier=k.tier; s.got=false; s.t=0;
+    s.x = cursorPx + k.b*unit;
+    s.y = g - 26 - k.y;
+  });
+  cursorPx += c.beats*unit;
+}
+
+/* ---------- lifecycle ---------- */
+function rgRefresh(){ if(document.getElementById('rg-roster')) buildRoster(); if(typeof drawHomeSprites==='function') drawHomeSprites(); }
+function buildRoster(){
+  const host=document.getElementById('rg-roster'); if(!host) return; host.innerHTML='';
+  CHARS.forEach((c,i)=>{
+    const card=document.createElement('div'); card.className='rg-card'+(i===rgSel?' sel':'');
+    const art=IMG[`${c.key}_face`]||IMG[`${c.key}_run0`];
+    card.innerHTML=`<div class="rg-portrait">${art?`<img src="${art.src}" alt="${c.name}">`:''}</div>
+      <div class="rg-name">${c.name}</div><div class="rg-role">${c.role}</div><div class="rg-perk">${c.blurb}</div>`;
+    card.onclick=()=>{rgSel=i;buildRoster();document.getElementById('rg-go').disabled=false;};
+    host.appendChild(card);
+  });
+}
+function rgShowSelect(){
+  document.getElementById('rg-select').style.display='block';
+  document.getElementById('rg-play').style.display='none';
+  document.getElementById('rg-over').style.display='none';
+  if(rgRaf){cancelAnimationFrame(rgRaf);rgRaf=null;} rgOn=false;
+}
+function rgStart(){
+  initA();
+  rgCv=document.getElementById('rg-canvas'); rgX=rgCv.getContext('2d'); rgX.imageSmoothingEnabled=false;
+  const g=RG.H-RG.GROUND_OFF;
+  P={x:130,y:g,vy:0,onGround:true,duck:false,anim:0,coyote:0,buffer:0};
+  clearPools(); deco=[]; trail=[];
+  eli={on:false,x:0,y:0,variant:0,life:0,shot:null,cool:480};
+  stageIdx=0;dist=0;score=0;hp=3;combo=1;comboT=0;runT=0;
+  tShield=0;tSpeed=0;tSlow=0;tAura=0;cdAura=0;iFr=0;puppy=null;
+  peakCombo=1;tokensGot=0;
+  cursorPx=RG.W+120; lastChunk=null;
+  if(CHARS[rgSel].perk==='steady') hp=4;
+  for(let i=0;i<10;i++) deco.push({x:i*180+Math.random()*120,layer:Math.random()<.5?0:1,t:Math.random()});
+  document.getElementById('rg-select').style.display='none';
+  document.getElementById('rg-play').style.display='block';
+  document.getElementById('rg-over').style.display='none';
+  document.getElementById('rg-aura').style.display=CHARS[rgSel].perk==='aura'?'inline-block':'none';
+  rgOn=true; rgLast=performance.now(); rgRaf=requestAnimationFrame(rgLoop);
+}
+
+/* ---------- input: buffer + coyote ---------- */
+function rgJump(){ if(rgOn) P.buffer=RG.BUFFER; }        // remember the press
+function rgDuck(on){ if(rgOn) P.duck=on; }
+function rgAura(){
+  if(!rgOn||CHARS[rgSel].perk!=='aura'||cdAura>0||tAura>0) return;
+  tAura=170; cdAura=560; sfxDing(); puppy={x:P.x-52,y:RG.H-RG.GROUND_OFF,b:0}; flash('✨ SOOTHING AURA');
+}
+function flash(m){ const e=document.getElementById('rg-flash'); if(!e)return; e.textContent=m; e.style.opacity='1'; clearTimeout(e._t); e._t=setTimeout(()=>e.style.opacity='0',1400); }
+
+/* ---------- loop ---------- */
+function rgLoop(now){
+  if(!rgOn) return;
+  const dt=Math.min(2.2,(now-rgLast)/16.67); rgLast=now;
+  runT += dt/60;
+  const g=RG.H-RG.GROUND_OFF;
+  const base=velAt(runT);
+  const v=base*(tSpeed>0?1.4:1)*(tSlow>0?0.62:1);
+
+  /* --- jump with coyote time + buffered input --- */
+  if(P.onGround) P.coyote = CHARS[rgSel].perk==='swift'?RG.COYOTE+3:RG.COYOTE;
+  else if(P.coyote>0) P.coyote-=dt;
+  if(P.buffer>0){
+    P.buffer-=dt;
+    if(P.coyote>0){                       // forgiving: fires even just after leaving ground
+      P.vy=RG.JUMP_V*(CHARS[rgSel].perk==='swift'?1.06:1);
+      P.onGround=false; P.coyote=0; P.buffer=0;
+      tone(560,'square',0.09,0.15);
+    }
+  }
+  P.vy+=RG.GRAV*dt; P.y+=P.vy*dt;
+  if(P.y>=g){P.y=g;P.vy=0;P.onGround=true;}
+  P.anim+=dt*(P.onGround?0.28:0);
+
+  /* --- stitch next chunk when the cursor nears the edge --- */
+  cursorPx -= v*dt;
+  if(cursorPx < RG.W+200) stitch(v,runT);
+
+  /* --- move pooled objects --- */
+  for(let i=0;i<POOL_H;i++){ const o=hz[i]; if(!o.on) continue; o.x-=v*dt; if(o.x<-90) o.on=false; }
+  for(let i=0;i<POOL_K;i++){ const k=tk[i]; if(!k.on) continue; k.x-=v*dt; k.t+=dt;
+    if(CHARS[rgSel].perk==='magnet'&&!k.got){
+      const dx=(P.x+22)-k.x, dy=(P.y-34)-k.y, d=Math.hypot(dx,dy);
+      if(d<150){ k.x+=dx/d*3.4*dt; k.y+=dy/d*3.4*dt; }
+    }
+    if(k.x<-40) k.on=false;
+  }
+  deco.forEach(d=>{ d.x-=v*(d.layer?.55:.22)*dt; if(d.x<-220){d.x=RG.W+Math.random()*260;d.t=Math.random();} });
+  if(puppy){ puppy.b+=.18*dt; puppy.x+=((P.x-54)-puppy.x)*.09*dt; }
+  if(CHARS[rgSel].perk==='swift') trail.push({x:P.x+20,y:P.y-30,a:1});
+  trail.forEach(t=>t.a-=.045*dt); trail=trail.filter(t=>t.a>0);
+
+  /* --- Eli --- */
+  eli.cool-=dt;
+  if(eli.cool<=0&&!eli.on){ eli.on=true;eli.x=RG.W+50;eli.y=g-70;eli.variant=(Math.random()*3)|0;eli.life=260;eli.shot=null;eli.cool=560+Math.random()*260; }
+  if(eli.on){ eli.x-=v*.62*dt; eli.life-=dt;
+    if(eli.life<=0||eli.x<-90) eli.on=false;
+    if(!eli.shot&&eli.x<RG.W-120&&Math.random()<.02*dt){ eli.shot={x:eli.x-6,y:eli.y+16,w:18,h:14}; tone(240,'sawtooth',.16,.18); }
+  }
+  if(eli.shot){ eli.shot.x-=(v+4.2)*dt; if(eli.shot.x<-30) eli.shot=null; }
+
+  /* --- timers --- */
+  if(tShield>0)tShield-=dt; if(tSpeed>0)tSpeed-=dt; if(tSlow>0)tSlow-=dt;
+  if(cdAura>0)cdAura-=dt; if(iFr>0)iFr-=dt;
+  if(tAura>0){ tAura-=dt;
+    for(let i=0;i<POOL_H;i++){ const o=hz[i]; if(o.on&&Math.abs((o.x+o.w/2)-(P.x+22))<120){o.on=false;score+=30*combo;} }
+    if(eli.shot) eli.shot=null;
+  }
+  if(comboT>0){ comboT-=dt; if(comboT<=0) combo=1; }
+
+  /* --- collisions --- */
+  const ph=P.duck?RG.DUCK_H:62;
+  const bx=P.x+8, by=P.y-ph, bw=28, bh=ph;
+  const safe = tShield>0||tAura>0||iFr>0;
+  for(let i=0;i<POOL_H;i++){
+    const o=hz[i]; if(!o.on||safe) continue;
+    if(bx+bw>o.x&&bx<o.x+o.w&&by+bh>o.y&&by<o.y+o.h){
+      if(o.verb==='slow'){ tSlow=90; flash('🍂 Slowed!'); tone(200,'triangle',.2,.18); }
+      else hurt();
+      o.on=false;
+    }
+  }
+  if(eli.shot&&!safe){ const s=eli.shot;
+    if(bx+bw>s.x&&bx<s.x+s.w&&by+bh>s.y&&by<s.y+s.h){ hurt(); eli.shot=null; } }
+  for(let i=0;i<POOL_K;i++){
+    const k=tk[i]; if(!k.on||k.got) continue;
+    if(bx+bw>k.x-14&&bx<k.x+14&&by+bh>k.y-14&&by<k.y+14){ k.got=true; k.on=false; grabToken(k.tier); }
+  }
+
+  /* --- progression --- */
+  dist += v*dt*0.34;
+  score += Math.round(v*dt*0.6*combo);
+  const ns=STAGES.reduce((a,s,i)=>dist>=s.at?i:a,0);
+  if(ns!==stageIdx){ stageIdx=ns; flash('📍 '+STAGES[ns].name); sfxDing(); }
+  if(dist>=RG.GOAL || runT>=RG.RUN_SECONDS+8) return finish(dist>=RG.GOAL);
+
+  hud();
+  try { draw(v); } catch(err){ console.error('draw() failed:',err); }
+  rgRaf=requestAnimationFrame(rgLoop);
+}
+
+function hurt(){ hp--; combo=1; comboT=0; iFr=70; sfxBuzz(); shake(); if(hp<=0) finish(false); }
+function grabToken(tier){
+  sfxDing(); tokensGot++;
+  const step = CHARS[rgSel].perk==='combo'?2:1;
+  combo=Math.min(8,combo+(tier==='combo'?step:step)); comboT=260;
+  if(combo>peakCombo) peakCombo=combo;
+  let pts=TIER[tier].pts;
+  if(tier==='risk'&&CHARS[rgSel].perk==='keepsake') pts*=2;
+  score+=pts*combo;
+}
+function shake(){ const c=document.getElementById('rg-canvas'); if(!c)return;
+  c.style.transform='translateX(-6px)'; setTimeout(()=>c.style.transform='translateX(6px)',60); setTimeout(()=>c.style.transform='',120); }
+function hud(){
+  document.getElementById('rg-hp').textContent='❤️'.repeat(Math.max(0,hp));
+  document.getElementById('rg-dist').textContent=Math.floor(dist)+'m';
+  document.getElementById('rg-score').textContent=score.toLocaleString();
+  document.getElementById('rg-combo').textContent='x'+combo;
+  document.getElementById('rg-stage').textContent=STAGES[stageIdx].name;
+  document.getElementById('rg-bar').style.width=Math.min(100,dist/RG.GOAL*100)+'%';
+  const a=document.getElementById('rg-aura');
+  if(a&&CHARS[rgSel].perk==='aura'){
+    if(tAura>0){a.textContent='✨ ACTIVE';a.disabled=true;}
+    else if(cdAura>0){a.textContent='✨ '+Math.ceil(cdAura/60)+'s';a.disabled=true;}
+    else{a.textContent='✨ AURA';a.disabled=false;}
+  }
+}
+function finish(won){
+  rgOn=false; if(rgRaf)cancelAnimationFrame(rgRaf);
+  if(score>bestScore) bestScore=score;
+  document.getElementById('rg-over').style.display='block';
+  document.getElementById('rg-over-title').textContent = won?'🎉 YOU MADE IT!':'RACE OVER';
+  document.getElementById('rg-over-title').style.color = won?'var(--green)':'var(--gold)';
+  document.getElementById('rg-over-msg').innerHTML = (won
+    ? `<strong>${CHARS[rgSel].name}</strong> made it to the reunion!`
+    : `<strong>${CHARS[rgSel].name}</strong> got ${Math.floor(dist)}m of ${RG.GOAL}m.`)
+    + `<br>Score <strong>${score.toLocaleString()}</strong> · Best ${bestScore.toLocaleString()}`
+    + `<br><span style="font-size:.85em;color:#8b93a3">${tokensGot} tokens · peak combo x${peakCombo}</span>`;
+  if(won&&typeof fireConfetti==='function') fireConfetti();
+  won?sfxFanfare():sfxSad();
+}
+
+/* ---------- render ---------- */
+function draw(v){
+  const X=rgX,g=RG.H-RG.GROUND_OFF,st=STAGES[stageIdx];
+  X.clearRect(0,0,RG.W,RG.H);
+  const sky=X.createLinearGradient(0,0,0,RG.H); sky.addColorStop(0,st.sky[0]); sky.addColorStop(1,st.sky[1]);
+  X.fillStyle=sky; X.fillRect(0,0,RG.W,RG.H);
+  X.fillStyle= stageIdx>=3?'rgba(255,250,220,.9)':'rgba(255,245,200,.75)';
+  X.beginPath(); X.arc(RG.W-130,82,stageIdx>=3?26:34,0,7); X.fill();
+  deco.filter(d=>!d.layer).forEach(d=>farProp(X,d,st,g));
+  deco.filter(d=>d.layer).forEach(d=>nearProp(X,d,st,g));
+  X.fillStyle=st.gnd; X.fillRect(0,g,RG.W,RG.H-g);
+  X.fillStyle=st.accent; X.fillRect(0,g,RG.W,5);
+  X.fillStyle=st.road; X.fillRect(0,g+5,RG.W,42);
+  X.fillStyle='rgba(255,215,0,.85)';
+  const off=(dist*3)%70; for(let i=-1;i<RG.W/70+1;i++) X.fillRect(i*70-off,g+24,34,4);
+  if(dist>RG.GOAL-380){
+    const fx=RG.W-(RG.GOAL-dist)*2.2;
+    for(let r=0;r<9;r++) for(let c=0;c<2;c++){ X.fillStyle=((r+c)%2)?'#fff':'#111'; X.fillRect(fx+c*16,g-120+r*14,16,14); }
+    X.fillStyle='#FFD700'; X.font='bold 16px Outfit'; X.fillText('REUNION!',fx-14,g-132);
+  }
+  for(let i=0;i<POOL_H;i++) if(hz[i].on) drawHaz(X,hz[i]);
+  for(let i=0;i<POOL_K;i++) if(tk[i].on) drawTok(X,tk[i]);
+  trail.forEach(t=>{X.fillStyle=`rgba(230,200,255,${t.a*.5})`;X.fillRect(t.x,t.y,5,5);});
+  if(eli.on) drawEli(X,eli);
+  if(puppy){ const b=Math.abs(Math.sin(puppy.b))*5;
+    X.fillStyle='#D2A679';X.fillRect(puppy.x,g-16-b,22,11);X.fillRect(puppy.x+18,g-22-b,10,9);
+    X.fillStyle='#8B6544';X.fillRect(puppy.x+17,g-25-b,4,5);X.fillRect(puppy.x+24,g-25-b,4,5);X.fillRect(puppy.x-4,g-19-b,5,4);
+    X.fillStyle='#000';X.fillRect(puppy.x+23,g-19-b,2,2); }
+  drawHero(X,g);
+  if(stageIdx>=2){ const vg=X.createRadialGradient(RG.W/2,RG.H/2,RG.H*.4,RG.W/2,RG.H/2,RG.H*.95);
+    vg.addColorStop(0,'transparent'); vg.addColorStop(1,'rgba(0,0,10,.45)'); X.fillStyle=vg; X.fillRect(0,0,RG.W,RG.H); }
+}
+function farProp(X,d,st,g){
+  if(st.prop==='city'){
+    X.fillStyle='rgba(20,25,45,0.55)';
+    const h=70+((d.t*100)%90); X.fillRect(d.x,g-h,54,h);
+    X.fillStyle='rgba(255,220,120,0.25)';
+    for(let r=0;r<h/18;r++) X.fillRect(d.x+8,g-h+8+r*18,10,8);
+  } else {
+    X.fillStyle='rgba(255,255,255,0.55)';
+    X.beginPath(); X.ellipse(d.x,70+d.t*40,52,17,0,0,Math.PI*2); X.fill();
+  }
+}
+function nearProp(X,d,st,g){
+  if(st.prop==='tree'){
+    X.fillStyle='#3E2A18'; X.fillRect(d.x+16,g-52,10,52);
+    X.fillStyle='#2F5C24'; X.beginPath(); X.arc(d.x+21,g-64,26,0,Math.PI*2); X.fill();
+  } else if(st.prop==='house'){
+    X.fillStyle='#B58A5E'; X.fillRect(d.x,g-58,64,58);
+    X.fillStyle='#7C3B2A'; X.beginPath(); X.moveTo(d.x-6,g-58); X.lineTo(d.x+32,g-86); X.lineTo(d.x+70,g-58); X.closePath(); X.fill();
+    X.fillStyle='#FFE9A8'; X.fillRect(d.x+12,g-42,16,14); X.fillRect(d.x+38,g-42,16,14);
+  } else if(st.prop==='city'){
+    X.fillStyle='#2A3550'; X.fillRect(d.x,g-96,58,96);
+    X.fillStyle='rgba(255,225,140,0.6)';
+    for(let r=0;r<5;r++) for(let c=0;c<2;c++) if((r+c+((d.t*10)|0))%2) X.fillRect(d.x+10+c*24,g-86+r*17,14,10);
+  } else {
+    X.fillStyle='#C94F5A'; X.beginPath(); X.moveTo(d.x,g); X.lineTo(d.x+34,g-56); X.lineTo(d.x+68,g); X.closePath(); X.fill();
+    X.fillStyle='#FFD86B'; X.fillRect(d.x+28,g-22,14,22);
+    X.strokeStyle='rgba(255,240,180,0.7)'; X.lineWidth=2;
+    X.beginPath(); X.moveTo(d.x-20,g-64); X.quadraticCurveTo(d.x+34,g-80,d.x+88,g-64); X.stroke();
+  }
+}
+function drawTok(X,k){
+  const T=TIER[k.tier], bob=Math.sin(k.t*.12)*4;
+  X.save(); X.shadowColor=T.col; X.shadowBlur=14;
+  X.fillStyle=T.col; X.beginPath(); X.arc(k.x,k.y+bob,T.r,0,7); X.fill();
+  X.fillStyle='rgba(255,255,255,.85)'; X.beginPath(); X.arc(k.x-3,k.y+bob-3,T.r*.32,0,7); X.fill();
+  X.restore();
+  if(k.tier==='risk'){ X.strokeStyle='rgba(255,255,255,.75)'; X.lineWidth=2;
+    X.beginPath(); X.arc(k.x,k.y+bob,T.r+5,0,7); X.stroke(); }
+}
+function drawHaz(X,o){
+  if(o.type==='pothole'){ X.fillStyle='#1a1a1a';X.beginPath();X.ellipse(o.x+o.w/2,o.y+8,o.w/2,9,0,0,7);X.fill();
+    X.fillStyle='#000';X.beginPath();X.ellipse(o.x+o.w/2,o.y+8,o.w/2-6,5,0,0,7);X.fill(); }
+  else if(o.type==='cart'){ X.fillStyle='#9aa4ad';X.fillRect(o.x,o.y+8,o.w,26);
+    X.fillStyle='#c0392b';X.fillRect(o.x+5,o.y,12,12);X.fillStyle='#27ae60';X.fillRect(o.x+20,o.y+2,14,10);
+    X.fillStyle='#333';X.beginPath();X.arc(o.x+9,o.y+40,6,0,7);X.arc(o.x+32,o.y+40,6,0,7);X.fill(); }
+  else if(o.type==='hay'){ X.fillStyle='#C9A227';X.beginPath();X.arc(o.x+o.w/2,o.y+o.h/2,o.h/2,0,7);X.fill();
+    X.strokeStyle='#8f7318';X.lineWidth=3;X.beginPath();X.arc(o.x+o.w/2,o.y+o.h/2,o.h/4,0,7);X.stroke(); }
+  else if(o.type==='leaves'){ const c=['#B85C2E','#C9873A','#8E6B2F','#A34428'];
+    for(let i=0;i<9;i++){X.fillStyle=c[i%4];X.fillRect(o.x+i*6,o.y+((i*3)%9),7,5);} }
+  else { X.fillStyle='#8d99a6';
+    for(let i=0;i<3;i++){ const bx=o.x+i*15, by=o.y+Math.sin(Date.now()/180+i)*6;
+      X.beginPath();X.ellipse(bx,by,8,5,0,0,7);X.fill(); X.fillStyle='#6c7885';X.fillRect(bx-3,by-6,6,4);X.fillStyle='#8d99a6'; } }
+}
+function drawEli(X,e){
+  const b=Math.sin(Date.now()/140)*3;
+  const shirt=e.variant===1?'#1F3A93':e.variant===0?'#5A3B1E':'#6E6E6E';
+  X.fillStyle=shirt;X.fillRect(e.x-15,e.y+b,30,46);
+  X.fillStyle='#6B4423';X.fillRect(e.x-10,e.y-16+b,20,17);
+  X.fillStyle='#222';X.fillRect(e.x-11,e.y-20+b,22,5);
+  X.fillStyle='#fff';X.fillRect(e.x-6,e.y-11+b,4,4);X.fillRect(e.x+2,e.y-11+b,4,4);
+  X.fillStyle='#000';X.fillRect(e.x-5,e.y-10+b,2,2);X.fillRect(e.x+3,e.y-10+b,2,2);
+  if(e.variant===1){ X.fillStyle='#E74C3C';X.beginPath();X.arc(e.x+24,e.y+10+b,11,0,7);X.fill();
+    X.fillStyle='#fff';X.font='bold 9px Outfit';X.fillText('STOP',e.x+13,e.y+13+b); }
+  X.fillStyle='#FF5252';X.font='bold 11px Outfit';X.fillText('COUSIN ELI',e.x-32,e.y-26+b);
+  if(e.shot){ X.fillStyle='#FFF3B0';X.fillRect(e.shot.x,e.shot.y,e.shot.w,e.shot.h);
+    X.strokeStyle='#c0392b';X.strokeRect(e.shot.x,e.shot.y,e.shot.w,e.shot.h);
+    X.fillStyle='#c0392b';X.font='9px Outfit';X.fillText('TKT',e.shot.x+2,e.shot.y+10); }
+}
+function drawHero(X,g){
+  const c=CHARS[rgSel];
+  if(tAura>0){ const gr=X.createRadialGradient(P.x+22,P.y-32,0,P.x+22,P.y-32,72);
+    gr.addColorStop(0,'rgba(130,255,225,.34)');gr.addColorStop(.6,'rgba(160,205,255,.14)');gr.addColorStop(1,'transparent');
+    X.fillStyle=gr;X.beginPath();X.arc(P.x+22,P.y-32,72,0,7);X.fill();
+    for(let i=0;i<6;i++){const a=(Date.now()/280+i*1.05)%6.28;
+      X.fillStyle='rgba(215,255,245,.9)';X.fillRect(P.x+22+Math.cos(a)*52,P.y-32+Math.sin(a)*46,4,4);} }
+  if(tShield>0){ X.strokeStyle=`rgba(255,215,0,${.5+Math.sin(Date.now()/90)*.3})`;X.lineWidth=3;
+    X.beginPath();X.arc(P.x+22,P.y-30,42,0,7);X.stroke(); }
+  if(iFr>0&&((Date.now()/70)|0)%2) return;
+  const fi=c.frames>1?(Math.floor(P.anim)%c.frames):0;
+  const im=IMG[`${c.key}_run${fi}`]||IMG[`${c.key}_run0`];
+  if(im){ const h=P.duck?46:66, w=im.width*(h/im.height);
+    if(tSpeed>0){ X.globalAlpha=.28; for(let i=1;i<4;i++) X.drawImage(im,P.x+22-w/2-i*13,P.y-h,w,h); X.globalAlpha=1; }
+    X.drawImage(im,P.x+22-w/2,P.y-h,w,h);
+  } else { X.fillStyle='#7B2635'; X.fillRect(P.x,P.y-60,44,60); }
+}
+
+/* ---------- bindings ---------- */
+document.addEventListener('keydown',e=>{
+  const pg=document.getElementById('pg-runner'); if(!pg||!pg.classList.contains('active'))return;
+  if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();rgJump();}
+  if(e.code==='ArrowDown'){e.preventDefault();rgDuck(true);}
+  if(e.code==='ShiftLeft'||e.code==='ShiftRight'){e.preventDefault();rgAura();}
+});
+document.addEventListener('keyup',e=>{ if(e.code==='ArrowDown') rgDuck(false); });
+
+/* ============ HOME PAGE PORTRAITS ============ */
+function drawHomeSprites(){
+  const map=[['mc-s',0],['mc-h',3],['mc-q',4],['mc-g',2],['mc-r',1],['mc-a',5],['mc-m',4],['mc-d',3]];
+  map.forEach(([id,ci])=>{
+    const cv=document.getElementById(id); if(!cv) return;
+    const x=cv.getContext('2d'); x.imageSmoothingEnabled=false; x.clearRect(0,0,48,48);
+    const c=CHARS[ci]; const im=IMG[`${c.key}_face`]||IMG[`${c.key}_run0`];
+    if(im){
+      const s=Math.max(48/im.width,48/im.height), w=im.width*s, h=im.height*s;
+      x.save(); x.beginPath(); x.arc(24,24,23,0,Math.PI*2); x.clip();
+      x.drawImage(im,(48-w)/2,(48-h)/2,w,h); x.restore();
+      x.strokeStyle='rgba(255,215,0,.55)'; x.lineWidth=2;
+      x.beginPath(); x.arc(24,24,23,0,Math.PI*2); x.stroke();
+    } else { x.fillStyle='rgba(255,215,0,.12)'; x.beginPath(); x.arc(24,24,22,0,Math.PI*2); x.fill(); }
+  });
+}
+const _rgRefreshBase = rgRefresh;
+rgRefresh = function(){ _rgRefreshBase(); drawHomeSprites(); };
+buildRoster(); drawHomeSprites();
+
+</script>
+</body>
+</html>
