@@ -148,15 +148,18 @@ const diffAt = t => Math.min(5, 1 + Math.floor(t/18));      // 1→5 across 90s
 
 /* ---------- chunk stitching ---------- */
 function pickChunk(t){
-  const d = diffAt(t);
+  const d = (isFinite(t) ? diffAt(t) : 1) || 1;
   // weight toward current tier, allow one below for breathing room
   let pool = CHUNKS.filter(c=>c.diff<=d && c.diff>=Math.max(1,d-1));
   if(!pool.length) pool = CHUNKS.filter(c=>c.diff<=d);
   if(lastChunk && pool.length>1) pool = pool.filter(c=>c.id!==lastChunk);
-  return pool[(Math.random()*pool.length)|0];
+  const pick = pool[(Math.random()*pool.length)|0];
+  return pick || CHUNKS[0];   // never undefined
 }
 function stitch(v,t){
-  const c = pickChunk(t); lastChunk = c.id;
+  const c = pickChunk(t) || CHUNKS[0];
+  if(!c) return;
+  lastChunk = c.id;
   const g = RG.H-RG.GROUND_OFF;
   const beatPx = v*RG.BEAT;                 // rhythm constant in time, scales in space
   const gapOK = Math.max(beatPx*2, minGap(v));   // never violate MinGap
@@ -248,7 +251,8 @@ function rgLoop(now){
 }
 function rgFrame(now){
   const dt=Math.min(2.2,(now-rgLast)/16.67); rgLast=now;
-  runT += dt/60;
+  runT += (isFinite(dt)?dt:1)/60;
+  if(!isFinite(runT)) runT = 0;
   const g=RG.H-RG.GROUND_OFF;
   const base=velAt(runT);
   const v=base*(tSpeed>0?1.4:1)*(tSlow>0?0.62:1);
