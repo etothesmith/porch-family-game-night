@@ -176,6 +176,23 @@ function stitch(v,t){
   cursorPx += c.beats*unit;
 }
 
+
+/* ---- canvas self-healing + visible diagnostics ---- */
+function acquireCanvas(){
+  const cv=document.getElementById('rg-canvas');
+  if(!cv) return false;
+  if(rgCv!==cv || !rgX){                       // node was replaced -> rebind
+    rgCv=cv; rgX=cv.getContext('2d');
+    if(!rgX) return false;
+    rgX.imageSmoothingEnabled=false;
+  }
+  return true;
+}
+function showErr(msg){
+  const el=document.getElementById('rg-err');
+  if(el){ el.style.display='block'; el.textContent='⚠ '+msg; }
+  console.error('[RaceToReunion]',msg);
+}
 /* ---------- lifecycle ---------- */
 function rgRefresh(){ if(document.getElementById('rg-roster')) buildRoster(); if(typeof drawHomeSprites==='function') drawHomeSprites(); }
 function buildRoster(){
@@ -197,7 +214,7 @@ function rgShowSelect(){
 }
 function rgStart(){
   initA();
-  rgCv=document.getElementById('rg-canvas'); rgX=rgCv.getContext('2d'); rgX.imageSmoothingEnabled=false;
+  if(!acquireCanvas()){ showErr('canvas not found'); return; }
   const g=RG.H-RG.GROUND_OFF;
   P={x:130,y:g,vy:0,onGround:true,duck:false,anim:0,coyote:0,buffer:0};
   clearPools(); deco=[]; trail=[];
@@ -227,6 +244,9 @@ function flash(m){ const e=document.getElementById('rg-flash'); if(!e)return; e.
 /* ---------- loop ---------- */
 function rgLoop(now){
   if(!rgOn) return;
+  try { return rgFrame(now); } catch(err){ showErr('frame: '+err.message); rgOn=false; }
+}
+function rgFrame(now){
   const dt=Math.min(2.2,(now-rgLast)/16.67); rgLast=now;
   runT += dt/60;
   const g=RG.H-RG.GROUND_OFF;
@@ -310,8 +330,9 @@ function rgLoop(now){
   if(ns!==stageIdx){ stageIdx=ns; flash('📍 '+STAGES[ns].name); sfxDing(); }
   if(dist>=RG.GOAL || runT>=RG.RUN_SECONDS+8) return finish(dist>=RG.GOAL);
 
-  hud();
-  try { draw(v); } catch(err){ console.error('draw() failed:',err); }
+  try { hud(); } catch(err){ showErr('hud: '+err.message); }
+  if(!acquireCanvas()){ showErr('canvas lost'); rgOn=false; return; }
+  try { draw(v); } catch(err){ showErr('draw: '+err.message); rgOn=false; return; }
   rgRaf=requestAnimationFrame(rgLoop);
 }
 
@@ -551,6 +572,8 @@ const RG_HTML = `
     <canvas id="rg-canvas" width="900" height="460"></canvas>
     <div id="rg-flash"></div>
   </div>
+  <div id="rg-err" style="display:none;background:#FEF2F2;border:1px solid #FCA5A5;color:#B91C1C;
+    font-size:11px;padding:7px 10px;border-radius:8px;margin-top:6px;font-family:monospace"></div>
   <div class="rg-ctrls">
     <button class="rg-btn amber" id="rg-jump" style="flex:2">⬆️ JUMP</button>
     <button class="rg-btn go" id="rg-duckb" style="flex:1">⬇️ DUCK</button>

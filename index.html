@@ -9,6 +9,23 @@
 </head>
 <body>
 <x-dc>
+<style id="pfw-shell">
+  #pfw-topbar{position:sticky;top:0;z-index:900;display:flex;align-items:center;gap:10px;
+    padding:10px 14px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
+    border-bottom:1px solid #eee;box-shadow:0 1px 8px rgba(0,0,0,.05);}
+  #pfw-topbar .pfw-back{width:34px;height:34px;border-radius:50%;background:#f3e8ff;border:none;
+    color:#7B2D8E;font-size:17px;cursor:pointer;flex-shrink:0;}
+  #pfw-topbar .pfw-title{font-family:'Fredoka',sans-serif;font-size:15px;color:#7B2D8E;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+  #pfw-topbar .pfw-home{background:none;border:none;color:#7B2D8E;font-size:19px;cursor:pointer;flex-shrink:0;}
+  /* the bar is sticky, not fixed, so it never overlaps content below it */
+</style>
+<div id="pfw-topbar">
+  <button class="pfw-back" onclick="pfwBack()" aria-label="Back">&#8592;</button>
+  <div class="pfw-title">Porch Family Weekend 2026</div>
+  <button class="pfw-home" onclick="pfwHome()" aria-label="Home">&#8962;</button>
+</div>
+
 <helmet>
 <link rel="stylesheet" href="ds-styles.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1273,6 +1290,60 @@ class Component extends DCLogic {
     };
   }
 }
+</script>
+
+<script>
+/* Phone back button: keep it inside the app instead of leaving the site.
+   Each in-app screen pushes a history entry; popstate walks back through
+   them and only lets the browser leave once we're already on Home.       */
+(function(){
+  var leaving = false;
+  function screenNow(){
+    var el = document.querySelector('[data-pfw-screen]');
+    return el ? el.getAttribute('data-pfw-screen') : 'home';
+  }
+  window.pfwBack = function(){ history.back(); };
+  window.pfwHome = function(){
+    var b = document.querySelector('[onClick*="nav.home"]');
+    if (b) b.click();
+  };
+  // seed two entries so there is always something to pop back into
+  history.replaceState({pfw:'home'}, '');
+  history.pushState({pfw:'app'}, '');
+
+  window.addEventListener('popstate', function(){
+    if (leaving) return;
+    // try to go to the app's home screen instead of unloading the page
+    var homeBtn = document.querySelector('[onClick*="nav.home"]');
+    if (homeBtn) {
+      homeBtn.click();
+      history.pushState({pfw:'app'}, '');   // re-arm so back works again
+    } else {
+      leaving = true;
+      history.back();
+    }
+  });
+
+  // Warn once, on first visit, that Back stays in the app
+  window.addEventListener('DOMContentLoaded', function(){
+    try{
+      if (localStorage.getItem('pfw_backnote')) return;
+      localStorage.setItem('pfw_backnote','1');
+      var n = document.createElement('div');
+      n.style.cssText = 'position:fixed;left:12px;right:12px;bottom:16px;z-index:2000;'+
+        'background:#7B2D8E;color:#fff;padding:13px 16px;border-radius:14px;'+
+        'font-family:Outfit,system-ui,sans-serif;font-size:13px;line-height:1.5;'+
+        'box-shadow:0 8px 30px rgba(0,0,0,.3)';
+      n.innerHTML = 'Heads up — your phone\u2019s <b>Back</b> button moves around inside this app, '+
+        'not back to your browser. Use it freely!'+
+        '<div style="text-align:right;margin-top:8px"><button style="background:#fff;color:#7B2D8E;'+
+        'border:none;padding:7px 16px;border-radius:999px;font-weight:700;cursor:pointer">Got it</button></div>';
+      n.querySelector('button').onclick = function(){ n.remove(); };
+      document.body.appendChild(n);
+      setTimeout(function(){ if(n.parentNode) n.remove(); }, 9000);
+    }catch(e){}
+  });
+})();
 </script>
 </body>
 </html>
