@@ -162,6 +162,23 @@ a, a:hover { color:#7B2D8E; }
       <div><div style="font-family:'Fredoka',sans-serif;font-size:26px;color:#7B2D8E">{{ countMins }}</div><div style="font-size:11px;color:#999">Min</div></div>
     </div>
     <div style="padding:24px 20px 0">
+
+      <!-- ANNOUNCEMENTS BANNER -->
+      <sc-if value="{{ hasAnnouncements }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:0 20px;margin-top:14px">
+          <sc-for list="{{ announcements }}" as="ann" hint-placeholder-count="1">
+            <div style="background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:8px;box-shadow:0 4px 16px rgba(123,45,142,0.18)">
+              <div style="display:flex;align-items:flex-start;gap:10px">
+                <div style="font-size:22px;flex-shrink:0">📢</div>
+                <div style="flex:1">
+                  <div style="font-size:14px;color:#fff;line-height:1.5;font-weight:500">{{ ann.text }}</div>
+                  <div style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:4px">{{ ann.time }}</div>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
       <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;margin:0 0 14px;color:#1a1a1a">This Weekend</h3>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div style="background:#fff;border-radius:var(--radius-lg);padding:20px 16px;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04)" style-hover="transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.08)" onClick="{{ nav.schedule }}">
@@ -901,6 +918,18 @@ a, a:hover { color:#7B2D8E; }
         <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><pf-icon name="arrow-left" size="18" color="#7B2D8E"></pf-icon></div>
         <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a;flex:1">Admin Panel</h2>
         <div style="font-size:11px;color:#7B2D8E;cursor:pointer;font-weight:600" onClick="{{ adminLogout }}">Sign Out</div>
+          <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#7B2D8E;margin-bottom:10px">📢 Post Announcement</div>
+            <div style="display:flex;gap:8px">
+              <input id="announce-input" placeholder="Type a message for everyone..." onKeyDown="{{ announceKeyDown }}"
+                style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:13px;font-family:Outfit,sans-serif">
+              <div style="padding:11px 18px;background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap" onClick="{{ postAnnouncement }}">Send</div>
+            </div>
+            <sc-if value="{{ hasAnnouncements }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:10px;font-size:11px;color:#999;cursor:pointer" onClick="{{ clearAnnouncements }}">Clear all announcements</div>
+            </sc-if>
+          </div>
+
       </div>
       <div style="display:flex;gap:6px;padding:0 20px 16px;overflow-x:auto">
         <sc-for list="{{ adminTabs }}" as="at" hint-placeholder-count="4">
@@ -1041,6 +1070,7 @@ class Component extends DCLogic {
     runnerState: 'idle', runnerScore: 0, runnerBest: parseInt(localStorage.getItem('pfw_runner_best')||'0'),
     runnerY: 0, runnerVY: 0, runnerObstacles: [], runnerCoins: [],
     dealMode: 'menu', photoIdx: 0, photoRevealed: false, photoOrder: [],
+    announcements:[], announceInput:'',
     players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
     doorPlan: [], doors: [], dealQ: [], dealQi: 0, dealRevealed: false, dealLastDoor: null, dealWins: 0, dealGags: 0,
     trivOrder: [], trivIdx: 0, trivRevealed: false, trivStreak: 0, trivBanked: 0, trivOffer: 0, trivPhase: 'ask',
@@ -1085,13 +1115,28 @@ class Component extends DCLogic {
     if (el) el.scrollTop = 0;
     this.setState({ screen: s });
   };
+  _postAnnouncement(){
+    const el=document.getElementById('announce-input');
+    const msg=el?el.value.trim():'';
+    if(!msg) return;
+    const a={text:msg, time:new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}), id:Date.now()};
+    const list=[a,...(this.state.announcements||[])].slice(0,20);
+    this.setState({announcements:list, announceInput:''});
+    this._persist('announcements', list);
+    if(el) el.value='';
+  }
+  _clearAnnouncements(){
+    this.setState({announcements:[]});
+    this._persist('announcements', []);
+  }
   _persist(key, data) {
     try { localStorage.setItem('pfw_'+key, JSON.stringify(data)); } catch(e) {}
     // mirror the same edit up to Firebase so everyone else sees it
     try {
       if (window.PorchLive && window.PorchLive.on) {
         const map = {schedule:'customSchedule', places:'customPlaces',
-                     contacts:'customContacts', quiz:'customQuiz'};
+                     contacts:'customContacts', quiz:'customQuiz',
+                     announcements:'announcements'};
         if (map[key]) window.PorchLive.push(map[key], data);
       }
     } catch(e) {}
@@ -1104,7 +1149,8 @@ class Component extends DCLogic {
     for(let a=n-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));const t=o[a];o[a]=o[b];o[b]=t;}
     return o;
   }
-  componentDidMount(){ window.__porchApp = this; if(this._mountedOrig) this._mountedOrig(); }
+  componentDidMount(){ window.__porchApp = this;
+    try{const a=localStorage.getItem('pfw_announcements');if(a)this.setState({announcements:JSON.parse(a)});}catch(e){} if(this._mountedOrig) this._mountedOrig(); }
   _getPlaces() { return this.state.customPlaces || this._places; }
   _getContacts() { return this.state.customContacts || this._contacts; }
   // Admin helpers
@@ -1695,6 +1741,14 @@ class Component extends DCLogic {
       runnerScene = React.createElement('div',{style:{position:'relative',width:'100%',height:'100%',overflow:'hidden',cursor:'pointer'},onClick:()=>this._jump()}, ...children);
     }
 
+    // ===== Announcements =====
+    const announcements = (s.announcements||[]).map(a=>({text:a.text,time:a.time,id:a.id}));
+    const hasAnnouncements = announcements.length > 0;
+    const noAnnouncements  = announcements.length === 0;
+    const postAnnouncement = () => this._postAnnouncement();
+    const clearAnnouncements = () => this._clearAnnouncements();
+    const announceKeyDown = (e) => { if(e.key==='Enter') this._postAnnouncement(); };
+
     // ===== Stage / wheel =====
     const wheelBg     = this._wheelSlices();
     const wheelStyle  = 'transform:rotate('+(s.wheelDeg||0)+'deg);background:'+(wheelBg||'#333')+';width:180px;height:180px;';
@@ -1931,6 +1985,9 @@ class Component extends DCLogic {
       runnerShowStart: s.runnerState==='idle', runnerShowOver: s.runnerState==='over',
       runnerFinalScore: s.runnerScore, runnerBest: s.runnerBest,
       runnerStart: () => this._startRunner(),
+      // Announcements
+      announcements, hasAnnouncements, noAnnouncements,
+      postAnnouncement, clearAnnouncements, announceKeyDown,
       // Stage / wheel
       wheelStyle, wheelMsg, stageClass, playersVal, spinWheel, setPlayers, bulbs, ladderRungs,
       // Porch of a Deal (doors)
