@@ -1707,33 +1707,7 @@ class Component extends DCLogic {
   }
 
   // SCHEDULE
-  _scheduleData = [
-    { day:'Fri Sep 4', events:[
-      {time:'3 PM',title:'Check-In & Welcome',desc:'Arrive at Drury Plaza, grab your welcome bag',location:'Hotel Lobby',color:'#7B2D8E'},
-      {time:'5 PM',title:'Ice Breaker Social',desc:'Mixer games to warm up the family',location:'Pool Area',color:'#A855F7'},
-      {time:'7 PM',title:'Welcome Dinner',desc:'Family-style buffet dinner',location:'Banquet Hall',color:'#F59E0B'}
-    ]},
-    { day:'Sat Sep 5', events:[
-      {time:'9 AM',title:'Family Breakfast',desc:'Hot breakfast buffet (free at Drury!)',location:'Breakfast Hall',color:'#16A34A'},
-      {time:'11 AM',title:'Lookout Mountain Trip',desc:'Visit Ruby Falls & Rock City',location:'Lookout Mountain',color:'#0EA5E9'},
-      {time:'3 PM',title:'Pool Party & Cookout',desc:'BBQ, music, and swimming',location:'Hotel Pool',color:'#F59E0B'},
-      {time:'7 PM',title:'Family Quiz Night',desc:'Test your Porch family knowledge!',location:'Meeting Room A',color:'#7B2D8E'},
-      {time:'9 PM',title:'Reoke Night',desc:'Karaoke battle — who has the best voice?',location:'Meeting Room A',color:'#EC4899'}
-    ]},
-    { day:'Sun Sep 6', events:[
-      {time:'9 AM',title:'Family Breakfast',desc:'Hot breakfast buffet',location:'Breakfast Hall',color:'#16A34A'},
-      {time:'10 AM',title:'Church Service',desc:'Family worship together',location:'TBD',color:'#7B2D8E'},
-      {time:'12 PM',title:'Brunch',desc:'Mid-day family feast',location:'Hotel',color:'#F59E0B'},
-      {time:'2 PM',title:'Tennessee Aquarium',desc:'Explore the freshwater & ocean exhibits',location:'Downtown Chattanooga',color:'#0EA5E9'},
-      {time:'6 PM',title:'Porch of a Deal',desc:'Game show night — win prizes!',location:'Meeting Room A',color:'#F97316'},
-      {time:'8 PM',title:'Family Talent Show',desc:'Show us what you got!',location:'Meeting Room A',color:'#EC4899'}
-    ]},
-    { day:'Mon Sep 7', events:[
-      {time:'9 AM',title:'Farewell Breakfast',desc:'Last meal together',location:'Breakfast Hall',color:'#16A34A'},
-      {time:'10 AM',title:'Family Photo',desc:'Official Porch Family portrait',location:'Hotel Courtyard',color:'#7B2D8E'},
-      {time:'11 AM',title:'Checkout & Goodbyes',desc:'See you next year!',location:'Hotel Lobby',color:'#A855F7'}
-    ]}
-  ];
+  _scheduleData = [{"day": "Friday, Sep 4", "events": [{"time": "5:30 PM", "title": "Evening Reception", "note": "Complimentary at Drury Inn for hotel guests", "loc": "Drury Plaza Hotel"}, {"time": "7:00 PM", "title": "Get Acquainted Fellowship", "note": "Dave & Buster's until 10:00 PM", "loc": "2100 Hamilton Place Blvd, Chattanooga, TN 37421"}]}, {"day": "Saturday, Sep 5", "events": [{"time": "7:00 AM", "title": "Breakfast at Hotel", "note": "For hotel guests, until 9:00 AM", "loc": "Drury Plaza Hotel"}, {"time": "9:00 AM", "title": "Leave for Aquarium", "note": "Bus provided to downtown Chattanooga", "loc": ""}, {"time": "10:00 AM", "title": "Chattanooga Aquarium", "note": "Downtown Chattanooga", "loc": ""}, {"time": "1:30 PM", "title": "Family Picnic", "note": "Until 4:00 PM", "loc": "Shepherd Community Center, 2124 Shepherd Rd, Chattanooga, TN 37421"}, {"time": "5:30 PM", "title": "Evening Reception", "note": "For hotel guests, until 7:00 PM", "loc": "Drury Plaza Hotel"}, {"time": "8:00 PM", "title": "Game Night: Let's Make a Deal + 80's Extravaganza", "note": "In the hospitality room", "loc": "Drury Plaza Hotel"}]}, {"day": "Sunday, Sep 6", "events": [{"time": "7:00 AM", "title": "Breakfast at Hotel", "note": "For hotel guests, until 10:00 AM", "loc": "Drury Plaza Hotel"}, {"time": "11:00 AM", "title": "Church Service", "note": "In the hospitality room", "loc": "Drury Plaza Hotel"}, {"time": "2:00 PM", "title": "Dinner at Greenway Farms", "note": "Map will be provided", "loc": "4960 Gann Store Rd, Hixson, TN 37343"}, {"time": "8:00 PM", "title": "Family Auction", "note": "In the hospitality room", "loc": "Drury Plaza Hotel"}]}, {"day": "Monday, Sep 7", "events": [{"time": "7:00 AM", "title": "Breakfast at Hotel", "note": "For hotel guests", "loc": "Drury Plaza Hotel"}, {"time": "12:00 PM", "title": "Checkout", "note": "Safe travels home!", "loc": "Drury Plaza Hotel"}]}];
 
   // HISTORY
   _historyData = [
@@ -2065,33 +2039,10 @@ class Component extends DCLogic {
   ];
 
   // PLACES
-  _places = [
-    {name:'Drury Plaza Hotel',address:'7301 Shallowford Rd, Chattanooga, TN',icon:'🏨',bg:'#f3e8ff',note:'Home base — free hot breakfast & evening kickback!'},
-    {name:'Lookout Mountain',address:'Lookout Mountain, TN/GA',icon:'⛰️',bg:'#DBEAFE',note:'Ruby Falls, Rock City & Incline Railway'},
-    {name:'Tennessee Aquarium',address:'1 Broad St, Chattanooga, TN',icon:'🐠',bg:'#D1FAE5',note:'Two buildings — River Journey & Ocean Journey'},
-    {name:'Coolidge Park',address:'150 River St, Chattanooga, TN',icon:'🎪',bg:'#FEF3C7',note:'Walking bridge, carousel & splash pad for kids'},
-    {name:'Chattanooga Choo Choo',address:'1400 Market St, Chattanooga, TN',icon:'🚂',bg:'#FFE4E6',note:'Historic train station, now entertainment district'}
-  ];
+  _places = [{"name": "Drury Plaza Hotel Hamilton Place", "address": "7301 Shallowford Rd, Chattanooga, TN 37421", "icon": "\ud83c\udfe8", "bg": "#f3e8ff", "note": "Home base for the weekend. Evening reception 5:30\u20137:00 PM for hotel guests."}, {"name": "Dave & Buster's", "address": "2100 Hamilton Place Blvd, Chattanooga, TN 37421", "icon": "\ud83c\udfae", "bg": "#FEF3C7", "note": "Friday Get Acquainted Fellowship, 7:00\u201310:00 PM."}, {"name": "Tennessee Aquarium", "address": "1 Broad St, Chattanooga, TN 37402", "icon": "\ud83d\udc20", "bg": "#E0F2FE", "note": "Saturday morning trip. Bus provided from the hotel."}, {"name": "Shepherd Community Center", "address": "2124 Shepherd Rd, Chattanooga, TN 37421", "icon": "\ud83c\udf33", "bg": "#F0FDF4", "note": "Saturday picnic, 1:30\u20134:00 PM."}, {"name": "Greenway Farms", "address": "4960 Gann Store Rd, Hixson, TN 37343", "icon": "\ud83c\udf7d\ufe0f", "bg": "#FEF2F2", "note": "Sunday dinner at 2:00 PM. Map will be provided."}];
 
   // MENU
-  _menuData = [
-    {day:'Friday',meals:[
-      {name:'🌅 Welcome Dinner',items:[{icon:'🍗',name:'Fried Chicken'},{icon:'🥬',name:'Collard Greens'},{icon:'🌽',name:'Cornbread'},{icon:'🥧',name:'Sweet Potato Pie'}]}
-    ]},
-    {day:'Saturday',meals:[
-      {name:'☀️ Breakfast',items:[{icon:'🥞',name:'Pancakes & Waffles'},{icon:'🥓',name:'Turkey Bacon & Sausage'},{icon:'🍳',name:'Scrambled Eggs'},{icon:'🍊',name:'Fresh Fruit & Juice'}]},
-      {name:'🔥 Cookout',items:[{icon:'🍔',name:'Burgers & Hot Dogs'},{icon:'🌭',name:'BBQ Ribs'},{icon:'🥗',name:'Potato Salad & Cole Slaw'},{icon:'🍉',name:'Watermelon'}]},
-      {name:'🌙 Snacks',items:[{icon:'🍿',name:'Popcorn & Candy'},{icon:'🥤',name:'Drinks & Punch'}]}
-    ]},
-    {day:'Sunday',meals:[
-      {name:'☀️ Breakfast',items:[{icon:'🍳',name:'Omelette Station'},{icon:'🥐',name:'Biscuits & Gravy'},{icon:'🧇',name:'Belgian Waffles'}]},
-      {name:'🍽️ Brunch',items:[{icon:'🍗',name:'Chicken & Waffles'},{icon:'🥘',name:'Shrimp & Grits'},{icon:'🥗',name:'Caesar Salad'},{icon:'🎂',name:'Reunion Cake'}]},
-      {name:'🌙 Light Bites',items:[{icon:'🥪',name:'Sandwich Platter'},{icon:'🧀',name:'Cheese & Crackers'}]}
-    ]},
-    {day:'Monday',meals:[
-      {name:'☀️ Farewell Breakfast',items:[{icon:'🥞',name:'Pancakes'},{icon:'🍳',name:'Eggs & Toast'},{icon:'☕',name:'Coffee & Tea'},{icon:'🍊',name:'Fresh Fruit'}]}
-    ]}
-  ];
+  _menuData = [{"day": "Friday, Sep 4", "meals": [{"name": "Evening Reception", "time": "5:30\u20137:00 PM", "items": ["Complimentary reception at Drury Inn for hotel guests"], "note": "Provided by the hotel"}]}, {"day": "Saturday, Sep 5", "meals": [{"name": "Hotel Breakfast", "time": "7:00\u20139:00 AM", "items": ["Complimentary at Drury Inn"], "note": "For hotel guests"}, {"name": "Family Picnic", "time": "1:30\u20134:00 PM", "items": ["Uncle James' Famous Fried Fish", "Pulled Pork", "Smoked Bologna", "Hamburgers & Hot Dogs", "Smoked Wings \u2014 Traditional, Lemon Pepper, Honey Garlic, BBQ", "Grilled Corn on the Cob", "Coleslaw", "Potato Salad", "Hobo Beans", "Buns & Hushpuppies", "Condiments", "Assorted Desserts", "Iced Tea, Lemonade, Capri Suns & Water"], "note": "Shepherd Community Center"}, {"name": "Evening Reception", "time": "5:30\u20137:00 PM", "items": ["Complimentary at Drury Inn"], "note": "For hotel guests"}]}, {"day": "Sunday, Sep 6", "meals": [{"name": "Hotel Breakfast", "time": "7:00\u201310:00 AM", "items": ["Complimentary at Drury Inn"], "note": "For hotel guests"}, {"name": "Dinner at Greenway Farms", "time": "2:00 PM", "items": ["Details to follow"], "note": "4960 Gann Store Rd, Hixson, TN 37343"}]}, {"day": "Monday, Sep 7", "meals": [{"name": "Hotel Breakfast", "time": "7:00 AM", "items": ["Complimentary at Drury Inn"], "note": "Safe travels!"}]}];
 
   // CONTACTS
   _contacts = [
@@ -2124,7 +2075,7 @@ class Component extends DCLogic {
     const navColors = {
       home: scr==='home'?active:inactive,
       schedule: scr==='schedule'?active:inactive,
-      games: ['games','deal','reoke','runner'].includes(scr)?active:inactive,
+      games: ['games','deal','reoke','runner','bingo','auction'].includes(scr)?active:inactive,
       contacts: scr==='contacts'?active:inactive
     };
 
@@ -2490,7 +2441,7 @@ class Component extends DCLogic {
 
     return {
       screenHome: scr==='home', screenSchedule: scr==='schedule', screenHistory: scr==='history',
-      screenQuiz: scr==='quiz', screenRunner: scr==='runner', screenGames: scr==='games',
+      screenQuiz: scr==='quiz', screenRunner: scr==='runner', screenBingo: scr==='bingo', screenAuction: scr==='auction', screenGames: scr==='games',
       screenDeal: scr==='deal', screenReoke: scr==='reoke', screenPlaces: scr==='places',
       screenMenu: scr==='menu', screenContacts: scr==='contacts', screenAdmin: scr==='admin',
       showBottomNav: !['runner','admin'].includes(scr),
