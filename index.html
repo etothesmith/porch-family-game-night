@@ -332,7 +332,7 @@ a, a:hover { color:#7B2D8E; }
             <div style="font-weight:700;font-size:15px;color:#1a1a1a">{{ ev.title }}</div>
             <div style="font-size:12px;color:#888;margin-top:4px">{{ ev.desc }}</div>
             <sc-if value="{{ ev.location }}" hint-placeholder-val="{{ true }}">
-              <div style="font-size:11px;color:#7B2D8E;margin-top:6px;display:flex;align-items:center;gap:4px"><pf-icon name="map-pin" size="12" color="#7B2D8E"></pf-icon> {{ ev.location }}</div>
+              <a href="{{ ev.mapUrl }}" target="_blank" rel="noopener" style="font-size:11px;color:#7B2D8E;margin-top:6px;display:flex;align-items:center;gap:4px;text-decoration:none"><pf-icon name="map-pin" size="12" color="#7B2D8E"></pf-icon> <span style="text-decoration:underline">{{ ev.location }}</span> <span style="font-size:9px;color:#bbb">↗</span></a>
             </sc-if>
           </div>
         </div>
@@ -428,10 +428,25 @@ a, a:hover { color:#7B2D8E; }
             <h3 style="font-family:'Fredoka',sans-serif;font-size:24px;color:#F5C542;margin:0 0 6px">PORCH FAMILY BINGO</h3>
             <p style="font-size:13px;color:rgba(255,255,255,0.6);margin:0">75 balls · Infinite cards · One winner</p>
           </div>
-          <div style="background:linear-gradient(135deg,#E53E3E,#C53030);border-radius:var(--radius-lg);padding:22px;cursor:pointer;margin-bottom:12px" onClick="{{ startBingoHost }}">
-            <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:0 0 4px">🎙️ I'm the Caller</h3>
-            <p style="font-size:12px;color:rgba(255,255,255,0.82);margin:0">Draw balls and call them out. You get a card too.</p>
-          </div>
+          <sc-if value="{{ hostVerified }}" hint-placeholder-val="{{ false }}">
+            <div style="background:linear-gradient(135deg,#E53E3E,#C53030);border-radius:var(--radius-lg);padding:22px;cursor:pointer;margin-bottom:12px" onClick="{{ startBingoHost }}">
+              <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:0 0 4px">🎙️ I'm the Caller</h3>
+              <p style="font-size:12px;color:rgba(255,255,255,0.82);margin:0">Draw balls and call them out. You get a card too.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hostNotVerified }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+              <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#E53E3E;margin-bottom:8px">🔒 Host: Enter password to be the Caller</div>
+              <div style="display:flex;gap:8px">
+                <input id="host-pass-input" type="password" placeholder="Host password" onKeyDown="{{ hostPassKey }}"
+                  style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:13px;font-family:Outfit,sans-serif">
+                <div style="padding:11px 16px;background:#E53E3E;border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ checkHostPass }}">Unlock</div>
+              </div>
+              <sc-if value="{{ hostPassError }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11px;color:#DC2626;margin-top:6px">Wrong password. Try again.</div>
+              </sc-if>
+            </div>
+          </sc-if>
           <div style="background:linear-gradient(135deg,#3182CE,#2B6CB0);border-radius:var(--radius-lg);padding:22px;cursor:pointer" onClick="{{ startBingoPlayer }}">
             <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:0 0 4px">🎴 I'm a Player</h3>
             <p style="font-size:12px;color:rgba(255,255,255,0.82);margin:0">Get a random card and mark your numbers.</p>
@@ -522,7 +537,22 @@ a, a:hover { color:#7B2D8E; }
               <b>5.</b> The host can add time if things get wild.
             </div>
           </div>
-          <div style="padding:16px;background:linear-gradient(135deg,#059669,#047857);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:17px;text-align:center;cursor:pointer;margin-top:14px;box-shadow:0 4px 16px rgba(5,150,105,0.32)" onClick="{{ startAuction }}">Start an Auction</div>
+          <sc-if value="{{ hostVerified }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:16px;background:linear-gradient(135deg,#059669,#047857);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:17px;text-align:center;cursor:pointer;margin-top:14px;box-shadow:0 4px 16px rgba(5,150,105,0.32)" onClick="{{ startAuction }}">Start an Auction</div>
+          </sc-if>
+          <sc-if value="{{ hostNotVerified }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;margin-top:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+              <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#059669;margin-bottom:8px">🔒 Host: Enter password to run the auction</div>
+              <div style="display:flex;gap:8px">
+                <input id="host-pass-input" type="password" placeholder="Host password" onKeyDown="{{ hostPassKey }}"
+                  style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:13px;font-family:Outfit,sans-serif">
+                <div style="padding:11px 16px;background:#059669;border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ checkHostPass }}">Unlock</div>
+              </div>
+              <sc-if value="{{ hostPassError }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11px;color:#DC2626;margin-top:6px">Wrong password. Try again.</div>
+              </sc-if>
+            </div>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -640,6 +670,23 @@ a, a:hover { color:#7B2D8E; }
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><span style="font-size:18px;color:#7B2D8E">←</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Game Night</h2>
     </div>
+      <!-- PLAYER NAME GATE -->
+      <sc-if value="{{ playerNotSet }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px;text-align:center">
+          <div style="font-size:42px;margin-bottom:10px">🎮</div>
+          <h3 style="font-family:'Fredoka',sans-serif;font-size:20px;color:#7B2D8E;margin:0 0 6px">Welcome to Game Night!</h3>
+          <p style="font-size:13px;color:#888;margin:0 0 18px">Enter your name to join the fun.</p>
+          <input id="player-name-input" placeholder="Your first name" onKeyDown="{{ playerNameKey }}"
+            style="width:100%;padding:14px 16px;border-radius:14px;border:2px solid #e5e5e5;font-size:16px;font-family:'Fredoka',sans-serif;text-align:center;box-sizing:border-box;margin-bottom:12px">
+          <div style="padding:15px;background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:17px;cursor:pointer" onClick="{{ setPlayerName }}">Let's Play!</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ playerNameSet }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:4px 20px 8px;display:flex;align-items:center;gap:8px">
+          <div style="font-size:13px;color:#999">Playing as</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7B2D8E;background:#f3e8ff;padding:4px 12px;border-radius:999px">{{ playerName }}</div>
+        </div>
+
     <div style="padding:0 20px;display:flex;flex-direction:column;gap:14px">
       <div style="background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:var(--radius-lg);padding:24px;cursor:pointer;transition:transform 0.2s" style-hover="transform:scale(1.02)" onClick="{{ nav.deal }}">
         <div style="margin-bottom:10px"><pf-icon name="star" size="32" color="#fff"></pf-icon></div>
@@ -668,6 +715,7 @@ a, a:hover { color:#7B2D8E; }
       </div>
     </div>
   </div>
+      </sc-if>
   </sc-if>
 
   <!-- DEAL GAME -->
@@ -684,23 +732,47 @@ a, a:hover { color:#7B2D8E; }
         <div style="padding:8px 0 20px">
           <p style="font-size:13px;color:#888;margin:0 0 16px;text-align:center">Three ways to play. Pick your round.</p>
 
-          <div style="background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:var(--radius-lg);padding:22px;cursor:pointer;margin-bottom:12px" onClick="{{ startDealSetup }}">
-            <div style="font-size:30px;margin-bottom:6px">&#128682;</div>
-            <h3 style="font-family:'Fredoka',sans-serif;font-size:19px;color:#fff;margin:0 0 4px">Porch of a Deal</h3>
-            <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Answer right, then pick a door. Prize or gag?</p>
-          </div>
+          <sc-if value="{{ hostVerified }}" hint-placeholder-val="{{ false }}">
+            <div style="background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:var(--radius-lg);padding:22px;cursor:pointer;margin-bottom:12px" onClick="{{ startDealSetup }}">
+              <div style="font-size:30px;margin-bottom:6px">&#128682;</div>
+              <h3 style="font-family:'Fredoka',sans-serif;font-size:19px;color:#fff;margin:0 0 4px">Porch of a Deal</h3>
+              <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Answer right, then pick a door. Prize or gag?</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hostNotVerified }}" hint-placeholder-val="{{ true }}">
+            <div style="background:rgba(245,158,11,0.08);border-radius:var(--radius-lg);padding:18px;margin-bottom:12px">
+              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#D97706;margin-bottom:2px">🚪 Porch of a Deal</div>
+              <div style="font-size:12px;color:#999">Host-only — enter password above to unlock</div>
+            </div>
+          </sc-if>
 
-          <div style="background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:var(--radius-lg);padding:22px;cursor:pointer;margin-bottom:12px" onClick="{{ goBankerRules }}">
-            <div style="font-size:30px;margin-bottom:6px">&#9742;</div>
-            <h3 style="font-family:'Fredoka',sans-serif;font-size:19px;color:#fff;margin:0 0 4px">The Porch Banker</h3>
-            <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Build a pot. Take the deal, or risk it all.</p>
-          </div>
+          <sc-if value="{{ hostVerified }}" hint-placeholder-val="{{ false }}">
+            <div style="background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:var(--radius-lg);padding:22px;cursor:pointer;margin-bottom:12px" onClick="{{ goBankerRules }}">
+              <div style="font-size:30px;margin-bottom:6px">&#9742;</div>
+              <h3 style="font-family:'Fredoka',sans-serif;font-size:19px;color:#fff;margin:0 0 4px">The Porch Banker</h3>
+              <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Build a pot. Take the deal, or risk it all.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hostNotVerified }}" hint-placeholder-val="{{ true }}">
+            <div style="background:rgba(14,165,233,0.08);border-radius:var(--radius-lg);padding:18px;margin-bottom:12px">
+              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#0369A1;margin-bottom:2px">☎️ The Porch Banker</div>
+              <div style="font-size:12px;color:#999">Host-only — enter password above to unlock</div>
+            </div>
+          </sc-if>
 
-          <div style="background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:var(--radius-lg);padding:22px;cursor:pointer" onClick="{{ startPhotoTrivia }}">
-            <div style="font-size:30px;margin-bottom:6px">&#128444;</div>
-            <h3 style="font-family:'Fredoka',sans-serif;font-size:19px;color:#fff;margin:0 0 4px">Photo Trivia</h3>
-            <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Family photos — host reveals the answer.</p>
-          </div>
+          <sc-if value="{{ hostVerified }}" hint-placeholder-val="{{ false }}">
+            <div style="background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:var(--radius-lg);padding:22px;cursor:pointer" onClick="{{ startPhotoTrivia }}">
+              <div style="font-size:30px;margin-bottom:6px">&#128444;</div>
+              <h3 style="font-family:'Fredoka',sans-serif;font-size:19px;color:#fff;margin:0 0 4px">Photo Trivia</h3>
+              <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Family photos — host reveals the answer.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hostNotVerified }}" hint-placeholder-val="{{ true }}">
+            <div style="background:rgba(123,45,142,0.08);border-radius:var(--radius-lg);padding:18px">
+              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#7B2D8E;margin-bottom:2px">🖼️ Photo Trivia</div>
+              <div style="font-size:12px;color:#999">Host-only — enter password above to unlock</div>
+            </div>
+          </sc-if>
 
 
         </div>
@@ -1132,7 +1204,7 @@ a, a:hover { color:#7B2D8E; }
             <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:{{ pl.bg }};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">{{ pl.icon }}</div>
             <div style="flex:1">
               <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:#1a1a1a;margin-bottom:2px">{{ pl.name }}</div>
-              <div style="font-size:12px;color:#888;margin-bottom:6px">{{ pl.address }}</div>
+              <a href="{{ pl.mapUrl }}" target="_blank" rel="noopener" style="font-size:12px;color:#7B2D8E;margin-bottom:6px;display:block;text-decoration:none"><span style="text-decoration:underline">{{ pl.address }}</span> <span style="font-size:10px">📍 Open Map</span></a>
               <div style="font-size:12px;color:#7B2D8E">{{ pl.note }}</div>
             </div>
           </div>
@@ -1376,6 +1448,7 @@ class Component extends DCLogic {
     runnerY: 0, runnerVY: 0, runnerObstacles: [], runnerCoins: [],
     dealMode: 'menu', photoIdx: 0, photoRevealed: false, photoOrder: [],
     announcements:[], announceInput:'',
+    playerName: '', playerNameSet: false, hostVerified: false, hostPassError: false,
     auctionMode:null, auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
     bingoMode:null, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoWon:false, bingoPattern:'line',
     players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
@@ -1438,9 +1511,36 @@ class Component extends DCLogic {
   }
 
 
+  // ===== PLAYER NAME GATE =====
+  _setPlayerName(){
+    const el = document.getElementById('player-name-input');
+    const n = el ? el.value.trim() : '';
+    if(!n) return;
+    this.setState({playerName: n, playerNameSet: true});
+    try{ localStorage.setItem('pfw_playerName', n); }catch(e){}
+  }
+  _loadPlayerName(){
+    try{
+      const n = localStorage.getItem('pfw_playerName');
+      if(n) this.setState({playerName: n, playerNameSet: true});
+    }catch(e){}
+  }
+
+  // ===== HOST PASSWORD GATE =====
+  _checkHostPass(){
+    const el = document.getElementById('host-pass-input');
+    const p = el ? el.value.trim() : '';
+    if(p === 'porchgamenight' || p === 'porchfamilyweekend'){
+      this.setState({hostVerified: true});
+      return true;
+    }
+    this.setState({hostPassError: true});
+    return false;
+  }
+
   // ===== PORCH AUCTION — live bidding from every phone =====
   _auctionPresets = [1, 5, 10, 25, 50, 100];
-  _startAuction(){ this.setState({auctionMode:'setup', auctionItem:'', auctionImg:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:''}); }
+  _startAuction(){ this.setState({auctionMode:'setup', auctionBidderName: this.state.playerName, auctionItem:'', auctionImg:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:''}); }
   _launchAuction(){
     const item = this.state.auctionItem.trim();
     if(!item) return;
@@ -1598,7 +1698,7 @@ class Component extends DCLogic {
     for(let a=n-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));const t=o[a];o[a]=o[b];o[b]=t;}
     return o;
   }
-  componentDidMount(){ window.__porchApp = this;
+  componentDidMount(){ window.__porchApp = this; this._loadPlayerName();
     try{const a=localStorage.getItem('pfw_announcements');if(a)this.setState({announcements:JSON.parse(a)});}catch(e){} if(this._mountedOrig) this._mountedOrig(); }
   _getPlaces() { return this.state.customPlaces || this._places; }
   _getContacts() { return this.state.customContacts || this._contacts; }
@@ -2141,6 +2241,18 @@ class Component extends DCLogic {
       runnerScene = React.createElement('div',{style:{position:'relative',width:'100%',height:'100%',overflow:'hidden',cursor:'pointer'},onClick:()=>this._jump()}, ...children);
     }
 
+    // ===== Player name gate =====
+    const playerName      = s.playerName;
+    const playerNameSet   = s.playerNameSet;
+    const playerNotSet    = !s.playerNameSet;
+    const setPlayerName   = () => this._setPlayerName();
+    const playerNameKey   = (e) => { if(e.key==='Enter') this._setPlayerName(); };
+    const hostVerified    = s.hostVerified;
+    const hostNotVerified = !s.hostVerified;
+    const checkHostPass   = () => this._checkHostPass();
+    const hostPassError   = s.hostPassError;
+    const hostPassKey     = (e) => { if(e.key==='Enter') this._checkHostPass(); };
+
     // ===== Auction =====
     const aucSetup  = s.auctionMode==='setup';
     const aucLive   = s.auctionMode==='live';
@@ -2401,7 +2513,7 @@ class Component extends DCLogic {
       onClick: () => this.setState({adminSchedDay:i})
     }));
     const adminSchedEvents = (adminSchedData[s.adminSchedDay]||{events:[]}).events.map((ev,i) => ({
-      ...ev, onEdit: () => this._adminOpenModal('event',i,{time:ev.time,title:ev.title,desc:ev.desc,location:ev.location}),
+      ...ev, mapUrl: ev.location ? 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(ev.location) : '', onEdit: () => this._adminOpenModal('event',i,{time:ev.time,title:ev.title,desc:ev.desc,location:ev.location}),
       onDelete: () => this._adminDeleteEvent(s.adminSchedDay,i)
     }));
     const adminQuizData = this._getQuiz();
@@ -2412,7 +2524,7 @@ class Component extends DCLogic {
     }));
     const adminPlacesData = this._getPlaces();
     const adminPlaceItems = adminPlacesData.map((p,i) => ({
-      ...p, onEdit: () => this._adminOpenModal('place',i,{name:p.name,address:p.address,note:p.note}),
+      ...p, mapUrl: p.address ? 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.address) : '', onEdit: () => this._adminOpenModal('place',i,{name:p.name,address:p.address,note:p.note}),
       onDelete: () => this._adminDeletePlace(i)
     }));
     const adminContactsData = this._getContacts();
@@ -2464,6 +2576,9 @@ class Component extends DCLogic {
       runnerShowStart: s.runnerState==='idle', runnerShowOver: s.runnerState==='over',
       runnerFinalScore: s.runnerScore, runnerBest: s.runnerBest,
       runnerStart: () => this._startRunner(),
+      // Player / host gates
+      playerName, playerNameSet, playerNotSet, setPlayerName, playerNameKey,
+      hostVerified, hostNotVerified, checkHostPass, hostPassError, hostPassKey,
       // Auction
       aucSetup, aucLive, aucOff, aucItem, aucTimer, aucTimerColor, aucTimerPulse,
       aucRunning, aucSold, aucNotSold, aucTopBid, aucTopBidder, aucBidHistory, aucPresets,
