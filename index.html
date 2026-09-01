@@ -98,6 +98,33 @@
   .gs-title{font-size:20px}
 }
 
+
+/* ===== BINGO ===== */
+@keyframes ballDrop{0%{transform:translateY(-180px) scale(0.3);opacity:0}40%{transform:translateY(20px) scale(1.1);opacity:1}55%{transform:translateY(-18px) scale(0.95)}70%{transform:translateY(6px) scale(1.03)}85%{transform:translateY(-3px)}100%{transform:translateY(0) scale(1)}}
+@keyframes ballGlow{0%{box-shadow:0 0 20px rgba(255,215,0,0.4)}50%{box-shadow:0 0 60px rgba(255,215,0,0.85),0 0 120px rgba(255,180,0,0.3)}100%{box-shadow:0 0 20px rgba(255,215,0,0.4)}}
+@keyframes bingoWin{0%{transform:scale(1)}25%{transform:scale(1.08) rotate(-2deg)}50%{transform:scale(0.96) rotate(2deg)}75%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.bingo-ball{width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,0.35),inset 0 -6px 16px rgba(0,0,0,0.25),inset 0 6px 16px rgba(255,255,255,0.35);
+  position:relative;overflow:hidden;}
+.bingo-ball::before{content:'';position:absolute;top:8px;left:22px;width:36px;height:22px;
+  background:rgba(255,255,255,0.45);border-radius:50%;transform:rotate(-28deg);filter:blur(3px);}
+.bingo-ball.drop{animation:ballDrop 1.6s cubic-bezier(.34,1.56,.64,1) forwards, ballGlow 2s ease-in-out 1.6s infinite;}
+.bingo-card{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:340px;margin:0 auto;}
+.bingo-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  border-radius:8px;font-family:'Fredoka',sans-serif;font-size:16px;font-weight:700;
+  cursor:pointer;transition:all 0.25s;-webkit-tap-highlight-color:transparent;
+  border:2px solid;}
+.bingo-cell.marked{transform:scale(0.92);box-shadow:inset 0 2px 8px rgba(0,0,0,0.2);}
+.bingo-header{font-family:'Fredoka',sans-serif;font-size:18px;font-weight:800;text-align:center;
+  padding:6px;border-radius:8px;color:#fff;}
+.bingo-history{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:10px;}
+.bingo-chip{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:9.5px;font-weight:800;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.2);font-family:'Fredoka',sans-serif;}
+.bingo-win{animation:bingoWin 0.6s ease-in-out;background:linear-gradient(90deg,#FFD700,#FFA500,#FFD700,#FFA500);
+  background-size:200% 100%;animation:shimmer 2s linear infinite;-webkit-background-clip:text;color:transparent;
+  font-family:'Fredoka',sans-serif;font-size:42px;font-weight:800;text-align:center;}
+
 </style>
 <div id="pfw-topbar">
   <button class="pfw-back" onclick="pfwBack()" aria-label="Back">&#8592;</button>
@@ -330,6 +357,87 @@ a, a:hover { color:#7B2D8E; }
   </sc-if>
 
   <!-- RUNNER GAME -->
+
+<!-- ===================== BINGO ===================== -->
+<sc-if value="{{ screenBingo }}" hint-placeholder-val="{{ false }}">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+    <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#7B2D8E">&#8592;</span></div>
+      <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Porch Family Bingo</h2>
+    </div>
+    <div style="padding:0 16px">
+      <sc-if value="{{ bingoMenuOn }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:14px 0 20px">
+          <div style="background:linear-gradient(135deg,#1E293B,#0F172A);border-radius:var(--radius-lg);padding:30px 20px;text-align:center;margin-bottom:14px">
+            <div style="font-size:48px;margin-bottom:6px">🎱</div>
+            <h3 style="font-family:'Fredoka',sans-serif;font-size:24px;color:#F5C542;margin:0 0 6px">PORCH FAMILY BINGO</h3>
+            <p style="font-size:13px;color:rgba(255,255,255,0.6);margin:0">75 balls · Infinite cards · One winner</p>
+          </div>
+          <div style="background:linear-gradient(135deg,#E53E3E,#C53030);border-radius:var(--radius-lg);padding:22px;cursor:pointer;margin-bottom:12px" onClick="{{ startBingoHost }}">
+            <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:0 0 4px">🎙️ I'm the Caller</h3>
+            <p style="font-size:12px;color:rgba(255,255,255,0.82);margin:0">Draw balls and call them out. You get a card too.</p>
+          </div>
+          <div style="background:linear-gradient(135deg,#3182CE,#2B6CB0);border-radius:var(--radius-lg);padding:22px;cursor:pointer" onClick="{{ startBingoPlayer }}">
+            <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:0 0 4px">🎴 I'm a Player</h3>
+            <p style="font-size:12px;color:rgba(255,255,255,0.82);margin:0">Get a random card and mark your numbers.</p>
+          </div>
+          <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;margin-top:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+            <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7B2D8E;margin-bottom:6px">How to play</div>
+            <div style="font-size:12.5px;color:#666;line-height:1.9"><b>1.</b> One person is the Caller — they draw balls.<br><b>2.</b> Everyone else taps "I'm a Player" for a unique card.<br><b>3.</b> Tap squares to mark them as numbers are called.<br><b>4.</b> First to complete a line, column, diagonal, or four corners — shout <b>BINGO!</b><br><b>5.</b> Tap "Call Bingo" to verify.</div>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ bingoHostOn }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:4px 0 20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div style="font-size:12px;color:#999;font-weight:700">{{ bingoDrawCount }}</div>
+            <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ bingoMenu }}">Exit</div>
+          </div>
+          <div style="background:linear-gradient(180deg,#1E293B,#0F172A);border-radius:var(--radius-lg);padding:30px 16px;text-align:center;margin-bottom:14px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden">
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(245,197,66,0.08),transparent 70%)"></div>
+            <sc-if value="{{ bingoAnimate }}" hint-placeholder-val="{{ false }}">
+              <div class="bingo-ball drop" style="background:radial-gradient(circle at 38% 35%,{{ bingoBallColor }},color-mix(in srgb,{{ bingoBallColor }},#000 40%))">
+                <div style="font-size:14px;font-weight:800;color:rgba(255,255,255,0.9);letter-spacing:2px">{{ bingoBallLetter }}</div>
+                <div style="font-size:38px;font-weight:900;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,0.3)">{{ bingoBallNum }}</div>
+              </div>
+            </sc-if>
+            <div style="padding:16px 32px;background:linear-gradient(135deg,#F5C542,#E0A008);border-radius:999px;color:#1a1a1a;font-family:'Fredoka',sans-serif;font-size:18px;cursor:pointer;margin-top:14px;box-shadow:0 6px 20px rgba(245,197,66,0.4);position:relative;z-index:2" onClick="{{ drawBall }}">DRAW BALL</div>
+          </div>
+          <div class="bingo-history">
+            <sc-for list="{{ bingoHistory }}" as="bh" hint-placeholder-count="0"><div class="bingo-chip" style="background:{{ bh.bg }}">{{ bh.text }}</div></sc-for>
+          </div>
+          <div style="margin-top:18px">
+            <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7B2D8E;text-align:center;margin-bottom:8px">Your Card</div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:300px;margin:0 auto 4px"><div class="bingo-header" style="background:#E53E3E">B</div><div class="bingo-header" style="background:#3182CE">I</div><div class="bingo-header" style="background:#38A169">N</div><div class="bingo-header" style="background:#D69E2E">G</div><div class="bingo-header" style="background:#805AD5">O</div></div>
+            <div class="bingo-card" style="max-width:300px"><sc-for list="{{ bingoCardCells }}" as="bc" hint-placeholder-count="25"><div class="bingo-cell" style="background:{{ bc.bg }};color:{{ bc.fg }};border-color:{{ bc.border }}" onClick="{{ bc.onClick }}">{{ bc.num }}</div></sc-for></div>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+              <div style="padding:12px 22px;background:linear-gradient(135deg,#38A169,#276749);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer" onClick="{{ callBingo }}">Call BINGO!</div>
+              <div style="padding:12px 22px;background:#f3e8ff;border-radius:999px;color:#7B2D8E;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ newCard }}">New Card</div>
+            </div>
+            <sc-if value="{{ bingoWon }}" hint-placeholder-val="{{ false }}"><div class="bingo-win" style="margin-top:14px">🎉 B I N G O ! 🎉</div></sc-if>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ bingoPlayerOn }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:4px 0 20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#3182CE">Your Bingo Card</div>
+            <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ bingoMenu }}">Exit</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:340px;margin:0 auto 4px"><div class="bingo-header" style="background:#E53E3E">B</div><div class="bingo-header" style="background:#3182CE">I</div><div class="bingo-header" style="background:#38A169">N</div><div class="bingo-header" style="background:#D69E2E">G</div><div class="bingo-header" style="background:#805AD5">O</div></div>
+          <div class="bingo-card"><sc-for list="{{ bingoCardCells }}" as="pc" hint-placeholder-count="25"><div class="bingo-cell" style="background:{{ pc.bg }};color:{{ pc.fg }};border-color:{{ pc.border }}" onClick="{{ pc.onClick }}">{{ pc.num }}</div></sc-for></div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">
+            <div style="padding:13px 26px;background:linear-gradient(135deg,#38A169,#276749);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer" onClick="{{ callBingo }}">Call BINGO!</div>
+            <div style="padding:13px 20px;background:#f3e8ff;border-radius:999px;color:#7B2D8E;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ newCard }}">New Card</div>
+          </div>
+          <sc-if value="{{ bingoWon }}" hint-placeholder-val="{{ false }}"><div class="bingo-win" style="margin-top:16px">🎉 B I N G O ! 🎉</div></sc-if>
+          <p style="font-size:12px;color:#999;text-align:center;margin-top:12px">Tap squares to mark them as the caller announces numbers.</p>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
   <sc-if value="{{ screenRunner }}" hint-placeholder-val="{{ false }}">
   <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
     <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
@@ -398,6 +506,18 @@ a, a:hover { color:#7B2D8E; }
             <h3 style="font-family:'Fredoka',sans-serif;font-size:19px;color:#fff;margin:0 0 4px">Photo Trivia</h3>
             <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Family photos — host reveals the answer.</p>
           </div>
+
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:20px 16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04)" onClick="{{ nav.bingo }}">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:46px;height:46px;border-radius:var(--radius-md);background:linear-gradient(135deg,#E53E3E,#D69E2E);display:flex;align-items:center;justify-content:center">
+              <div style="font-size:22px">🎱</div>
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px;color:#1a1a1a">Porch Family Bingo</div>
+              <div style="font-size:12px;color:#999">75-ball bingo with dramatic draws</div>
+            </div>
+          </div>
+        </div>
         </div>
       </sc-if>
 
@@ -1071,6 +1191,7 @@ class Component extends DCLogic {
     runnerY: 0, runnerVY: 0, runnerObstacles: [], runnerCoins: [],
     dealMode: 'menu', photoIdx: 0, photoRevealed: false, photoOrder: [],
     announcements:[], announceInput:'',
+    bingoMode:null, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoWon:false, bingoPattern:'line',
     players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
     doorPlan: [], doors: [], dealQ: [], dealQi: 0, dealRevealed: false, dealLastDoor: null, dealWins: 0, dealGags: 0,
     trivOrder: [], trivIdx: 0, trivRevealed: false, trivStreak: 0, trivBanked: 0, trivOffer: 0, trivPhase: 'ask',
@@ -1129,6 +1250,93 @@ class Component extends DCLogic {
     this.setState({announcements:[]});
     this._persist('announcements', []);
   }
+
+  // ===== PORCH FAMILY BINGO =====
+  _bingoLetters = ['B','I','N','G','O'];
+  _bingoRanges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
+
+  _genCard(){
+    const card=[];
+    this._bingoRanges.forEach(([lo,hi],c)=>{
+      const pool=[];for(let n=lo;n<=hi;n++)pool.push(n);
+      for(let a=pool.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[pool[a],pool[b]]=[pool[b],pool[a]];}
+      card.push(pool.slice(0,5));
+    });
+    return card; // card[col][row], card[2][2] = free space
+  }
+  _startBingo(isHost){
+    const allBalls=[];
+    this._bingoRanges.forEach(([lo,hi],c)=>{for(let n=lo;n<=hi;n++) allBalls.push({letter:this._bingoLetters[c],num:n});});
+    for(let a=allBalls.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[allBalls[a],allBalls[b]]=[allBalls[b],allBalls[a]];}
+    const card=this._genCard();
+    this.setState({
+      bingoMode: isHost?'host':'player',
+      bingoCard: card,
+      bingoMarked: card.map((col,c)=>col.map((_,r)=>c===2&&r===2)),
+      bingoBalls: allBalls,
+      bingoDrawn: [],
+      bingoIdx: -1,
+      bingoCurrent: null,
+      bingoAnimating: false,
+      bingoWon: false,
+      bingoPattern: 'line'
+    });
+  }
+  _drawBall(){
+    if(this.state.bingoAnimating) return;
+    const idx=this.state.bingoIdx+1;
+    if(idx>=this.state.bingoBalls.length) return;
+    const ball=this.state.bingoBalls[idx];
+    this.setState({bingoAnimating:true, bingoIdx:idx, bingoCurrent:ball});
+    // auto-mark on card
+    setTimeout(()=>{
+      const marked=this.state.bingoMarked.map(c=>[...c]);
+      const card=this.state.bingoCard;
+      for(let c=0;c<5;c++) for(let r=0;r<5;r++) if(card[c][r]===ball.num) marked[c][r]=true;
+      const drawn=[...this.state.bingoDrawn, ball];
+      // persist to Firebase so player devices see it
+      this._persist('bingoState', {drawn:drawn, idx:idx});
+      this.setState({bingoMarked:marked, bingoDrawn:drawn, bingoAnimating:false});
+    }, 2200);
+  }
+  _toggleMark(c,r){
+    if(c===2&&r===2) return; // free space
+    const marked=this.state.bingoMarked.map(col=>[...col]);
+    marked[c][r]=!marked[c][r];
+    this.setState({bingoMarked:marked});
+  }
+  _checkBingo(){
+    const m=this.state.bingoMarked;
+    // rows
+    for(let r=0;r<5;r++){let w=true;for(let c=0;c<5;c++) if(!m[c][r])w=false; if(w) return true;}
+    // columns
+    for(let c=0;c<5;c++){let w=true;for(let r=0;r<5;r++) if(!m[c][r])w=false; if(w) return true;}
+    // diagonals
+    let d1=true,d2=true;for(let i=0;i<5;i++){if(!m[i][i])d1=false;if(!m[i][4-i])d2=false;}
+    if(d1||d2) return true;
+    // four corners
+    if(m[0][0]&&m[4][0]&&m[0][4]&&m[4][4]) return true;
+    // full card (blackout)
+    let all=true;for(let c=0;c<5;c++)for(let r=0;r<5;r++)if(!m[c][r])all=false;
+    return all;
+  }
+  _callBingo(){
+    if(this._checkBingo()){
+      this.setState({bingoWon:true});
+    } else {
+      this.setState({bingoWon:false});
+    }
+  }
+  _newCard(){
+    const card=this._genCard();
+    this.setState({
+      bingoCard:card,
+      bingoMarked:card.map((col,c)=>col.map((_,r)=>c===2&&r===2)),
+      bingoWon:false
+    });
+  }
+  _bingoMenu(){ this.setState({bingoMode:null}); }
+
   _persist(key, data) {
     try { localStorage.setItem('pfw_'+key, JSON.stringify(data)); } catch(e) {}
     // mirror the same edit up to Firebase so everyone else sees it
@@ -1136,7 +1344,8 @@ class Component extends DCLogic {
       if (window.PorchLive && window.PorchLive.on) {
         const map = {schedule:'customSchedule', places:'customPlaces',
                      contacts:'customContacts', quiz:'customQuiz',
-                     announcements:'announcements'};
+                     announcements:'announcements',
+                     bingoState:'bingoState'};
         if (map[key]) window.PorchLive.push(map[key], data);
       }
     } catch(e) {}
@@ -1666,7 +1875,7 @@ class Component extends DCLogic {
     const nav = {
       home: mkNav('home'), schedule: mkNav('schedule'), history: mkNav('history'),
       quiz: () => { this.setState({quizIdx:0,quizScore:0,quizSelected:null,quizFinished:false,quizOrder:this._shuffleQuiz()}); this._go('quiz'); },
-      runner: mkNav('runner'), games: mkNav('games'),
+      runner: mkNav('runner'), bingo: mkNav('bingo'), games: mkNav('games'),
       deal: () => { this._initDeal(); this.setState({dealMode:'menu', photoRevealed:false}); this._go('deal'); },
       reoke: mkNav('reoke'), places: mkNav('places'), menu: mkNav('menu'), contacts: mkNav('contacts'),
       admin: () => this._go('admin')
@@ -1740,6 +1949,49 @@ class Component extends DCLogic {
       children.push(React.createElement('div',{key:'c2',style:{position:'absolute',top:'40px',left:'60%',opacity:0.4},dangerouslySetInnerHTML:{__html:'<pf-sprite name="cloud" size="22"></pf-sprite>'}}));
       runnerScene = React.createElement('div',{style:{position:'relative',width:'100%',height:'100%',overflow:'hidden',cursor:'pointer'},onClick:()=>this._jump()}, ...children);
     }
+
+    // ===== Bingo =====
+    const bingoMenuOn   = !s.bingoMode;
+    const bingoHostOn   = s.bingoMode==='host';
+    const bingoPlayerOn = s.bingoMode==='player';
+    const bingoAnimate  = s.bingoAnimating;
+    const bingoBall     = s.bingoCurrent;
+    const bingoBallLetter = bingoBall ? bingoBall.letter : '';
+    const bingoBallNum    = bingoBall ? String(bingoBall.num) : '';
+    const bingoBallFull   = bingoBall ? (bingoBall.letter+bingoBall.num) : '';
+    const ballColors = {B:'#E53E3E',I:'#3182CE',N:'#38A169',G:'#D69E2E',O:'#805AD5'};
+    const bingoBallColor = bingoBall ? (ballColors[bingoBall.letter]||'#7B2D8E') : '#7B2D8E';
+    const bingoDrawCount = (s.bingoDrawn||[]).length + ' / 75';
+    const bingoHistory = (s.bingoDrawn||[]).slice().reverse().map(b=>({
+      text: b.letter+b.num,
+      bg: ballColors[b.letter]||'#7B2D8E'
+    }));
+    const bingoCardCells = [];
+    if(s.bingoCard && s.bingoCard.length===5){
+      for(let r=0;r<5;r++){
+        for(let c=0;c<5;c++){
+          const free = c===2&&r===2;
+          const num = free ? '★' : String(s.bingoCard[c][r]);
+          const marked = s.bingoMarked && s.bingoMarked[c] && s.bingoMarked[c][r];
+          const col = this._bingoLetters[c];
+          bingoCardCells.push({
+            num, marked, free, col,
+            bg: marked ? (ballColors[col]||'#7B2D8E') : '#fff',
+            fg: marked ? '#fff' : '#1a1a1a',
+            border: marked ? 'transparent' : '#e5e5e5',
+            onClick: ()=> free ? null : this._toggleMark(c,r)
+          });
+        }
+      }
+    }
+    const bingoWon = s.bingoWon;
+    const bingoNotWon = !s.bingoWon;
+    const startBingoHost   = () => this._startBingo(true);
+    const startBingoPlayer = () => this._startBingo(false);
+    const drawBall    = () => this._drawBall();
+    const callBingo   = () => this._callBingo();
+    const newCard     = () => this._newCard();
+    const bingoMenu   = () => this._bingoMenu();
 
     // ===== Announcements =====
     const announcements = (s.announcements||[]).map(a=>({text:a.text,time:a.time,id:a.id}));
@@ -1985,6 +2237,12 @@ class Component extends DCLogic {
       runnerShowStart: s.runnerState==='idle', runnerShowOver: s.runnerState==='over',
       runnerFinalScore: s.runnerScore, runnerBest: s.runnerBest,
       runnerStart: () => this._startRunner(),
+      // Bingo
+      bingoMenuOn, bingoHostOn, bingoPlayerOn, bingoAnimate,
+      bingoBallLetter, bingoBallNum, bingoBallFull, bingoBallColor,
+      bingoDrawCount, bingoHistory, bingoCardCells,
+      bingoWon, bingoNotWon,
+      startBingoHost, startBingoPlayer, drawBall, callBingo, newCard, bingoMenu,
       // Announcements
       announcements, hasAnnouncements, noAnnouncements,
       postAnnouncement, clearAnnouncements, announceKeyDown,
