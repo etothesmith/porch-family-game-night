@@ -166,6 +166,20 @@
 /* Ensure the app column doesn't bleed on any screen */
 x-dc > * { max-width:100%; overflow-x:hidden; }
 
+
+/* ===== AUCTION ===== */
+@keyframes aucPulse{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes aucSlideIn{0%{transform:translateX(100%);opacity:0}100%{transform:translateX(0);opacity:1}}
+@keyframes aucGavel{0%{transform:rotate(0)}30%{transform:rotate(-35deg)}60%{transform:rotate(8deg)}100%{transform:rotate(0)}}
+.auc-timer-pulse{animation:aucPulse 0.6s ease-in-out infinite;}
+.auc-bid-new{animation:aucSlideIn 0.4s cubic-bezier(.22,.68,0,1.31) forwards;}
+.auc-gavel{animation:aucGavel 0.5s ease-in-out;}
+.auc-stage{background:linear-gradient(165deg,#0c2e1a 0%,#0a3d22 40%,#064e1e 100%);border-radius:var(--radius-lg);
+  padding:24px 16px;text-align:center;position:relative;overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,0.35);}
+.auc-stage::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,rgba(245,197,66,0.1),transparent 65%);}
+.auc-woodbar{background:linear-gradient(90deg,#5c3a1e,#7a4f2d,#5c3a1e);height:6px;border-radius:3px;margin:12px 0;}
+
 </style>
 <div id="pfw-topbar">
   <button class="pfw-back" onclick="pfwBack()" aria-label="Back">&#8592;</button>
@@ -479,6 +493,136 @@ a, a:hover { color:#7B2D8E; }
   </div>
 </sc-if>
 
+
+<!-- ===================== AUCTION ===================== -->
+<sc-if value="{{ screenAuction }}" hint-placeholder-val="{{ false }}">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+    <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;border-radius:50%;background:#ECFDF5;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#059669">&#8592;</span></div>
+      <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Porch Auction</h2>
+    </div>
+    <div style="padding:0 16px">
+
+      <!-- MENU -->
+      <sc-if value="{{ aucOff }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:14px 0 20px">
+          <div class="auc-stage">
+            <div style="font-size:54px;margin-bottom:8px;position:relative;z-index:1">🔨</div>
+            <h3 style="font-family:'Fredoka',sans-serif;font-size:26px;color:#F5C542;margin:0 0 6px;position:relative;z-index:1">PORCH AUCTION</h3>
+            <p style="font-size:13px;color:rgba(255,255,255,0.55);margin:0;position:relative;z-index:1">Live bidding from every phone</p>
+            <div class="auc-woodbar"></div>
+          </div>
+          <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;margin-top:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+            <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#059669;margin-bottom:6px">How it works</div>
+            <div style="font-size:12.5px;color:#666;line-height:1.9">
+              <b>1.</b> The host types in what's being auctioned.<br>
+              <b>2.</b> Everyone enters their name and bids from their phone.<br>
+              <b>3.</b> Each bid resets a 10-second countdown.<br>
+              <b>4.</b> When the clock hits zero — SOLD!<br>
+              <b>5.</b> The host can add time if things get wild.
+            </div>
+          </div>
+          <div style="padding:16px;background:linear-gradient(135deg,#059669,#047857);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:17px;text-align:center;cursor:pointer;margin-top:14px;box-shadow:0 4px 16px rgba(5,150,105,0.32)" onClick="{{ startAuction }}">Start an Auction</div>
+        </div>
+      </sc-if>
+
+      <!-- SETUP -->
+      <sc-if value="{{ aucSetup }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:8px 0 20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div style="font-family:'Fredoka',sans-serif;font-size:17px;color:#059669">What's on the block?</div>
+            <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ aucReset }}">Cancel</div>
+          </div>
+          <input value="{{ aucItem }}" onInput="{{ setAucItem }}" placeholder="e.g. Grandma's famous peach cobbler"
+            style="width:100%;padding:14px 16px;border-radius:14px;border:2px solid #D1FAE5;font-size:15px;font-family:Outfit,sans-serif;box-sizing:border-box;margin-bottom:14px">
+          <div style="padding:16px;background:linear-gradient(135deg,#059669,#047857);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:17px;text-align:center;cursor:pointer;box-shadow:0 4px 16px rgba(5,150,105,0.32)" onClick="{{ launchAuction }}">Open Bidding 🔨</div>
+        </div>
+      </sc-if>
+
+      <!-- LIVE AUCTION -->
+      <sc-if value="{{ aucLive }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:4px 0 20px">
+
+          <!-- STAGE: item + timer + top bid -->
+          <div class="auc-stage" style="margin-bottom:14px">
+            <div style="position:relative;z-index:1">
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;font-weight:700">NOW AUCTIONING</div>
+              <h3 style="font-family:'Fredoka',sans-serif;font-size:20px;color:#fff;margin:6px 0 2px">{{ aucItem }}</h3>
+              <div class="auc-woodbar"></div>
+
+              <!-- TIMER -->
+              <sc-if value="{{ aucNotSold }}" hint-placeholder-val="{{ true }}">
+                <div style="margin:10px 0">
+                  <div style="font-family:'Fredoka',sans-serif;font-size:64px;color:{{ aucTimerColor }};line-height:1;text-shadow:0 4px 20px rgba(0,0,0,0.5)">{{ aucTimer }}</div>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px">seconds remaining</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ aucSold }}" hint-placeholder-val="{{ false }}">
+                <div style="margin:14px 0">
+                  <div style="font-size:48px" class="auc-gavel">🔨</div>
+                  <div style="font-family:'Fredoka',sans-serif;font-size:36px;color:#F5C542;margin-top:4px;text-shadow:0 3px 12px rgba(245,197,66,0.5)">SOLD!</div>
+                </div>
+              </sc-if>
+
+              <!-- TOP BID -->
+              <div style="background:rgba(255,255,255,0.08);border-radius:14px;padding:14px;margin-top:8px;backdrop-filter:blur(4px)">
+                <div style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;letter-spacing:1px">HIGHEST BID</div>
+                <div style="font-family:'Fredoka',sans-serif;font-size:32px;color:#F5C542">{{ aucTopBid }}</div>
+                <div style="font-size:13px;color:rgba(255,255,255,0.7)">{{ aucTopBidder }}</div>
+              </div>
+
+              <!-- HOST CONTROLS -->
+              <div style="display:flex;gap:6px;justify-content:center;margin-top:12px">
+                <div style="padding:8px 14px;background:rgba(255,255,255,0.12);border-radius:999px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onClick="{{ aucAddTime }}">+10s</div>
+                <div style="padding:8px 14px;background:rgba(255,255,255,0.12);border-radius:999px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onClick="{{ aucAddTime5 }}">+5s</div>
+                <div style="padding:8px 14px;background:rgba(255,255,255,0.08);border-radius:999px;color:rgba(255,255,255,0.5);font-size:12px;font-weight:600;cursor:pointer" onClick="{{ aucNewItem }}">New Item</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BIDDER AREA -->
+          <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:12px">
+            <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#059669;margin-bottom:8px">Place Your Bid</div>
+            <input value="{{ aucBidderName }}" onInput="{{ setAucBidder }}" placeholder="Your name"
+              style="width:100%;padding:11px 14px;border-radius:12px;border:2px solid #D1FAE5;font-size:14px;font-family:Outfit,sans-serif;box-sizing:border-box;margin-bottom:10px">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+              <sc-for list="{{ aucPresets }}" as="ap" hint-placeholder-count="6">
+                <div style="padding:10px 16px;background:linear-gradient(135deg,#059669,#047857);border-radius:12px;color:#fff;font-family:'Fredoka',sans-serif;font-size:14px;cursor:pointer;flex:1;min-width:60px;text-align:center;box-shadow:0 2px 8px rgba(5,150,105,0.2)" onClick="{{ ap.onClick }}">{{ ap.label }}</div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input id="auction-custom" type="number" placeholder="Custom $" onKeyDown="{{ aucCustomKey }}"
+                style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:14px;font-family:Outfit,sans-serif">
+              <div style="padding:11px 18px;background:#1a1a1a;border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap" onClick="{{ aucCustomBid }}">Bid</div>
+            </div>
+          </div>
+
+          <!-- BID FEED -->
+          <sc-if value="{{ aucHasBids }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+              <div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#999;margin-bottom:8px">Bid History</div>
+              <sc-for list="{{ aucBidHistory }}" as="ab" hint-placeholder-count="1">
+                <div class="auc-bid-new" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:{{ ab.bg }};margin-bottom:6px">
+                  <div style="flex:1">
+                    <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:{{ ab.fg }};font-weight:700">{{ ab.name }}</div>
+                    <div style="font-size:11px;color:{{ ab.sub }}">{{ ab.time }}</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-family:'Fredoka',sans-serif;font-size:17px;color:{{ ab.fg }};font-weight:800">{{ ab.total }}</div>
+                    <div style="font-size:10px;color:{{ ab.sub }}">{{ ab.amount }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</sc-if>
+
   <sc-if value="{{ screenRunner }}" hint-placeholder-val="{{ false }}">
   <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
     <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
@@ -507,7 +651,17 @@ a, a:hover { color:#7B2D8E; }
         <h3 style="font-family:'Fredoka',sans-serif;font-size:20px;color:#fff;margin:0 0 4px">Family Reoke</h3>
         <p style="font-size:13px;color:rgba(255,255,255,0.8);margin:0">Karaoke night with the Porch family!</p>
       </div>
-      <div style="background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:var(--radius-lg);padding:24px;cursor:pointer;transition:transform 0.2s" style-hover="transform:scale(1.02)" onClick="{{ nav.runner }}">
+      <div style="background:linear-gradient(135deg,#E53E3E,#C53030);border-radius:var(--radius-lg);padding:24px;cursor:pointer;transition:transform 0.2s" style-hover="transform:scale(1.02)" onClick="{{ nav.bingo }}">
+        <div style="margin-bottom:10px;font-size:32px">🎱</div>
+        <h3 style="font-family:'Fredoka',sans-serif;font-size:20px;color:#fff;margin:0 0 4px">Porch Bingo</h3>
+        <p style="font-size:13px;color:rgba(255,255,255,0.8);margin:0">75 balls, dramatic draws, infinite cards!</p>
+      </div>
+      <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:var(--radius-lg);padding:24px;cursor:pointer;transition:transform 0.2s" style-hover="transform:scale(1.02)" onClick="{{ nav.auction }}">
+        <div style="margin-bottom:10px;font-size:32px">🔨</div>
+        <h3 style="font-family:'Fredoka',sans-serif;font-size:20px;color:#fff;margin:0 0 4px">Porch Auction</h3>
+        <p style="font-size:13px;color:rgba(255,255,255,0.8);margin:0">Live bidding from every phone. Going once…</p>
+      </div>
+            <div style="background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:var(--radius-lg);padding:24px;cursor:pointer;transition:transform 0.2s" style-hover="transform:scale(1.02)" onClick="{{ nav.runner }}">
         <div style="margin-bottom:10px"><pf-icon name="running" size="32" color="#fff"></pf-icon></div>
         <h3 style="font-family:'Fredoka',sans-serif;font-size:20px;color:#fff;margin:0 0 4px">Race to Reunion</h3>
         <p style="font-size:13px;color:rgba(255,255,255,0.8);margin:0">Race to the Reunion — beat the family record!</p>
@@ -548,17 +702,7 @@ a, a:hover { color:#7B2D8E; }
             <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Family photos — host reveals the answer.</p>
           </div>
 
-        <div style="background:#fff;border-radius:var(--radius-lg);padding:20px 16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04)" onClick="{{ nav.bingo }}">
-          <div style="display:flex;align-items:center;gap:14px">
-            <div style="width:46px;height:46px;border-radius:var(--radius-md);background:linear-gradient(135deg,#E53E3E,#D69E2E);display:flex;align-items:center;justify-content:center">
-              <div style="font-size:22px">🎱</div>
-            </div>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:14px;color:#1a1a1a">Porch Family Bingo</div>
-              <div style="font-size:12px;color:#999">75-ball bingo with dramatic draws</div>
-            </div>
-          </div>
-        </div>
+
         </div>
       </sc-if>
 
@@ -1232,6 +1376,7 @@ class Component extends DCLogic {
     runnerY: 0, runnerVY: 0, runnerObstacles: [], runnerCoins: [],
     dealMode: 'menu', photoIdx: 0, photoRevealed: false, photoOrder: [],
     announcements:[], announceInput:'',
+    auctionMode:null, auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
     bingoMode:null, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoWon:false, bingoPattern:'line',
     players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
     doorPlan: [], doors: [], dealQ: [], dealQi: 0, dealRevealed: false, dealLastDoor: null, dealWins: 0, dealGags: 0,
@@ -1291,6 +1436,59 @@ class Component extends DCLogic {
     this.setState({announcements:[]});
     this._persist('announcements', []);
   }
+
+
+  // ===== PORCH AUCTION — live bidding from every phone =====
+  _auctionPresets = [1, 5, 10, 25, 50, 100];
+  _startAuction(){ this.setState({auctionMode:'setup', auctionItem:'', auctionImg:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:''}); }
+  _launchAuction(){
+    const item = this.state.auctionItem.trim();
+    if(!item) return;
+    this.setState({auctionMode:'live', auctionBids:[], auctionTimer:10, auctionRunning:true, auctionSold:false});
+    this._persist('auctionLive', {item:item, bids:[], timer:10, running:true, sold:false});
+    this._auctionTick();
+  }
+  _auctionTick(){
+    if(this._aucInterval) clearInterval(this._aucInterval);
+    this._aucInterval = setInterval(()=>{
+      if(!this.state.auctionRunning) { clearInterval(this._aucInterval); return; }
+      const t = this.state.auctionTimer - 1;
+      if(t <= 0){
+        clearInterval(this._aucInterval);
+        this.setState({auctionRunning:false, auctionSold:true, auctionTimer:0});
+        this._persist('auctionLive', {item:this.state.auctionItem, bids:this.state.auctionBids, timer:0, running:false, sold:true});
+        if(typeof fireConfetti==='function') fireConfetti();
+      } else {
+        this.setState({auctionTimer:t});
+      }
+    }, 1000);
+  }
+  _auctionAddTime(s){
+    const t = this.state.auctionTimer + (s||10);
+    this.setState({auctionTimer:t, auctionRunning:true, auctionSold:false});
+    if(!this._aucInterval || this.state.auctionSold) this._auctionTick();
+    this._persist('auctionLive', {item:this.state.auctionItem, bids:this.state.auctionBids, timer:t, running:true, sold:false});
+  }
+  _auctionBid(amt){
+    const name = (this.state.auctionBidderName||'').trim();
+    if(!name) return;
+    const bids = [...(this.state.auctionBids||[])];
+    const top = bids.length ? bids[0].total : 0;
+    const bid = {name:name, amount:amt, total:top+amt, time:new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'}), id:Date.now()};
+    bids.unshift(bid);
+    this.setState({auctionBids:bids, auctionTimer:10, auctionRunning:true, auctionSold:false});
+    if(!this._aucInterval) this._auctionTick();
+    this._persist('auctionLive', {item:this.state.auctionItem, bids:bids, timer:10, running:true, sold:false});
+  }
+  _auctionCustomBid(){
+    const el = document.getElementById('auction-custom');
+    const v = parseInt(el?el.value:'',10);
+    if(isNaN(v) || v < 1) return;
+    this._auctionBid(v);
+    if(el) el.value='';
+  }
+  _auctionReset(){ if(this._aucInterval) clearInterval(this._aucInterval); this.setState({auctionMode:null}); }
+  _auctionNewItem(){ if(this._aucInterval) clearInterval(this._aucInterval); this.setState({auctionMode:'setup', auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false}); }
 
   // ===== PORCH FAMILY BINGO =====
   _bingoLetters = ['B','I','N','G','O'];
@@ -1386,7 +1584,8 @@ class Component extends DCLogic {
         const map = {schedule:'customSchedule', places:'customPlaces',
                      contacts:'customContacts', quiz:'customQuiz',
                      announcements:'announcements',
-                     bingoState:'bingoState'};
+                     bingoState:'bingoState',
+                     auctionLive:'auctionLive'};
         if (map[key]) window.PorchLive.push(map[key], data);
       }
     } catch(e) {}
@@ -1916,7 +2115,7 @@ class Component extends DCLogic {
     const nav = {
       home: mkNav('home'), schedule: mkNav('schedule'), history: mkNav('history'),
       quiz: () => { this.setState({quizIdx:0,quizScore:0,quizSelected:null,quizFinished:false,quizOrder:this._shuffleQuiz()}); this._go('quiz'); },
-      runner: mkNav('runner'), bingo: mkNav('bingo'), games: mkNav('games'),
+      runner: mkNav('runner'), bingo: mkNav('bingo'), auction: mkNav('auction'), games: mkNav('games'),
       deal: () => { this._initDeal(); this.setState({dealMode:'menu', photoRevealed:false}); this._go('deal'); },
       reoke: mkNav('reoke'), places: mkNav('places'), menu: mkNav('menu'), contacts: mkNav('contacts'),
       admin: () => this._go('admin')
@@ -1990,6 +2189,42 @@ class Component extends DCLogic {
       children.push(React.createElement('div',{key:'c2',style:{position:'absolute',top:'40px',left:'60%',opacity:0.4},dangerouslySetInnerHTML:{__html:'<pf-sprite name="cloud" size="22"></pf-sprite>'}}));
       runnerScene = React.createElement('div',{style:{position:'relative',width:'100%',height:'100%',overflow:'hidden',cursor:'pointer'},onClick:()=>this._jump()}, ...children);
     }
+
+    // ===== Auction =====
+    const aucSetup  = s.auctionMode==='setup';
+    const aucLive   = s.auctionMode==='live';
+    const aucOff    = !s.auctionMode;
+    const aucItem   = s.auctionItem;
+    const aucTimer  = s.auctionTimer;
+    const aucTimerColor  = s.auctionTimer<=3 ? '#EF4444' : s.auctionTimer<=5 ? '#F59E0B' : '#10B981';
+    const aucTimerPulse  = s.auctionTimer<=3 && s.auctionRunning;
+    const aucRunning     = s.auctionRunning;
+    const aucSold        = s.auctionSold;
+    const aucNotSold     = !s.auctionSold;
+    const aucTopBid      = (s.auctionBids||[]).length ? ('$'+(s.auctionBids[0].total).toLocaleString()) : '$0';
+    const aucTopBidder   = (s.auctionBids||[]).length ? s.auctionBids[0].name : 'No bids yet';
+    const aucBidHistory  = (s.auctionBids||[]).slice(0,30).map((b,i)=>({
+      name:b.name, amount:'+$'+b.amount, total:'$'+b.total.toLocaleString(), time:b.time,
+      isTop: i===0,
+      bg: i===0 ? 'linear-gradient(135deg,#059669,#047857)' : '#fff',
+      fg: i===0 ? '#fff' : '#1a1a1a',
+      sub: i===0 ? 'rgba(255,255,255,0.7)' : '#999'
+    }));
+    const aucPresets = this._auctionPresets.map(v=>({
+      label: '+$'+v, onClick: ()=>this._auctionBid(v)
+    }));
+    const aucBidderName  = s.auctionBidderName;
+    const aucHasBids     = (s.auctionBids||[]).length > 0;
+    const startAuction   = () => this._startAuction();
+    const launchAuction  = () => this._launchAuction();
+    const aucAddTime     = () => this._auctionAddTime(10);
+    const aucAddTime5    = () => this._auctionAddTime(5);
+    const aucCustomBid   = () => this._auctionCustomBid();
+    const aucNewItem     = () => this._auctionNewItem();
+    const aucReset       = () => this._auctionReset();
+    const setAucItem     = (e) => this.setState({auctionItem: e&&e.target?e.target.value:''});
+    const setAucBidder   = (e) => this.setState({auctionBidderName: e&&e.target?e.target.value:''});
+    const aucCustomKey   = (e) => { if(e.key==='Enter') this._auctionCustomBid(); };
 
     // ===== Bingo =====
     const bingoMenuOn   = !s.bingoMode;
@@ -2278,6 +2513,11 @@ class Component extends DCLogic {
       runnerShowStart: s.runnerState==='idle', runnerShowOver: s.runnerState==='over',
       runnerFinalScore: s.runnerScore, runnerBest: s.runnerBest,
       runnerStart: () => this._startRunner(),
+      // Auction
+      aucSetup, aucLive, aucOff, aucItem, aucTimer, aucTimerColor, aucTimerPulse,
+      aucRunning, aucSold, aucNotSold, aucTopBid, aucTopBidder, aucBidHistory, aucPresets,
+      aucBidderName, aucHasBids, startAuction, launchAuction, aucAddTime, aucAddTime5,
+      aucCustomBid, aucNewItem, aucReset, setAucItem, setAucBidder, aucCustomKey,
       // Bingo
       bingoMenuOn, bingoHostOn, bingoPlayerOn, bingoAnimate,
       bingoBallLetter, bingoBallNum, bingoBallFull, bingoBallColor,
