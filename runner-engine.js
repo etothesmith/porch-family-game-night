@@ -666,15 +666,7 @@ function drawHero(X,g){
   } else { X.fillStyle='#7B2635'; X.fillRect(P.x,P.y-60,44,60); }
 }
 
-/* ---------- bindings ---------- */
-document.addEventListener('keydown',e=>{
-  const pg=document.getElementById('pg-runner'); if(!pg||!pg.classList.contains('active'))return;
-  if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();rgJump();}
-  if(e.code==='ArrowDown'){e.preventDefault();rgDuck(true);}
-  if(e.code==='ShiftLeft'||e.code==='ShiftRight'){e.preventDefault();rgAura();}
-  if(e.code==='KeyF'||e.code==='KeyX'){e.preventDefault();rgThrow();}
-});
-document.addEventListener('keyup',e=>{ if(e.code==='ArrowDown') rgDuck(false); });
+/* ---------- bindings: see the single handler below ---------- */
 
 
 /* ---------- injected UI + lifecycle ---------- */
@@ -807,6 +799,7 @@ document.addEventListener('keydown',e=>{
   if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();rgJump();}
   if(e.code==='ArrowDown'){e.preventDefault();rgDuck(true);}
   if(e.code==='ShiftLeft'||e.code==='ShiftRight'){e.preventDefault();rgAura();}
+  if(e.code==='KeyF'||e.code==='KeyX'){e.preventDefault();rgThrow();}
 });
 document.addEventListener('keyup',e=>{ if(e.code==='ArrowDown') rgDuck(false); });
 

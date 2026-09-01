@@ -19,6 +19,85 @@
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
   #pfw-topbar .pfw-home{background:none;border:none;color:#7B2D8E;font-size:19px;cursor:pointer;flex-shrink:0;}
   /* the bar is sticky, not fixed, so it never overlaps content below it */
+/* =========================================================
+   GAME SHOW DRESSING — curtains, marquee, spotlights, wheel
+   Scoped to .gs-stage so it can't leak into the rest of the app.
+   ========================================================= */
+.gs-stage{position:relative;border-radius:18px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 0%,#2a0f3d 0%,#160722 55%,#0d0416 100%);
+  padding:0 0 14px;margin-bottom:14px;box-shadow:0 10px 34px rgba(0,0,0,.32);}
+
+/* marquee bulb rail */
+.gs-marquee{display:flex;justify-content:space-around;align-items:center;height:22px;
+  background:linear-gradient(180deg,#1b0b28,#0d0416);border-bottom:2px solid #F5C542;}
+.gs-bulb{width:7px;height:7px;border-radius:50%;background:#FFF3C4;
+  box-shadow:0 0 5px 2px rgba(255,215,0,.85),0 0 11px 4px rgba(255,180,0,.35);
+  animation:gsBulb 1.1s infinite alternate ease-in-out;}
+.gs-bulb:nth-child(3n){animation-delay:.36s;background:#FFD1E8;box-shadow:0 0 5px 2px rgba(255,120,200,.8);}
+.gs-bulb:nth-child(3n+1){animation-delay:.72s;background:#CFF3FF;box-shadow:0 0 5px 2px rgba(100,220,255,.8);}
+@keyframes gsBulb{0%{opacity:.28;transform:scale(.82)}100%{opacity:1;transform:scale(1.12)}}
+
+/* sweeping spotlights */
+.gs-lights{position:absolute;inset:22px 0 0;pointer-events:none;overflow:hidden;}
+.gs-lights i{position:absolute;top:-40%;left:50%;width:34%;height:190%;
+  background:linear-gradient(180deg,rgba(255,225,150,.16),transparent 72%);
+  transform-origin:50% 0;filter:blur(7px);}
+.gs-lights i:nth-child(1){animation:gsSweepA 7s ease-in-out infinite alternate;}
+.gs-lights i:nth-child(2){animation:gsSweepB 9s ease-in-out infinite alternate;
+  background:linear-gradient(180deg,rgba(180,150,255,.14),transparent 72%);}
+@keyframes gsSweepA{0%{transform:translateX(-50%) rotate(-26deg)}100%{transform:translateX(-50%) rotate(22deg)}}
+@keyframes gsSweepB{0%{transform:translateX(-50%) rotate(24deg)}100%{transform:translateX(-50%) rotate(-20deg)}}
+
+/* velvet curtains that part on reveal */
+.gs-curtain{position:absolute;top:22px;bottom:0;width:52%;z-index:6;
+  transition:transform 1.15s cubic-bezier(.6,.02,.28,1);}
+.gs-curtain::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(92deg,#4a0716 0,#7d1228 15px,#5d0c1d 30px,#3d0511 46px);}
+.gs-curtain::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.55),transparent 12%,transparent 84%,rgba(0,0,0,.6));}
+.gs-curtain.l{left:0;border-right:4px solid #F5C542;box-shadow:6px 0 22px rgba(0,0,0,.6);}
+.gs-curtain.r{right:0;border-left:4px solid #F5C542;box-shadow:-6px 0 22px rgba(0,0,0,.6);}
+.gs-stage.open .gs-curtain.l{transform:translateX(-102%);}
+.gs-stage.open .gs-curtain.r{transform:translateX(102%);}
+
+/* stage content sits above the floor glow */
+.gs-inner{position:relative;z-index:4;padding:16px 14px 4px;text-align:center;}
+.gs-floor{position:absolute;left:0;right:0;bottom:0;height:34%;z-index:1;
+  background:linear-gradient(to top,rgba(120,60,200,.22),transparent);}
+.gs-title{font-family:'Fredoka',sans-serif;font-size:17px;color:#F5C542;
+  text-shadow:0 0 12px rgba(245,197,66,.5);letter-spacing:1px;margin-bottom:2px;}
+.gs-sub{font-size:11.5px;color:rgba(255,255,255,.62);}
+
+/* prize-wheel */
+.gs-wheelwrap{position:relative;display:inline-block;margin:10px auto 4px;}
+.gs-wheel{display:block;border-radius:50%;
+  box-shadow:0 0 0 5px #F5C542,0 0 0 9px #2a1a05,0 0 28px rgba(245,197,66,.35);
+  transition:transform 4.6s cubic-bezier(.15,.83,.2,1);}
+.gs-ptr{position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;
+  border-top:24px solid #F5C542;filter:drop-shadow(0 3px 5px rgba(0,0,0,.7));z-index:3;}
+.gs-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:26px;height:26px;border-radius:50%;border:3px solid #F5C542;
+  background:radial-gradient(circle,#fff,#b9b9b9);z-index:2;}
+
+/* money ladder for the banker */
+.gs-ladder{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:10px;}
+.gs-rung{font-family:'Fredoka',sans-serif;font-size:10.5px;padding:4px 8px;border-radius:999px;
+  background:rgba(255,255,255,.07);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.09);}
+.gs-rung.hit{background:linear-gradient(135deg,#F5C542,#E0A008);color:#2a1a05;border-color:#F5C542;font-weight:700;}
+.gs-rung.now{background:#fff;color:#2a1a05;border-color:#fff;font-weight:800;
+  box-shadow:0 0 12px rgba(255,255,255,.55);}
+
+/* responsive */
+@media(max-width:420px){
+  .gs-title{font-size:15px}.gs-inner{padding:12px 10px 4px}
+  .gs-rung{font-size:9.5px;padding:3px 6px}
+}
+@media(min-width:900px){
+  .gs-stage{max-width:820px;margin-left:auto;margin-right:auto}
+  .gs-title{font-size:20px}
+}
+
 </style>
 <div id="pfw-topbar">
   <button class="pfw-back" onclick="pfwBack()" aria-label="Back">&#8592;</button>
@@ -31,6 +110,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="pf-icons.js"></script>
 <script src="runner-engine.js"></script>
+<script src="gameshow.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 @keyframes fadeIn { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:translateY(0) } }
@@ -393,6 +473,30 @@ a, a:hover { color:#7B2D8E; }
             <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ dealMenu }}">Exit</div>
           </div>
 
+          <div id="gs-host" style="margin-bottom:14px"></div>
+
+          <div class="{{ stageClass }}">
+            <div class="gs-marquee">
+              <sc-for list="{{ bulbs }}" as="b" hint-placeholder-count="22"><div class="gs-bulb"></div></sc-for>
+            </div>
+            <div class="gs-lights"><i></i><i></i></div>
+            <div class="gs-floor"></div>
+            <div class="gs-curtain l"></div>
+            <div class="gs-curtain r"></div>
+            <div class="gs-inner">
+              <div class="gs-title">PORCH OF A DEAL</div>
+              <div class="gs-sub">Spin to see who's up</div>
+              <div class="gs-wheelwrap">
+                <div class="gs-ptr"></div>
+                <div class="gs-wheel" style="{{ wheelStyle }}"></div>
+                <div class="gs-hub"></div>
+              </div>
+              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#fff;min-height:20px;margin-top:2px">{{ wheelMsg }}</div>
+              <div style="padding:11px 20px;background:linear-gradient(135deg,#F5C542,#E0A008);border-radius:999px;color:#2a1a05;font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer;display:inline-block;margin-top:9px" onClick="{{ spinWheel }}">SPIN THE WHEEL</div>
+              <input value="{{ playersVal }}" onInput="{{ setPlayers }}" placeholder="Player names, comma separated"
+                style="width:100%;margin-top:11px;padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.32);color:#fff;font-size:12px;font-family:Outfit,sans-serif">
+            </div>
+          </div>
           <sc-if value="{{ dealAsk }}" hint-placeholder-val="{{ true }}">
             <div style="background:#fff;border-radius:var(--radius-lg);padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
               <sc-if value="{{ dealHasImg }}" hint-placeholder-val="{{ false }}">
@@ -489,6 +593,22 @@ a, a:hover { color:#7B2D8E; }
             </div>
           </div>
 
+          <div class="gs-stage open">
+            <div class="gs-marquee">
+              <sc-for list="{{ bulbs }}" as="b2" hint-placeholder-count="22"><div class="gs-bulb"></div></sc-for>
+            </div>
+            <div class="gs-lights"><i></i><i></i></div>
+            <div class="gs-floor"></div>
+            <div class="gs-inner">
+              <div class="gs-title">THE PORCH BANKER</div>
+              <div class="gs-sub">Climb the ladder — then decide</div>
+              <div class="gs-ladder">
+                <sc-for list="{{ ladderRungs }}" as="lr" hint-placeholder-count="10">
+                  <div class="{{ lr.cls }}">{{ lr.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
           <!-- ASK -->
           <sc-if value="{{ trivPhaseAsk }}" hint-placeholder-val="{{ true }}">
             <div style="background:#fff;border-radius:var(--radius-lg);padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
@@ -918,6 +1038,7 @@ class Component extends DCLogic {
     runnerState: 'idle', runnerScore: 0, runnerBest: parseInt(localStorage.getItem('pfw_runner_best')||'0'),
     runnerY: 0, runnerVY: 0, runnerObstacles: [], runnerCoins: [],
     dealMode: 'menu', photoIdx: 0, photoRevealed: false, photoOrder: [],
+    players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
     doorPlan: [], doors: [], dealQ: [], dealQi: 0, dealRevealed: false, dealLastDoor: null, dealWins: 0, dealGags: 0,
     trivOrder: [], trivIdx: 0, trivRevealed: false, trivStreak: 0, trivBanked: 0, trivOffer: 0, trivPhase: 'ask',
     dealPhase: 'pick', dealPlayerCase: null, dealValues: [], dealOpened: [], dealRound: 0, dealOfferAmt: 0, dealResult: null,
@@ -1224,6 +1345,30 @@ class Component extends DCLogic {
   };
 
 
+
+  // ===== GAME SHOW STAGE (wheel + curtains) =====
+  _spinWheel(){
+    if(this.state.wheelSpinning) return;
+    const names = (this.state.players||'').split(',').map(n=>n.trim()).filter(Boolean);
+    if(!names.length){ this.setState({wheelMsg:'Add players in the box above first!'}); return; }
+    const pick = Math.floor(Math.random()*names.length);
+    const slice = 360/names.length;
+    // land the chosen slice under the pointer, plus 5-7 whole turns for drama
+    const turns = 5 + Math.floor(Math.random()*3);
+    const target = turns*360 + (360 - (pick*slice + slice/2));
+    this.setState({ wheelSpinning:true, wheelDeg:(this.state.wheelDeg||0)+target, wheelMsg:'Spinning…' });
+    setTimeout(()=>{
+      this.setState({ wheelSpinning:false, wheelPick:names[pick], wheelMsg:names[pick]+" — you're up!", curtainOpen:true });
+    }, 4700);
+  }
+  _wheelSlices(){
+    const names=(this.state.players||'').split(',').map(n=>n.trim()).filter(Boolean);
+    const cols=['#c2185b','#0277bd','#00897b','#f9a825','#7b1fa2','#ef6c00','#00838f','#d81b60','#00c853','#ff8f00'];
+    if(!names.length) return '';
+    const slice=360/names.length;
+    const stops=names.map((n,i)=>`${cols[i%cols.length]} ${i*slice}deg ${(i+1)*slice}deg`).join(',');
+    return `conic-gradient(${stops})`;
+  }
   // ===== SHARED QUESTION POOL (trivia + photos) — both games draw from this =====
   _buildPool(){
     const pool = [];
@@ -1255,6 +1400,7 @@ class Component extends DCLogic {
   }
   _dealRules(){ this.setState({dealMode:'rules'}); }
   _startDealPlay(){
+    try{ if(window.PorchShow) window.PorchShow.curtainReveal("PORCH OF A DEAL"); }catch(e){}
     const P=['🏆','🎁','💎','🌟','👑','💰','🎯','✨','🥇','🎊'];
     const G=['🤡','🧦','🪣','💀','🧹','😬','🪤','🐸','🧻','🎃'];
     let pi=0,gi=0;
@@ -1295,6 +1441,7 @@ class Component extends DCLogic {
   _ladder = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
 
   _startTrivia() {
+    try{ if(window.PorchShow) window.PorchShow.curtainReveal("THE PORCH BANKER"); }catch(e){}
     this.setState({ dealMode:'trivia', trivOrder:this._buildPool(), trivIdx:0, trivRevealed:false,
                     trivStreak:0, trivBanked:0, trivOffer:0, trivPhase:'ask' });
   }
@@ -1359,6 +1506,7 @@ class Component extends DCLogic {
 
   // PHOTO TRIVIA LOGIC
   _startPhotoTrivia() {
+    try{ if(window.PorchShow) window.PorchShow.curtainReveal("PHOTO TRIVIA"); }catch(e){}
     const order = this._photoTrivia.map((_,i)=>i).sort(()=>Math.random()-0.5);
     this.setState({ dealMode:'photo', photoOrder: order, photoIdx: 0, photoRevealed: false });
   }
@@ -1534,6 +1682,20 @@ class Component extends DCLogic {
       children.push(React.createElement('div',{key:'c2',style:{position:'absolute',top:'40px',left:'60%',opacity:0.4},dangerouslySetInnerHTML:{__html:'<pf-sprite name="cloud" size="22"></pf-sprite>'}}));
       runnerScene = React.createElement('div',{style:{position:'relative',width:'100%',height:'100%',overflow:'hidden',cursor:'pointer'},onClick:()=>this._jump()}, ...children);
     }
+
+    // ===== Stage / wheel =====
+    const wheelBg     = this._wheelSlices();
+    const wheelStyle  = 'transform:rotate('+(s.wheelDeg||0)+'deg);background:'+(wheelBg||'#333')+';width:180px;height:180px;';
+    const wheelMsg    = s.wheelMsg;
+    const stageClass  = s.curtainOpen ? 'gs-stage open' : 'gs-stage';
+    const playersVal  = s.players;
+    const spinWheel   = () => this._spinWheel();
+    const setPlayers  = (e) => this.setState({players: e && e.target ? e.target.value : ''});
+    const bulbs = Array.from({length:22},(_,i)=>({i:i}));
+    const ladderRungs = this._ladder.map((v,i)=>({
+      label:'$'+(v>=1000? (v/1000)+'k' : v),
+      cls: i < s.trivStreak ? 'gs-rung hit' : (i === s.trivStreak ? 'gs-rung now' : 'gs-rung')
+    }));
 
     // ===== Porch of a Deal (doors) =====
     const dealSetupOn = s.dealMode === 'setup';
@@ -1757,6 +1919,8 @@ class Component extends DCLogic {
       runnerShowStart: s.runnerState==='idle', runnerShowOver: s.runnerState==='over',
       runnerFinalScore: s.runnerScore, runnerBest: s.runnerBest,
       runnerStart: () => this._startRunner(),
+      // Stage / wheel
+      wheelStyle, wheelMsg, stageClass, playersVal, spinWheel, setPlayers, bulbs, ladderRungs,
       // Porch of a Deal (doors)
       dealSetupOn, dealRulesOn, dealPlayOn, bankerRulesOn,
       planPrize, planGag, planReady, planNotReady, setupDoors,
