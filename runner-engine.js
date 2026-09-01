@@ -759,6 +759,12 @@ const RG_CSS = `
 #rg-host *{box-sizing:border-box;}
 .rg-roster{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 @media(max-width:640px){.rg-roster{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:640px){
+  .rg-roster{grid-template-columns:repeat(3,1fr);}
+  #rg-canvas{max-height:420px;}
+  .rg-ctrls .rg-btn{font-size:16px;padding:16px 14px;}
+  .rg-hud{font-size:14px;}
+}
 .rg-card{background:#fff;border:2px solid #eee;border-radius:14px;padding:10px 8px;cursor:pointer;
   transition:all .18s;text-align:center;-webkit-tap-highlight-color:transparent;}
 .rg-card:hover{border-color:#d8b4fe;}

@@ -10,7 +10,7 @@
 <body>
 <x-dc>
 <style id="pfw-shell">
-  #pfw-topbar{position:sticky;top:0;z-index:900;display:flex;align-items:center;gap:10px;
+  #pfw-topbar{position:sticky;top:0;z-index:900;display:flex;align-items:center;gap:10px;max-width:inherit;
     padding:10px 14px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
     border-bottom:1px solid #eee;box-shadow:0 1px 8px rgba(0,0,0,.05);}
   #pfw-topbar .pfw-back{width:34px;height:34px;border-radius:50%;background:#f3e8ff;border:none;
@@ -124,6 +124,47 @@
 .bingo-win{animation:bingoWin 0.6s ease-in-out;background:linear-gradient(90deg,#FFD700,#FFA500,#FFD700,#FFA500);
   background-size:200% 100%;animation:shimmer 2s linear infinite;-webkit-background-clip:text;color:transparent;
   font-family:'Fredoka',sans-serif;font-size:42px;font-weight:800;text-align:center;}
+
+
+/* ===== DESKTOP & TABLET LAYOUT ===== */
+@media (min-width: 640px) {
+  /* Center the whole app in a phone-width column */
+  x-dc { display:block; max-width:480px; margin:0 auto; min-height:100vh;
+    box-shadow:0 0 60px rgba(0,0,0,0.12); position:relative; }
+  body { background:#f0edf3; }
+
+  /* Bingo cards can breathe wider on tablet */
+  .bingo-card { max-width:380px !important; }
+  .bingo-cell { font-size:18px !important; }
+  .bingo-ball { width:140px !important; height:140px !important; }
+  .bingo-ball div:last-child { font-size:44px !important; }
+
+  /* Game show stage uses available width */
+  .gs-stage { max-width:100% !important; }
+  .gs-wheel { width:220px !important; height:220px !important; }
+
+  /* Runner canvas gets a proper aspect ratio */
+  #rg-canvas { max-height:420px; }
+  .rg-roster { grid-template-columns:repeat(3,1fr) !important; }
+}
+
+@media (min-width: 900px) {
+  x-dc { max-width:520px; }
+  .bingo-card { max-width:400px !important; }
+  .bingo-cell { font-size:20px !important; }
+  .bingo-chip { width:38px !important; height:38px !important; font-size:11px !important; }
+
+  /* Door grid looks better 5-wide on desktop */
+  .gs-title { font-size:22px !important; }
+}
+
+@media (min-width: 1200px) {
+  x-dc { max-width:560px; box-shadow:0 0 80px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.04); }
+  body { background:linear-gradient(135deg,#f5f0fa 0%,#ede8f3 50%,#e8e0f0 100%); }
+}
+
+/* Ensure the app column doesn't bleed on any screen */
+x-dc > * { max-width:100%; overflow-x:hidden; }
 
 </style>
 <div id="pfw-topbar">
