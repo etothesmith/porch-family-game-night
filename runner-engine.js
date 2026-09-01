@@ -96,6 +96,42 @@ const RG = {
   DUCK_H:38
 };
 
+/* ===========================================================
+   PLATFORMS & PITS — ported from Smith's Sprint
+   Sprint capped gaps at 52% of jump distance and rises at 55%
+   of jump height. Same ratios here, but gap width is computed
+   from CURRENT velocity at spawn time, so a pit is clearable
+   at any speed instead of only the one it was authored for.
+   =========================================================== */
+const AIR_FRAMES = 2*Math.abs(RG.JUMP_V)/RG.GRAV;      // ~44.4
+const JUMP_APEX  = RG.JUMP_V*RG.JUMP_V/(2*RG.GRAV);    // ~110px
+const GAP_RATIO  = 0.52, RISE_RATIO = 0.55;
+const maxGap  = v => v*AIR_FRAMES*GAP_RATIO;
+const MAX_RISE = JUMP_APEX*RISE_RATIO;                  // ~61px
+
+const POOL_PIT = 14, POOL_LEDGE = 16;
+const pits   = Array.from({length:POOL_PIT  },()=>({on:false,x:0,w:0}));
+const ledges = Array.from({length:POOL_LEDGE},()=>({on:false,x:0,y:0,w:0}));
+function takePit(){   for(let i=0;i<POOL_PIT;  i++) if(!pits[i].on)   return pits[i];   return null; }
+function takeLedge(){ for(let i=0;i<POOL_LEDGE;i++) if(!ledges[i].on) return ledges[i]; return null; }
+function clearTerrain(){ pits.forEach(p=>p.on=false); ledges.forEach(l=>l.on=false); }
+
+/* Spawn a pit + optional ledge over it. Called from stitch(). */
+function spawnTerrain(cursor, unit, v, g, kind){
+  const w = Math.min(maxGap(v), unit*1.6);
+  const p = takePit(); if(!p) return;
+  p.on=true; p.x=cursor; p.w=w;
+  if(kind==='ledge'){
+    const l=takeLedge();
+    if(l){ l.on=true; l.w=w*0.62; l.x=cursor+(w-l.w)/2; l.y=g-(28+Math.random()*(MAX_RISE-28)); }
+  }
+}
+/* Is the player standing over open air? */
+function overPit(px){
+  for(let i=0;i<POOL_PIT;i++){ const p=pits[i]; if(p.on && px>p.x+6 && px<p.x+p.w-6) return true; }
+  return false;
+}
+
 const CHARS = [
   {key:'freddie', name:"Aunt Freddie",  role:"Balanced Tea Tray Runner",    perk:'steady',  blurb:"Starts with an extra heart.",              frames:2},
   {key:'norah',   name:"Uncle Norah",   role:"Precision Gadget Navigator",  perk:'magnet',  blurb:"Pulls nearby tokens toward you.",          frames:2},
@@ -213,6 +249,19 @@ function stitch(v,t){
     s.x = cursorPx + k.b*unit;
     s.y = g - 26 - k.y;
   });
+  // terrain: several pits spread through each chunk (a run only stitches ~5 chunks,
+  // so one per chunk would be far too sparse to read as a mechanic)
+  if(stageIdx>=1){
+    const g2 = RG.H-RG.GROUND_OFF;
+    const span = c.beats*unit;
+    const want = stageIdx>=2 ? 3 : 2;
+    for(let n=0;n<want;n++){
+      if(Math.random() > (stageIdx>=2 ? 0.85 : 0.65)) continue;
+      // spread them out and keep clear of the chunk seams
+      const at = cursorPx + span*(0.22 + n*(0.56/Math.max(1,want-1)));
+      spawnTerrain(at, unit, v, g2, (stageIdx>=2 && Math.random()<0.45) ? 'ledge' : 'pit');
+    }
+  }
   cursorPx += c.beats*unit;
 }
 
@@ -257,7 +306,7 @@ function rgStart(){
   if(!acquireCanvas()){ showErr('canvas not found'); return; }
   const g=RG.H-RG.GROUND_OFF;
   P={x:130,y:g,vy:0,onGround:true,duck:false,anim:0,coyote:0,buffer:0};
-  clearPools(); deco=[]; trail=[];
+  clearPools(); clearTerrain(); deco=[]; trail=[];
   eli={on:false,x:0,y:0,variant:0,life:0,shot:null,cool:480};
   stageIdx=0;dist=0;score=0;hp=3;combo=1;comboT=0;runT=0;
   tShield=0;tSpeed=0;tSlow=0;tAura=0;cdAura=0;iFr=0;puppy=null;
@@ -315,8 +364,27 @@ function rgFrame(now){
       tone(560,'square',0.09,0.15);
     }
   }
+  const prevY = P.y;
   P.vy+=RG.GRAV*dt; P.y+=P.vy*dt;
-  if(P.y>=g){P.y=g;P.vy=0;P.onGround=true;}
+  P.onGround=false;
+  // land on a ledge (only when falling and crossing its top edge)
+  for(let i=0;i<POOL_LEDGE;i++){
+    const l=ledges[i]; if(!l.on) continue;
+    if(P.x+34>l.x && P.x+10<l.x+l.w && P.vy>=0 && P.y>=l.y && prevY<=l.y+14){
+      P.y=l.y; P.vy=0; P.onGround=true;
+    }
+  }
+  // ground, unless there's a pit under the feet
+  if(!P.onGround){
+    if(P.y>=g){
+      if(overPit(P.x+22)){
+        if(P.y>g+150){                       // fell in
+          if(tShield<=0&&tAura<=0&&iFr<=0){ hurt(); flash('Fell in!'); }
+          P.y=g-160; P.vy=-4; P.x=Math.max(90,P.x-30);
+        }
+      } else { P.y=g; P.vy=0; P.onGround=true; }
+    }
+  }
   P.anim+=dt*(P.onGround?0.28:0);
 
   /* --- stitch next chunk when the cursor nears the edge --- */
@@ -332,6 +400,8 @@ function rgFrame(now){
     }
     if(k.x<-40) k.on=false;
   }
+  for(let i=0;i<POOL_PIT;i++){ const p=pits[i]; if(p.on){ p.x-=v*dt; if(p.x+p.w<-60) p.on=false; } }
+  for(let i=0;i<POOL_LEDGE;i++){ const l=ledges[i]; if(l.on){ l.x-=v*dt; if(l.x+l.w<-60) l.on=false; } }
   deco.forEach(d=>{ d.x-=v*(d.layer?.55:.22)*dt; if(d.x<-220){d.x=RG.W+Math.random()*260;d.t=Math.random();} });
   if(puppy){ puppy.b+=.18*dt; puppy.x+=((P.x-54)-puppy.x)*.09*dt; }
   if(CHARS[rgSel].perk==='swift') trail.push({x:P.x+20,y:P.y-30,a:1});
@@ -521,6 +591,19 @@ function draw(v){
     const fx=RG.W-(RG.GOAL-dist)*2.2;
     for(let r=0;r<9;r++) for(let c=0;c<2;c++){ X.fillStyle=((r+c)%2)?'#fff':'#111'; X.fillRect(fx+c*16,g-120+r*14,16,14); }
     X.fillStyle='#FFD700'; X.font='bold 16px Outfit'; X.fillText('REUNION!',fx-14,g-132);
+  }
+  // pits: cut the road out
+  for(let i=0;i<POOL_PIT;i++){ const p=pits[i]; if(!p.on) continue;
+    X.fillStyle='#0b0b12'; X.fillRect(p.x,g,p.w,RG.H-g);
+    X.fillStyle='rgba(0,0,0,.55)'; X.fillRect(p.x,g,p.w,10);
+    X.strokeStyle='rgba(255,255,255,.10)'; X.lineWidth=2;
+    X.beginPath(); X.moveTo(p.x,g); X.lineTo(p.x,g+26); X.moveTo(p.x+p.w,g); X.lineTo(p.x+p.w,g+26); X.stroke();
+  }
+  // ledges
+  for(let i=0;i<POOL_LEDGE;i++){ const l=ledges[i]; if(!l.on) continue;
+    X.fillStyle=st.accent; X.fillRect(l.x,l.y,l.w,13);
+    X.fillStyle='rgba(255,255,255,.22)'; X.fillRect(l.x,l.y,l.w,3);
+    X.fillStyle='rgba(0,0,0,.35)'; X.fillRect(l.x,l.y+13,l.w,7);
   }
   for(let i=0;i<POOL_H;i++) if(hz[i].on) drawHaz(X,hz[i]);
   for(let i=0;i<POOL_K;i++) if(tk[i].on) drawTok(X,tk[i]);
