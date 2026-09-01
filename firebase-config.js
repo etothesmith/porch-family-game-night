@@ -16,7 +16,13 @@
    they're safe to commit. Access is controlled by database rules,
    not by hiding these keys.
    ============================================================ */
-window.PORCH_FIREBASE_CONFIG = null;
+window.PORCH_FIREBASE_CONFIG = {
+  databaseURL: "https://porch-family-default-rtdb.firebaseio.com",
+  projectId:   "porch-family"
+};
+/* Realtime Database only needs databaseURL. apiKey/appId are for
+   Auth, Analytics and Storage, none of which this app uses. If you
+   ever add sign-in or photo uploads, add the full config then. */
 
 /* When you're ready, delete the line above and use this shape instead:
 
