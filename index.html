@@ -202,6 +202,7 @@ x-dc > * { max-width:100%; overflow-x:hidden; }
   <div class="pfw-title">Porch Family Weekend 2026</div>
   <span id="pfw-livedot" style="font-size:9px;font-weight:800;color:#fff;background:#9CA3AF;padding:2px 7px;border-radius:999px;letter-spacing:.5px">Local</span>
   <button class="pfw-home" onclick="pfwHome()" aria-label="Home">&#8962;</button>
+  <button class="pfw-home" onclick="pfwAdmin()" aria-label="Admin" style="font-size:16px">⚙</button>
 </div>
 
 <helmet>
@@ -315,12 +316,7 @@ a, a:hover { color:#7B2D8E; }
         <pf-face name="jean" size="28" ring="#7B2D8E"></pf-face><div style="flex:1;font-weight:600;font-size:14px;color:#1a1a1a">Family Contacts</div><span style="color:#ccc;font-size:18px">›</span>
       </div>
     </div>
-    <div style="padding:20px 20px 0;display:flex;justify-content:center">
-      <div style="background:#f3e8ff;border-radius:999px;padding:10px 20px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:background 0.2s" style-hover="background:#e9d5ff" onClick="{{ nav.admin }}">
-        <pf-icon name="lock" size="16" color="#7B2D8E"></pf-icon>
-        <span style="font-size:12px;font-weight:600;color:#7B2D8E">Admin Panel</span>
-      </div>
-    </div>
+
   </div>
   </sc-if>
 
@@ -1537,6 +1533,7 @@ a, a:hover { color:#7B2D8E; }
   <button onClick="{{ nav.games }}"><span>🎮</span><small>Games</small></button>
   <button onClick="{{ nav.quiz }}"><span>🧠</span><small>Quiz</small></button>
   <button onClick="{{ nav.history }}"><span>📜</span><small>History</small></button>
+  <button onClick="{{ nav.admin }}"><span>⚙️</span><small>Admin</small></button>
 </div>
 
 </x-dc>
@@ -2797,6 +2794,10 @@ class Component extends DCLogic {
     return el ? el.getAttribute('data-pfw-screen') : 'home';
   }
   window.pfwBack = function(){ history.back(); };
+  window.pfwAdmin = function(){
+    var b = document.querySelector('[onClick*="nav.admin"]');
+    if (b) b.click();
+  };
   window.pfwHome = function(){
     var b = document.querySelector('[onClick*="nav.home"]');
     if (b) b.click();
