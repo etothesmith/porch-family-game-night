@@ -9,7 +9,7 @@
   if (window.__PORCH_LIVE__) return; window.__PORCH_LIVE__ = true;
 
   var CFG = window.PORCH_FIREBASE_CONFIG;
-  var KEYS = ['customSchedule','customPlaces','customContacts','customQuiz'];
+  var KEYS = ['customSchedule','customPlaces','customContacts','customQuiz','announcements','bingoState','auctionLive','runnerBoard'];
   var db = null, ready = false, muted = false;
 
   function setStatus(txt, ok){
