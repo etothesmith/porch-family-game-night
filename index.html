@@ -184,7 +184,7 @@ x-dc > * { max-width:100%; overflow-x:hidden; }
 
 /* ===== BOTTOM NAV BAR ===== */
 /* ensure content clears the fixed nav bar */
-/* nav is now a small FAB — no extra bottom padding needed */
+
 .pfw-bnav{position:fixed;bottom:0;left:0;right:0;z-index:950;
   background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
   border-top:1px solid #eee;padding:6px 0 env(safe-area-inset-bottom,6px);
@@ -241,7 +241,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- HOME -->
   <sc-if value="{{ screenHome }}" hint-placeholder-val="{{ true }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="position:relative;padding:52px 24px 44px;background:linear-gradient(155deg,#5A1A6E 0%,#7B2D8E 40%,#A855F7 100%);overflow:hidden">
       <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06)"></div>
       <div style="position:absolute;bottom:10px;left:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.04)"></div>
@@ -358,7 +358,7 @@ a, a:hover { color:#7B2D8E; }
   </sc-if>
 
   <sc-if value="{{ screenSchedule }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}">
         <span style="font-size:18px;color:#7B2D8E">←</span>
@@ -392,7 +392,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- HISTORY -->
   <sc-if value="{{ screenHistory }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><span style="font-size:18px;color:#7B2D8E">←</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Our History</h2>
@@ -417,7 +417,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- QUIZ -->
   <sc-if value="{{ screenQuiz }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><span style="font-size:18px;color:#7B2D8E">←</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Family Quiz</h2>
@@ -464,7 +464,7 @@ a, a:hover { color:#7B2D8E; }
 
 <!-- ===================== BINGO ===================== -->
 <sc-if value="{{ screenBingo }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#7B2D8E">&#8592;</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Porch Family Bingo</h2>
@@ -569,7 +569,7 @@ a, a:hover { color:#7B2D8E; }
 
 <!-- ===================== MESSAGE BOARD ===================== -->
 <sc-if value="{{ screenBoard }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#EDE9FE;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><span style="font-size:18px;color:#7C3AED">&#8592;</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Family Board</h2>
@@ -631,7 +631,7 @@ a, a:hover { color:#7B2D8E; }
 
 <!-- ===================== AUCTION ===================== -->
 <sc-if value="{{ screenAuction }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#ECFDF5;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#059669">&#8592;</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Porch Auction</h2>
@@ -774,7 +774,7 @@ a, a:hover { color:#7B2D8E; }
 </sc-if>
 
   <sc-if value="{{ screenRunner }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#7B2D8E">&#8592;</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Race to the Reunion</h2>
@@ -785,7 +785,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- GAMES -->
   <sc-if value="{{ screenGames }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><span style="font-size:18px;color:#7B2D8E">←</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Game Night</h2>
@@ -840,7 +840,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- DEAL GAME -->
   <sc-if value="{{ screenDeal }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#FEF3C7;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#D97706">←</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Porch of a Deal</h2>
@@ -1262,7 +1262,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- REOKE -->
   <sc-if value="{{ screenReoke }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#FCE7F3;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#DB2777">&#8592;</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Family Reoke</h2>
@@ -1389,7 +1389,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- PLACES -->
   <sc-if value="{{ screenPlaces }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><span style="font-size:18px;color:#7B2D8E">←</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Places & Venues</h2>
@@ -1413,7 +1413,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- MENU -->
   <sc-if value="{{ screenMenu }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><span style="font-size:18px;color:#7B2D8E">←</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Daily Menu</h2>
@@ -1444,7 +1444,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- CONTACTS -->
   <sc-if value="{{ screenContacts }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><span style="font-size:18px;color:#7B2D8E">←</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Family Contacts</h2>
@@ -1484,7 +1484,7 @@ a, a:hover { color:#7B2D8E; }
 
   <!-- ADMIN -->
   <sc-if value="{{ screenAdmin }}" hint-placeholder-val="{{ false }}">
-  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
     <sc-if value="{{ adminLocked }}" hint-placeholder-val="{{ true }}">
       <div style="padding:60px 20px;text-align:center">
         <div style="margin-bottom:20px"><pf-icon name="lock" size="48" color="#7B2D8E"></pf-icon></div>
@@ -1678,20 +1678,16 @@ a, a:hover { color:#7B2D8E; }
 </div>
 
 
-<!-- FLOATING NAV -->
-<div class="pfw-grid" id="pfw-grid">
-  <div class="pfw-grid-inner">
-    <button onClick="{{ nav.home }}"><span>🏠</span><small>Home</small></button>
-    <button onClick="{{ nav.schedule }}"><span>📅</span><small>Schedule</small></button>
-    <button onClick="{{ nav.games }}"><span>🎮</span><small>Games</small></button>
-    <button onClick="{{ nav.quiz }}"><span>🧠</span><small>Quiz</small></button>
-    <button onClick="{{ nav.history }}"><span>📜</span><small>History</small></button>
-    <button onClick="{{ nav.board }}"><span>💬</span><small>Board</small></button>
-    <button onClick="{{ nav.places }}"><span>📍</span><small>Places</small></button>
-    <button onClick="{{ nav.contacts }}"><span>📱</span><small>Contacts</small></button>
-    <button onClick="{{ nav.admin }}"><span>⚙️</span><small>Admin</small></button>
-  </div>
+<!-- SLIM NAV BAR -->
+<div class="pfw-nav">
+  <button onClick="{{ nav.home }}" title="Home">🏠</button>
+  <button onClick="{{ nav.schedule }}" title="Schedule">📅</button>
+  <button onClick="{{ nav.games }}" title="Games">🎮</button>
+  <button onClick="{{ nav.quiz }}" title="Quiz">🧠</button>
+  <button onClick="{{ nav.board }}" title="Board">💬</button>
+  <button onClick="{{ nav.admin }}" title="Admin">⚙️</button>
 </div>
+<div class="pfw-nav-spacer"></div>
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;430px&quot;,&quot;height&quot;:&quot;932px&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Purple&quot;,&quot;Gold&quot;,&quot;Teal&quot;],&quot;default&quot;:&quot;Purple&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;showCountdown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Home&quot;},&quot;eventYear&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2026&quot;,&quot;section&quot;:&quot;Content&quot;}}">
@@ -3227,43 +3223,7 @@ window.reokePlay=function(){
 </script>
 
 
-<script>
-(function(){
-  // inject the FAB button outside x-dc so it doesn't get re-rendered
-  var fab = document.createElement('button');
-  fab.className = 'pfw-fab';
-  fab.id = 'pfw-fab';
-  fab.innerHTML = '☰';
-  fab.setAttribute('aria-label','Navigation');
-  fab.onclick = function(){
-    var grid = document.getElementById('pfw-grid');
-    var open = grid && grid.classList.contains('show');
-    if(grid){ grid.classList.toggle('show'); }
-    fab.classList.toggle('open');
-    fab.innerHTML = open ? '☰' : '✕';
-  };
-  document.body.appendChild(fab);
 
-  // close grid when a nav button is tapped
-  document.addEventListener('click', function(e){
-    var grid = document.getElementById('pfw-grid');
-    var fab = document.getElementById('pfw-fab');
-    if(!grid || !fab) return;
-    // if click was on a grid button, close it
-    if(e.target.closest('.pfw-grid button')){
-      grid.classList.remove('show');
-      fab.classList.remove('open');
-      fab.innerHTML = '☰';
-    }
-    // if click was outside grid and fab, close it
-    if(!e.target.closest('.pfw-grid') && !e.target.closest('.pfw-fab') && grid.classList.contains('show')){
-      grid.classList.remove('show');
-      fab.classList.remove('open');
-      fab.innerHTML = '☰';
-    }
-  });
-})();
-</script>
 
 </body>
 </html>
