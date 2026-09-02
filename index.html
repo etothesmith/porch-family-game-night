@@ -1680,6 +1680,7 @@ class Component extends DCLogic {
   _countdown = null;
 
   componentDidMount() {
+    window.__porchApp = this;
     this._countdown = setInterval(() => this.forceUpdate(), 60000);
     document.addEventListener('keydown', this._onKey);
     // Load persisted data
@@ -1690,6 +1691,11 @@ class Component extends DCLogic {
       customPlaces: load('places'),
       customContacts: load('contacts')
     });
+    this._loadPlayerName();
+    try{const a=localStorage.getItem('pfw_announcements');if(a)this.setState({announcements:JSON.parse(a)});}catch(e){}
+    try{const b=localStorage.getItem('pfw_messageBoard');if(b)this.setState({messageBoard:JSON.parse(b)});}catch(e){}
+    try{if(localStorage.getItem('pfw_announcePass'))this.setState({announceUnlocked:true});}catch(e){}
+    try{if(localStorage.getItem('pfw_quizPass'))this.setState({quizEditUnlocked:true});}catch(e){}
   }
   componentWillUnmount() {
     clearInterval(this._countdown);
@@ -2000,11 +2006,7 @@ class Component extends DCLogic {
     for(let a=n-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));const t=o[a];o[a]=o[b];o[b]=t;}
     return o;
   }
-  componentDidMount(){ window.__porchApp = this; this._loadPlayerName();
-    try{const a=localStorage.getItem('pfw_announcements');if(a)this.setState({announcements:JSON.parse(a)});}catch(e){}
-    try{if(localStorage.getItem('pfw_announcePass'))this.setState({announceUnlocked:true});}catch(e){}
-    try{if(localStorage.getItem('pfw_quizPass'))this.setState({quizEditUnlocked:true});}catch(e){}
-    try{const b=localStorage.getItem('pfw_messageBoard');if(b)this.setState({messageBoard:JSON.parse(b)});}catch(e){} if(this._mountedOrig) this._mountedOrig(); }
+
   _getPlaces() { return this.state.customPlaces || this._places; }
   _getContacts() { return this.state.customContacts || this._contacts; }
   // Admin helpers
