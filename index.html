@@ -346,6 +346,14 @@ a, a:hover { color:#7B2D8E; }
       <div style="background:#fff;border-radius:999px;padding:14px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.2s" style-hover="background:#f5f0f7" onClick="{{ nav.contacts }}">
         <pf-face name="jean" size="28" ring="#7B2D8E"></pf-face><div style="flex:1;font-weight:600;font-size:14px;color:#1a1a1a">Family Contacts</div><span style="color:#ccc;font-size:18px">›</span>
       </div>
+      <div style="background:#fff;border-radius:999px;padding:14px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.2s;position:relative" style-hover="background:#f5f0f7" onClick="{{ nav.board }}">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#A78BFA);display:flex;align-items:center;justify-content:center;font-size:14px">💬</div>
+        <div style="flex:1;font-weight:600;font-size:14px;color:#1a1a1a">Family Board</div>
+        <sc-if value="{{ hasBoardPosts }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#DC2626;color:#fff;font-size:10px;font-weight:800;min-width:20px;height:20px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 5px">{{ boardCount }}</div>
+        </sc-if>
+        <span style="color:#ccc;font-size:18px">›</span>
+      </div>
     </div>
 
   </div>
@@ -1678,7 +1686,7 @@ a, a:hover { color:#7B2D8E; }
   <button onClick="{{ nav.schedule }}" title="Schedule">📅</button>
   <button onClick="{{ nav.games }}" title="Games">🎮</button>
   <button onClick="{{ nav.quiz }}" title="Quiz">🧠</button>
-  <button onClick="{{ nav.board }}" title="Board">💬</button>
+  <button onClick="{{ nav.board }}" title="Board" style="position:relative">💬<sc-if value="{{ hasBoardNew }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:0;right:0;background:#DC2626;color:#fff;font-size:8px;font-weight:800;min-width:14px;height:14px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px">{{ boardBadge }}</span></sc-if></button>
   <button onClick="{{ nav.admin }}" title="Admin">⚙️</button>
 </div>
 <div class="pfw-nav-spacer"></div>
@@ -1697,7 +1705,7 @@ class Component extends DCLogic {
     playerName: '', playerNameSet: false, hostVerified: false, hostPassError: false,
     auctionMode:null, auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
     announceUnlocked:false, announcePassError:false, quizEditUnlocked:false, quizPassError:false,
-    messageBoard:[],
+    messageBoard:[], boardLastSeen:0,
     reokeMode:null,
     bingoMode:null, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoSuspense:false, bingoWon:false, bingoPattern:'line',
     players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
@@ -1729,6 +1737,7 @@ class Component extends DCLogic {
     this._loadPlayerName();
     try{const a=localStorage.getItem('pfw_announcements');if(a)this.setState({announcements:JSON.parse(a)});}catch(e){}
     try{const b=localStorage.getItem('pfw_messageBoard');if(b)this.setState({messageBoard:JSON.parse(b)});}catch(e){}
+    try{const bs=localStorage.getItem('pfw_boardSeen');if(bs)this.setState({boardLastSeen:parseInt(bs,10)||0});}catch(e){}
     try{if(localStorage.getItem('pfw_announcePass'))this.setState({announceUnlocked:true});}catch(e){}
     try{if(localStorage.getItem('pfw_quizPass'))this.setState({quizEditUnlocked:true});}catch(e){}
   }
@@ -1823,6 +1832,13 @@ class Component extends DCLogic {
     this.setState({customContacts: contacts});
     if(nameEl) nameEl.value = '';
     if(phoneEl) phoneEl.value = '';
+  }
+
+  // ===== BOARD NOTIFICATIONS =====
+  _markBoardSeen(){
+    const count = (this.state.messageBoard||[]).length;
+    this.setState({boardLastSeen: count});
+    try{ localStorage.setItem('pfw_boardSeen', String(count)); }catch(e){}
   }
 
   // ===== MESSAGE BOARD =====
@@ -2527,7 +2543,7 @@ class Component extends DCLogic {
     const nav = {
       home: mkNav('home'), schedule: mkNav('schedule'), history: mkNav('history'),
       quiz: () => { this.setState({quizIdx:0,quizScore:0,quizSelected:null,quizFinished:false,quizOrder:this._shuffleQuiz()}); this._go('quiz'); },
-      runner: mkNav('runner'), bingo: mkNav('bingo'), auction: mkNav('auction'), board: mkNav('board'), games: mkNav('games'),
+      runner: mkNav('runner'), bingo: mkNav('bingo'), auction: mkNav('auction'), board: () => { this._markBoardSeen(); this._go('board'); }, games: mkNav('games'),
       deal: () => { this._initDeal(); this.setState({dealMode:'menu', photoRevealed:false}); this._go('deal'); },
       reoke: mkNav('reoke'), places: mkNav('places'), menu: mkNav('menu'), contacts: mkNav('contacts'),
       admin: () => this._go('admin')
@@ -2610,6 +2626,10 @@ class Component extends DCLogic {
       replyId: 'reply-'+p.id,
       doReply: ()=> this._replyMessage(p.id)
     }));
+    const boardCount = boardPosts.length;
+    const boardNewCount = Math.max(0, boardCount - (s.boardLastSeen||0));
+    const hasBoardNew = boardNewCount > 0;
+    const boardBadge = boardNewCount > 0 ? String(boardNewCount) : '';
     const hasBoardPosts = boardPosts.length > 0;
     const clearMessages = () => this._clearMessages();
     const postMessage = () => this._postMessage();
@@ -2979,7 +2999,7 @@ class Component extends DCLogic {
       runnerFinalScore: s.runnerScore, runnerBest: s.runnerBest,
       runnerStart: () => this._startRunner(),
       // Message Board
-      boardPosts, hasBoardPosts, postMessage, boardMsgKey, clearMessages,
+      boardPosts, hasBoardPosts, postMessage, boardMsgKey, clearMessages, boardCount, boardNewCount, hasBoardNew, boardBadge,
       // Reoke mode
       doReokeSpin, doReokePlay,
       reokeOff, reokeHost, reokePlayer, startReokeHost, startReokePlayer, reokeMenu,
