@@ -100,6 +100,7 @@
 
 
 /* ===== BINGO ===== */
+@keyframes bingoBar{0%{width:0}100%{width:100%}}
 @keyframes ballDrop{0%{transform:translateY(-180px) scale(0.3);opacity:0}40%{transform:translateY(20px) scale(1.1);opacity:1}55%{transform:translateY(-18px) scale(0.95)}70%{transform:translateY(6px) scale(1.03)}85%{transform:translateY(-3px)}100%{transform:translateY(0) scale(1)}}
 @keyframes ballGlow{0%{box-shadow:0 0 20px rgba(255,215,0,0.4)}50%{box-shadow:0 0 60px rgba(255,215,0,0.85),0 0 120px rgba(255,180,0,0.3)}100%{box-shadow:0 0 20px rgba(255,215,0,0.4)}}
 @keyframes bingoWin{0%{transform:scale(1)}25%{transform:scale(1.08) rotate(-2deg)}50%{transform:scale(0.96) rotate(2deg)}75%{transform:scale(1.04)}100%{transform:scale(1)}}
@@ -479,7 +480,16 @@ a, a:hover { color:#7B2D8E; }
           </div>
           <div style="background:linear-gradient(180deg,#1E293B,#0F172A);border-radius:var(--radius-lg);padding:30px 16px;text-align:center;margin-bottom:14px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden">
             <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(245,197,66,0.08),transparent 70%)"></div>
-            <sc-if value="{{ bingoAnimate }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ bingoSuspense }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative;z-index:1">
+                <div style="font-size:28px;animation:aucPulse 0.8s ease-in-out infinite">🎱</div>
+                <div style="font-family:'Fredoka',sans-serif;font-size:18px;color:#F5C542;margin-top:8px;animation:aucPulse 1.2s ease-in-out infinite">Drawing...</div>
+                <div style="width:120px;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;margin:12px auto 0;overflow:hidden">
+                  <div style="width:100%;height:100%;background:linear-gradient(90deg,#F5C542,#EC4899);border-radius:3px;animation:bingoBar 3s linear forwards"></div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ bingoReady }}" hint-placeholder-val="{{ false }}">
               <div class="bingo-ball drop" style="background:radial-gradient(circle at 38% 35%,{{ bingoBallColor }},color-mix(in srgb,{{ bingoBallColor }},#000 40%))">
                 <div style="font-size:14px;font-weight:800;color:rgba(255,255,255,0.9);letter-spacing:2px">{{ bingoBallLetter }}</div>
                 <div style="font-size:38px;font-weight:900;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,0.3)">{{ bingoBallNum }}</div>
@@ -522,6 +532,63 @@ a, a:hover { color:#7B2D8E; }
   </div>
 </sc-if>
 
+
+<!-- ===================== MESSAGE BOARD ===================== -->
+<sc-if value="{{ screenBoard }}" hint-placeholder-val="{{ false }}">
+  <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
+    <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;border-radius:50%;background:#EDE9FE;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.home }}"><span style="font-size:18px;color:#7C3AED">&#8592;</span></div>
+      <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Family Board</h2>
+    </div>
+    <div style="padding:0 16px">
+      <!-- POST INPUT -->
+      <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+        <div style="display:flex;gap:8px">
+          <input id="board-msg-input" placeholder="Say something to the family..." onKeyDown="{{ boardMsgKey }}"
+            style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #EDE9FE;font-size:14px;font-family:Outfit,sans-serif">
+          <div style="padding:11px 18px;background:linear-gradient(135deg,#7C3AED,#6D28D9);border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap" onClick="{{ postMessage }}">Post</div>
+        </div>
+      </div>
+      <!-- POSTS -->
+      <sc-for list="{{ boardPosts }}" as="bp" hint-placeholder-count="0">
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#A78BFA);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:14px;color:#fff;font-weight:800">{{ bp.name }}</span>
+            </div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#1a1a1a">{{ bp.name }}</div>
+                <div style="font-size:10px;color:#bbb">{{ bp.time }}</div>
+              </div>
+              <div style="font-size:13.5px;color:#444;line-height:1.55;margin-top:4px">{{ bp.text }}</div>
+            </div>
+          </div>
+          <!-- REPLIES -->
+          <sc-if value="{{ bp.hasReplies }}" hint-placeholder-val="{{ false }}">
+            <div style="margin:10px 0 0 46px;border-left:2px solid #EDE9FE;padding-left:12px">
+              <sc-for list="{{ bp.replies }}" as="rp" hint-placeholder-count="0">
+                <div style="margin-bottom:8px">
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <div style="font-family:'Fredoka',sans-serif;font-size:12px;color:#7C3AED">{{ rp.name }}</div>
+                    <div style="font-size:9px;color:#ccc">{{ rp.time }}</div>
+                  </div>
+                  <div style="font-size:12.5px;color:#555;line-height:1.5;margin-top:2px">{{ rp.text }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <!-- REPLY INPUT -->
+          <div style="margin:8px 0 0 46px;display:flex;gap:6px">
+            <input id="{{ bp.replyId }}" placeholder="Reply..." style="flex:1;padding:8px 12px;border-radius:10px;border:1.5px solid #EDE9FE;font-size:12px;font-family:Outfit,sans-serif">
+            <div style="padding:8px 14px;background:#EDE9FE;border-radius:10px;color:#7C3AED;font-weight:700;font-size:11px;cursor:pointer" onClick="{{ bp.doReply }}">Reply</div>
+          </div>
+        </div>
+      </sc-for>
+      <sc-if value="{{ hasBoardPosts }}" hint-placeholder-val="{{ false }}"><div></div></sc-if>
+    </div>
+  </div>
+</sc-if>
 
 <!-- ===================== AUCTION ===================== -->
 <sc-if value="{{ screenAuction }}" hint-placeholder-val="{{ false }}">
@@ -1535,6 +1602,7 @@ a, a:hover { color:#7B2D8E; }
   <button onClick="{{ nav.games }}"><span>🎮</span><small>Games</small></button>
   <button onClick="{{ nav.quiz }}"><span>🧠</span><small>Quiz</small></button>
   <button onClick="{{ nav.history }}"><span>📜</span><small>History</small></button>
+  <button onClick="{{ nav.board }}"><span>💬</span><small>Board</small></button>
   <button onClick="{{ nav.admin }}"><span>⚙️</span><small>Admin</small></button>
 </div>
 
@@ -1551,8 +1619,9 @@ class Component extends DCLogic {
     announcements:[], announceInput:'',
     playerName: '', playerNameSet: false, hostVerified: false, hostPassError: false,
     auctionMode:null, auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
+    messageBoard:[],
     reokeMode:null,
-    bingoMode:null, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoWon:false, bingoPattern:'line',
+    bingoMode:null, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoSuspense:false, bingoWon:false, bingoPattern:'line',
     players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
     doorPlan: [], doors: [], dealQ: [], dealQi: 0, dealRevealed: false, dealLastDoor: null, dealWins: 0, dealGags: 0,
     trivOrder: [], trivIdx: 0, trivRevealed: false, trivStreak: 0, trivBanked: 0, trivOffer: 0, trivPhase: 'ask',
@@ -1612,6 +1681,36 @@ class Component extends DCLogic {
     this._persist('announcements', []);
   }
 
+
+
+  // ===== MESSAGE BOARD =====
+  _postMessage(){
+    const el=document.getElementById('board-msg-input');
+    const msg=el?el.value.trim():'';
+    if(!msg) return;
+    const name = this.state.playerName || localStorage.getItem('pfw_playerName') || 'Anonymous';
+    const post={text:msg, name:name, time:new Date().toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}), id:Date.now(), replies:[]};
+    const board=[post,...(this.state.messageBoard||[])].slice(0,100);
+    this.setState({messageBoard:board});
+    this._persist('messageBoard', board);
+    if(el) el.value='';
+  }
+  _replyMessage(postId){
+    const el=document.getElementById('reply-'+postId);
+    const txt=el?el.value.trim():'';
+    if(!txt) return;
+    const name = this.state.playerName || localStorage.getItem('pfw_playerName') || 'Anonymous';
+    const board=(this.state.messageBoard||[]).map(p=>{
+      if(p.id===postId){
+        const replies=[...(p.replies||[]), {text:txt, name:name, time:new Date().toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}), id:Date.now()}];
+        return {...p, replies:replies};
+      }
+      return p;
+    });
+    this.setState({messageBoard:board});
+    this._persist('messageBoard', board);
+    if(el) el.value='';
+  }
 
   // ===== REOKE MODE =====
   _startReokeHost(){ this.setState({reokeMode:'host'}); }
@@ -1733,8 +1832,12 @@ class Component extends DCLogic {
     const idx=this.state.bingoIdx+1;
     if(idx>=this.state.bingoBalls.length) return;
     const ball=this.state.bingoBalls[idx];
-    this.setState({bingoAnimating:true, bingoIdx:idx, bingoCurrent:ball});
-    // auto-mark on card
+    // 3-second dramatic build: show suspense state, THEN reveal the ball
+    this.setState({bingoAnimating:true, bingoIdx:idx, bingoCurrent:null, bingoSuspense:true});
+    setTimeout(()=>{
+      this.setState({bingoCurrent:ball, bingoSuspense:false});
+    }, 3000);
+    // auto-mark after the ball lands (3s suspense + 2.2s animation)
     setTimeout(()=>{
       const marked=this.state.bingoMarked.map(c=>[...c]);
       const card=this.state.bingoCard;
@@ -1743,7 +1846,7 @@ class Component extends DCLogic {
       // persist to Firebase so player devices see it
       this._persist('bingoState', {drawn:drawn, idx:idx});
       this.setState({bingoMarked:marked, bingoDrawn:drawn, bingoAnimating:false});
-    }, 2200);
+    }, 5400);
   }
   _toggleMark(c,r){
     if(c===2&&r===2) return; // free space
@@ -1791,6 +1894,7 @@ class Component extends DCLogic {
         const map = {schedule:'customSchedule', places:'customPlaces',
                      contacts:'customContacts', quiz:'customQuiz',
                      announcements:'announcements',
+                     messageBoard:'messageBoard',
                      bingoState:'bingoState',
                      auctionLive:'auctionLive'};
         if (map[key]) window.PorchLive.push(map[key], data);
@@ -1806,7 +1910,8 @@ class Component extends DCLogic {
     return o;
   }
   componentDidMount(){ window.__porchApp = this; this._loadPlayerName();
-    try{const a=localStorage.getItem('pfw_announcements');if(a)this.setState({announcements:JSON.parse(a)});}catch(e){} if(this._mountedOrig) this._mountedOrig(); }
+    try{const a=localStorage.getItem('pfw_announcements');if(a)this.setState({announcements:JSON.parse(a)});}catch(e){}
+    try{const b=localStorage.getItem('pfw_messageBoard');if(b)this.setState({messageBoard:JSON.parse(b)});}catch(e){} if(this._mountedOrig) this._mountedOrig(); }
   _getPlaces() { return this.state.customPlaces || this._places; }
   _getContacts() { return this.state.customContacts || this._contacts; }
   // Admin helpers
@@ -2273,7 +2378,7 @@ class Component extends DCLogic {
     const nav = {
       home: mkNav('home'), schedule: mkNav('schedule'), history: mkNav('history'),
       quiz: () => { this.setState({quizIdx:0,quizScore:0,quizSelected:null,quizFinished:false,quizOrder:this._shuffleQuiz()}); this._go('quiz'); },
-      runner: mkNav('runner'), bingo: mkNav('bingo'), auction: mkNav('auction'), games: mkNav('games'),
+      runner: mkNav('runner'), bingo: mkNav('bingo'), auction: mkNav('auction'), board: mkNav('board'), games: mkNav('games'),
       deal: () => { this._initDeal(); this.setState({dealMode:'menu', photoRevealed:false}); this._go('deal'); },
       reoke: mkNav('reoke'), places: mkNav('places'), menu: mkNav('menu'), contacts: mkNav('contacts'),
       admin: () => this._go('admin')
@@ -2348,6 +2453,18 @@ class Component extends DCLogic {
       runnerScene = React.createElement('div',{style:{position:'relative',width:'100%',height:'100%',overflow:'hidden',cursor:'pointer'},onClick:()=>this._jump()}, ...children);
     }
 
+    // ===== Message Board =====
+    const boardPosts = (s.messageBoard||[]).map(p=>({
+      ...p,
+      replies: (p.replies||[]).map(r=>({...r})),
+      hasReplies: (p.replies||[]).length > 0,
+      replyId: 'reply-'+p.id,
+      doReply: ()=> this._replyMessage(p.id)
+    }));
+    const hasBoardPosts = boardPosts.length > 0;
+    const postMessage = () => this._postMessage();
+    const boardMsgKey = (e) => { if(e.key==='Enter') this._postMessage(); };
+
     // ===== Reoke mode =====
     const reokeOff    = !s.reokeMode;
     const reokeHost   = s.reokeMode==='host';
@@ -2409,6 +2526,8 @@ class Component extends DCLogic {
     const bingoHostOn   = s.bingoMode==='host';
     const bingoPlayerOn = s.bingoMode==='player';
     const bingoAnimate  = s.bingoAnimating;
+    const bingoSuspense = s.bingoSuspense;
+    const bingoReady = s.bingoAnimating && !s.bingoSuspense && !!s.bingoCurrent;
     const bingoBall     = s.bingoCurrent;
     const bingoBallLetter = bingoBall ? bingoBall.letter : '';
     const bingoBallNum    = bingoBall ? String(bingoBall.num) : '';
@@ -2691,6 +2810,8 @@ class Component extends DCLogic {
       runnerShowStart: s.runnerState==='idle', runnerShowOver: s.runnerState==='over',
       runnerFinalScore: s.runnerScore, runnerBest: s.runnerBest,
       runnerStart: () => this._startRunner(),
+      // Message Board
+      boardPosts, hasBoardPosts, postMessage, boardMsgKey,
       // Reoke mode
       reokeOff, reokeHost, reokePlayer, startReokeHost, startReokePlayer, reokeMenu,
       // Player / host gates
@@ -2705,7 +2826,7 @@ class Component extends DCLogic {
       bingoMenuOn, bingoHostOn, bingoPlayerOn, bingoAnimate,
       bingoBallLetter, bingoBallNum, bingoBallFull, bingoBallColor,
       bingoDrawCount, bingoHistory, bingoCardCells,
-      bingoWon, bingoNotWon,
+      bingoSuspense, bingoReady, bingoWon, bingoNotWon,
       startBingoHost, startBingoPlayer, drawBall, callBingo, newCard, bingoMenu,
       // Announcements
       announcements, hasAnnouncements, noAnnouncements,
@@ -2824,17 +2945,27 @@ class Component extends DCLogic {
   // Warn once, on first visit, that Back stays in the app
   window.addEventListener('DOMContentLoaded', function(){
     try{
-      if (localStorage.getItem('pfw_backnote')) return;
-      localStorage.setItem('pfw_backnote','1');
+      if (localStorage.getItem('pfw_addscreen')) return;
+      localStorage.setItem('pfw_addscreen','1');
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      var isAndroid = /Android/.test(navigator.userAgent);
+      var steps = isIOS
+        ? 'Tap the <b>Share</b> button (square with arrow ↑) then <b>"Add to Home Screen"</b>'
+        : isAndroid
+        ? 'Tap the <b>⋮ menu</b> (three dots) then <b>"Add to Home Screen"</b> or <b>"Install app"</b>'
+        : 'Bookmark this page for quick access!';
       var n = document.createElement('div');
-      n.style.cssText = 'position:fixed;left:12px;right:12px;bottom:16px;z-index:2000;'+
-        'background:#7B2D8E;color:#fff;padding:13px 16px;border-radius:14px;'+
-        'font-family:Outfit,system-ui,sans-serif;font-size:13px;line-height:1.5;'+
-        'box-shadow:0 8px 30px rgba(0,0,0,.3)';
-      n.innerHTML = 'Heads up — your phone\u2019s <b>Back</b> button moves around inside this app, '+
-        'not back to your browser. Use it freely!'+
-        '<div style="text-align:right;margin-top:8px"><button style="background:#fff;color:#7B2D8E;'+
-        'border:none;padding:7px 16px;border-radius:999px;font-weight:700;cursor:pointer">Got it</button></div>';
+      n.style.cssText = 'position:fixed;left:12px;right:12px;bottom:80px;z-index:2000;'+
+        'background:linear-gradient(135deg,#7B2D8E,#6D28D9);color:#fff;padding:16px 18px;border-radius:16px;'+
+        'font-family:Outfit,system-ui,sans-serif;font-size:13px;line-height:1.6;'+
+        'box-shadow:0 8px 30px rgba(0,0,0,.35)';
+      n.innerHTML = '<div style="display:flex;align-items:flex-start;gap:10px">'+
+        '<div style="font-size:28px;flex-shrink:0">📲</div>'+
+        '<div><b style="font-size:15px">Add to your Home Screen!</b><br>'+
+        'Get the Porch Family app icon on your phone — no download needed.<br><br>'+
+        steps+'</div></div>'+
+        '<div style="text-align:right;margin-top:10px"><button style="background:rgba(255,255,255,0.15);color:#fff;'+
+        'border:1px solid rgba(255,255,255,0.3);padding:8px 18px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer">Got it!</button></div>';
       n.querySelector('button').onclick = function(){ n.remove(); };
       document.body.appendChild(n);
       setTimeout(function(){ if(n.parentNode) n.remove(); }, 9000);
