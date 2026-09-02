@@ -180,6 +180,22 @@ x-dc > * { max-width:100%; overflow-x:hidden; }
 .auc-stage::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,rgba(245,197,66,0.1),transparent 65%);}
 .auc-woodbar{background:linear-gradient(90deg,#5c3a1e,#7a4f2d,#5c3a1e);height:6px;border-radius:3px;margin:12px 0;}
 
+
+/* ===== BOTTOM NAV BAR ===== */
+.pfw-bnav{position:fixed;bottom:0;left:0;right:0;z-index:950;
+  background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
+  border-top:1px solid #eee;padding:6px 0 env(safe-area-inset-bottom,6px);
+  display:flex;justify-content:space-around;align-items:center;
+  box-shadow:0 -2px 12px rgba(0,0,0,.06);}
+@media(min-width:640px){.pfw-bnav{max-width:480px;left:50%;transform:translateX(-50%);border-radius:18px 18px 0 0;}}
+@media(min-width:900px){.pfw-bnav{max-width:520px;}}
+.pfw-bnav button{background:none;border:none;display:flex;flex-direction:column;align-items:center;
+  gap:2px;padding:4px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent;min-width:52px;}
+.pfw-bnav button span{font-size:20px;}
+.pfw-bnav button small{font-size:9px;color:#999;font-weight:600;}
+.pfw-bnav button.act small{color:#7B2D8E;}
+.pfw-bnav button.act span{filter:none;}
+
 </style>
 <div id="pfw-topbar">
   <button class="pfw-back" onclick="pfwBack()" aria-label="Back">&#8592;</button>
@@ -1125,32 +1141,59 @@ a, a:hover { color:#7B2D8E; }
   <!-- REOKE -->
   <sc-if value="{{ screenReoke }}" hint-placeholder-val="{{ false }}">
   <div style="animation:fadeIn 0.3s ease-out;padding-bottom:90px">
-    <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
-      <div style="width:36px;height:36px;border-radius:50%;background:#FCE7F3;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#DB2777">←</span></div>
+    <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;border-radius:50%;background:#FCE7F3;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#DB2777">&#8592;</span></div>
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Family Reoke</h2>
     </div>
-    <div style="padding:0 20px">
-      <div style="background:linear-gradient(135deg,#EC4899,#F43F5E);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px;text-align:center">
-        <div style="animation:float 2.5s infinite"><pf-icon name="mic" size="42" color="#fff"></pf-icon></div>
-        <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:12px 0 4px">Tonight's Playlist</h3>
-        <p style="font-size:13px;color:rgba(255,255,255,0.7);margin:0">Vote for songs or add your own!</p>
-      </div>
-      <sc-for list="{{ reokeSongs }}" as="song" hint-placeholder-count="5">
-        <div style="background:#fff;border-radius:var(--radius-md);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
-          <div style="width:38px;height:38px;border-radius:var(--radius-md);background:{{ song.bg }};display:flex;align-items:center;justify-content:center;font-size:18px">{{ song.icon }}</div>
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:14px;color:#1a1a1a">{{ song.title }}</div>
-            <div style="font-size:12px;color:#999">{{ song.artist }}</div>
+    <div style="padding:0 16px">
+      <!-- SLOT MACHINE -->
+      <div id="reoke-machine" style="background:linear-gradient(180deg,#18183a,#0c0c28);border:3px solid #F5C542;border-radius:20px;padding:20px 14px;text-align:center;position:relative;box-shadow:inset 0 0 25px rgba(0,0,0,0.4),0 15px 40px rgba(0,0,0,0.3);margin-bottom:16px">
+        <div style="background:linear-gradient(135deg,#F5C542,#E0A008);color:#1a1000;font-family:'Fredoka',sans-serif;font-size:13px;padding:3px 16px;border-radius:8px;letter-spacing:2px;position:absolute;top:-13px;left:50%;transform:translateX(-50%);white-space:nowrap">🎰 FAMILY REOKE 🎰</div>
+        <div id="reoke-slots" style="display:flex;gap:6px;justify-content:center;margin:14px 0">
+          <div style="flex:1;height:80px;background:linear-gradient(180deg,#e8e8e8,#fff 20%,#fff 80%,#e0e0e0);border:2px solid #1a1a1a;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+            <div id="slot-singer" style="font-family:'Fredoka',sans-serif;font-size:14px;color:#111;text-align:center;padding:4px">?</div>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px 12px;border-radius:999px;background:#FDF2F8;transition:background 0.2s" style-hover="background:#FCE7F3" onClick="{{ song.vote }}">
-            <span style="font-size:14px">❤️</span>
-            <span style="font-size:13px;font-weight:600;color:#DB2777">{{ song.votes }}</span>
+          <div style="flex:1;height:80px;background:linear-gradient(180deg,#e8e8e8,#fff 20%,#fff 80%,#e0e0e0);border:2px solid #1a1a1a;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+            <div id="slot-type" style="font-family:'Fredoka',sans-serif;font-size:14px;color:#111;text-align:center;padding:4px">?</div>
+          </div>
+          <div style="flex:1;height:80px;background:linear-gradient(180deg,#e8e8e8,#fff 20%,#fff 80%,#e0e0e0);border:2px solid #1a1a1a;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+            <div id="slot-song" style="font-family:'Fredoka',sans-serif;font-size:13px;color:#111;text-align:center;padding:4px">?</div>
           </div>
         </div>
-      </sc-for>
+        <div id="reoke-result" style="min-height:60px;padding:8px 0">
+          <div id="reoke-singer-txt" style="font-family:'Fredoka',sans-serif;font-size:18px;color:#F5C542"></div>
+          <div id="reoke-song-txt" style="font-family:'Fredoka',sans-serif;font-size:15px;color:#fff;margin-top:2px"></div>
+          <div id="reoke-artist-txt" style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px"></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <div id="reoke-spin-btn" style="padding:14px 28px;background:linear-gradient(135deg,#F5C542,#E0A008);border-radius:999px;color:#1a1000;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer;box-shadow:0 4px 16px rgba(245,197,66,0.4)" onclick="reokeSpin()">PULL THE LEVER 🎰</div>
+          <div id="reoke-play-btn" style="display:none;padding:14px 20px;background:linear-gradient(135deg,#EC4899,#F43F5E);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer" onclick="reokePlay()">▶ PLAY</div>
+          <a id="reoke-yt-link" href="#" target="_blank" style="display:none;padding:14px 20px;background:#0EA5E9;border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:14px;text-decoration:none">🔍 YouTube</a>
+        </div>
+      </div>
+      <!-- YouTube embed -->
+      <div id="reoke-yt-area" style="display:none;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+        <iframe id="reoke-yt-frame" width="100%" height="240" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen></iframe>
+      </div>
+      <!-- Players input -->
+      <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+        <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#DB2777;margin-bottom:8px">Who's singing?</div>
+        <input id="reoke-names" placeholder="Names, comma separated (e.g. Uncle James, Aunt Jean, Sarah)" value=""
+          style="width:100%;padding:11px 14px;border-radius:12px;border:2px solid #FCE7F3;font-size:13px;font-family:Outfit,sans-serif;box-sizing:border-box">
+      </div>
+      <!-- Rules -->
+      <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+        <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#DB2777;margin-bottom:6px">How it works</div>
+        <div style="font-size:12.5px;color:#666;line-height:1.9">
+          <b>PULL THE LEVER</b> — Slot machine picks Singer, Type (Solo/Duet/Group), and Song.<br>
+          <b>DUET/GROUP</b> — Machine spins again for a partner!<br>
+          <b>🌟 WILDCARD</b> — Rare 10% chance: volunteer picks their own jam!<br>
+          <b>▶ PLAY</b> — Plays the karaoke track right in the app.
+        </div>
+      </div>
     </div>
   </div>
-  </sc-if>
+</sc-if>
 
   <!-- PLACES -->
   <sc-if value="{{ screenPlaces }}" hint-placeholder-val="{{ false }}">
@@ -1399,6 +1442,15 @@ a, a:hover { color:#7B2D8E; }
   </div>
   </sc-if>
 </div>
+
+<div class="pfw-bnav">
+  <button onClick="{{ nav.home }}"><span>🏠</span><small>Home</small></button>
+  <button onClick="{{ nav.schedule }}"><span>📅</span><small>Schedule</small></button>
+  <button onClick="{{ nav.games }}"><span>🎮</span><small>Games</small></button>
+  <button onClick="{{ nav.quiz }}"><span>🧠</span><small>Quiz</small></button>
+  <button onClick="{{ nav.history }}"><span>📜</span><small>History</small></button>
+</div>
+
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;430px&quot;,&quot;height&quot;:&quot;932px&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Purple&quot;,&quot;Gold&quot;,&quot;Teal&quot;],&quot;default&quot;:&quot;Purple&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;showCountdown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Home&quot;},&quot;eventYear&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2026&quot;,&quot;section&quot;:&quot;Content&quot;}}">
 class Component extends DCLogic {
@@ -2683,5 +2735,79 @@ class Component extends DCLogic {
   });
 })();
 </script>
+
+<script>
+/* Family Reoke — slot machine */
+(function(){
+const rDb=[{t:"My Girl",ar:"The Temptations",ty:"Group",yt:"9pe4JSIhXg0"},{t:"Ain't No Mountain High Enough",ar:"Marvin & Tammi",ty:"Duet",yt:"0XC39zKT_Dk"},{t:"Superstition",ar:"Stevie Wonder",ty:"Solo",yt:"4ia5KDIXLy4"},{t:"Respect",ar:"Aretha Franklin",ty:"Solo",yt:"F2TmbIOfpuk"},{t:"Stand By Me",ar:"Ben E. King",ty:"Solo",yt:"G4b-D2hE5H8"},{t:"I Want You Back",ar:"Jackson 5",ty:"Group",yt:"hM6o4R-0J2E"},{t:"September",ar:"Earth Wind & Fire",ty:"Group",yt:"8cK5O4W3T2E"},{t:"Before I Let Go",ar:"Maze ft Frankie Beverly",ty:"Solo",yt:"vI_04_P55P8"},{t:"Waterfalls",ar:"TLC",ty:"Group",yt:"enVeRCtCw8w"},{t:"End of the Road",ar:"Boyz II Men",ty:"Group",yt:"84L0nU4zD_4"},{t:"No Diggity",ar:"Blackstreet",ty:"Group",yt:"9mPZ_x_e4wA"},{t:"This Is How We Do It",ar:"Montell Jordan",ty:"Solo",yt:"G7Yh_f_xUfM"},{t:"Say My Name",ar:"Destiny's Child",ty:"Group",yt:"lTfV_YvGbp8"},{t:"Yeah!",ar:"Usher",ty:"Solo",yt:"QO_fKzXyBbw"},{t:"Family Affair",ar:"Mary J. Blige",ty:"Solo",yt:"UaU6tXWv3U0"},{t:"The Boy Is Mine",ar:"Brandy & Monica",ty:"Duet",yt:"Yh_a0y5p728"},{t:"Crazy in Love",ar:"Beyonce",ty:"Duet",yt:"Po2wzSJPTBk"},{t:"Fallin'",ar:"Alicia Keys",ty:"Solo",yt:"k5FvP3fN4Zk"},{t:"I Will Always Love You",ar:"Whitney Houston",ty:"Solo",yt:"aY8e8XoWdYI"},{t:"Sweet Caroline",ar:"Neil Diamond",ty:"Solo",yt:"1vhFnTjia_I"},{t:"Don't Stop Believin'",ar:"Journey",ty:"Group",yt:"KaqC5FnvAEc"},{t:"I Will Survive",ar:"Gloria Gaynor",ty:"Solo",yt:"ehqhfZvaPNM"},{t:"Tennessee Whiskey",ar:"Chris Stapleton",ty:"Solo",yt:"F4iK00O8GfU"},{t:"Lean on Me",ar:"Bill Withers",ty:"Group",yt:"fOZ-MySzAac"},{t:"Shout",ar:"Isley Brothers",ty:"Group",yt:"xKwAMrQSe0k"},{t:"Cupid Shuffle",ar:"Cupid",ty:"Group",yt:"h24_zoqu4RU"},{t:"Cha Cha Slide",ar:"DJ Casper",ty:"Group",yt:"wZv62ShoStY"},{t:"Electric Slide",ar:"Marcia Griffiths",ty:"Group",yt:"tH9PBBo6v6k"},{t:"Hit the Road Jack",ar:"Ray Charles",ty:"Duet",yt:"Q8Tiz6INF7I"},{t:"Happy",ar:"Pharrell",ty:"Solo",yt:"ZbZSe6N_BXs"},{t:"Love on Top",ar:"Beyonce",ty:"Solo",yt:"Ob7vObnFUH8"},{t:"Best Part",ar:"Daniel Caesar & H.E.R.",ty:"Duet",yt:"vBy7FaapGRo"},{t:"Killing Me Softly",ar:"Fugees",ty:"Group",yt:"oKOtzIo-uYw"},{t:"At Last",ar:"Etta James",ty:"Solo",yt:"S-cbOl96RFM"},{t:"Natural Woman",ar:"Aretha Franklin",ty:"Solo",yt:"dEWuAE4pXew"},{t:"Uptown Funk",ar:"Bruno Mars",ty:"Solo",yt:"OPf0YbXqDm0"},{t:"We Are Family",ar:"Sister Sledge",ty:"Group",yt:"eBpYGRhrsq8"},{t:"Celebration",ar:"Kool & The Gang",ty:"Group",yt:"3GwjfUFyY6M"},{t:"Old Town Road",ar:"Lil Nas X",ty:"Solo",yt:"r7qovpFAGrQ"},{t:"Blinding Lights",ar:"The Weeknd",ty:"Solo",yt:"4NRXx6U8ABQ"},{t:"Endless Love",ar:"Diana Ross & Lionel Richie",ty:"Duet",yt:"JM_R1R28kLM"},{t:"Shallow",ar:"Lady Gaga & Bradley Cooper",ty:"Duet",yt:"bo_efYhYU2A"},{t:"Bohemian Rhapsody",ar:"Queen",ty:"Group",yt:"fJ9rUzIMcZQ"},{t:"ABC",ar:"Jackson 5",ty:"Group",yt:"ho7796-au8Y"},{t:"Proud Mary",ar:"Tina Turner",ty:"Solo",yt:"T3dFUBcGMJU"},{t:"Thriller",ar:"Michael Jackson",ty:"Solo",yt:"sOnqjkJTMaA"},{t:"Billie Jean",ar:"Michael Jackson",ty:"Solo",yt:"Zi_XLOBDo_Y"},{t:"Purple Rain",ar:"Prince",ty:"Solo",yt:"TvnYmWpD_T8"},{t:"Umbrella",ar:"Rihanna",ty:"Solo",yt:"CvBfHwUxHIk"},{t:"Georgia On My Mind",ar:"Ray Charles",ty:"Solo",yt:"glggureS_Js"},{t:"Wobble Baby",ar:"V.I.C.",ty:"Group",yt:"fCOoPNmJbhU"},{t:"Finesse",ar:"Bruno Mars & Cardi B",ty:"Duet",yt:"LsoLEjrDogU"},{t:"Summertime",ar:"DJ Jazzy Jeff & Fresh Prince",ty:"Duet",yt:"Kr0tTbTbmVA"},{t:"Can't Help Falling in Love",ar:"Elvis Presley",ty:"Solo",yt:"vGJTaP6anOU"},{t:"Levitating",ar:"Dua Lipa",ty:"Solo",yt:"TUVcZfQe-Kw"},{t:"Build Me Up Buttercup",ar:"The Foundations",ty:"Group",yt:"iol0B-clFFM"}];
+const types=['Solo','Duet','Group'];
+let spinning=false, curSong=null;
+
+function getNames(){
+  const el=document.getElementById('reoke-names');
+  return (el?el.value:'').split(',').map(s=>s.trim()).filter(Boolean);
+}
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function animSlot(el, items, final, delay, dur){
+  let t0=null, interval=80;
+  const id=setInterval(()=>{el.textContent=items[Math.floor(Math.random()*items.length)];},interval);
+  setTimeout(()=>{clearInterval(id);el.textContent=final;el.style.background='linear-gradient(135deg,#F5C542,#fff8dc)';
+    setTimeout(()=>{el.style.background='';},600);},delay+dur);
+}
+window.reokeSpin=function(){
+  if(spinning)return;
+  const names=getNames();
+  if(!names.length){document.getElementById('slot-singer').textContent='Add names above!';return;}
+  spinning=true;
+  document.getElementById('reoke-yt-area').style.display='none';
+  document.getElementById('reoke-play-btn').style.display='none';
+  document.getElementById('reoke-yt-link').style.display='none';
+  document.getElementById('reoke-singer-txt').textContent='';
+  document.getElementById('reoke-song-txt').textContent='';
+  document.getElementById('reoke-artist-txt').textContent='';
+
+  const isVol = Math.random()<0.10;
+  const singer = isVol ? '[VOLUNTEER]' : pick(names);
+  const type   = isVol ? '[YOUR CHOICE]' : pick(types);
+  const song   = isVol ? null : pick(rDb.filter(s=> type==='Solo'?s.ty==='Solo' : type==='Duet'?s.ty==='Duet' : s.ty==='Group') || rDb);
+  curSong = song;
+
+  const s1=document.getElementById('slot-singer'), s2=document.getElementById('slot-type'), s3=document.getElementById('slot-song');
+  animSlot(s1, names, singer, 0, 1200);
+  animSlot(s2, types, type, 400, 1400);
+  animSlot(s3, rDb.map(s=>s.t), isVol?'🌟 PICK YOUR JAM 🌟':(song?song.t:'?'), 800, 1800);
+
+  setTimeout(()=>{
+    spinning=false;
+    if(isVol){
+      document.getElementById('reoke-singer-txt').textContent='🌟 VOLUNTEER! 🌟';
+      document.getElementById('reoke-song-txt').textContent='Pick your own song!';
+    } else {
+      document.getElementById('reoke-singer-txt').textContent=singer;
+      document.getElementById('reoke-song-txt').textContent=song?song.t:'';
+      document.getElementById('reoke-artist-txt').textContent=song?('by '+song.ar):'';
+      if(song){
+        document.getElementById('reoke-play-btn').style.display='inline-block';
+        document.getElementById('reoke-yt-link').style.display='inline-block';
+        document.getElementById('reoke-yt-link').href='https://www.youtube.com/results?search_query='+encodeURIComponent(song.t+' '+song.ar+' karaoke');
+      }
+      // Duet/Group: show partner
+      if(type==='Duet'||type==='Group'){
+        const others=names.filter(n=>n!==singer);
+        const partner=others.length?pick(others):'(need more names!)';
+        document.getElementById('reoke-singer-txt').textContent=singer+' + '+partner;
+      }
+    }
+  }, 2800);
+};
+window.reokePlay=function(){
+  if(!curSong||!curSong.yt)return;
+  document.getElementById('reoke-yt-frame').src='https://www.youtube.com/embed/'+curSong.yt+'?autoplay=1&rel=0';
+  document.getElementById('reoke-yt-area').style.display='block';
+  document.getElementById('reoke-yt-area').scrollIntoView({behavior:'smooth',block:'center'});
+};
+})();
+</script>
+
 </body>
 </html>
