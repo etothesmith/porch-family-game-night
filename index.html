@@ -184,7 +184,7 @@ x-dc > * { max-width:100%; overflow-x:hidden; }
 
 /* ===== BOTTOM NAV BAR ===== */
 /* ensure content clears the fixed nav bar */
-x-dc > sc-if > div { padding-bottom: 80px !important; }
+/* nav is now a small FAB — no extra bottom padding needed */
 .pfw-bnav{position:fixed;bottom:0;left:0;right:0;z-index:950;
   background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
   border-top:1px solid #eee;padding:6px 0 env(safe-area-inset-bottom,6px);
@@ -1677,14 +1677,20 @@ a, a:hover { color:#7B2D8E; }
   </sc-if>
 </div>
 
-<div class="pfw-bnav">
-  <button onClick="{{ nav.home }}"><span>🏠</span><small>Home</small></button>
-  <button onClick="{{ nav.schedule }}"><span>📅</span><small>Schedule</small></button>
-  <button onClick="{{ nav.games }}"><span>🎮</span><small>Games</small></button>
-  <button onClick="{{ nav.quiz }}"><span>🧠</span><small>Quiz</small></button>
-  <button onClick="{{ nav.history }}"><span>📜</span><small>History</small></button>
-  <button onClick="{{ nav.board }}"><span>💬</span><small>Board</small></button>
-  <button onClick="{{ nav.admin }}"><span>⚙️</span><small>Admin</small></button>
+
+<!-- FLOATING NAV -->
+<div class="pfw-grid" id="pfw-grid">
+  <div class="pfw-grid-inner">
+    <button onClick="{{ nav.home }}"><span>🏠</span><small>Home</small></button>
+    <button onClick="{{ nav.schedule }}"><span>📅</span><small>Schedule</small></button>
+    <button onClick="{{ nav.games }}"><span>🎮</span><small>Games</small></button>
+    <button onClick="{{ nav.quiz }}"><span>🧠</span><small>Quiz</small></button>
+    <button onClick="{{ nav.history }}"><span>📜</span><small>History</small></button>
+    <button onClick="{{ nav.board }}"><span>💬</span><small>Board</small></button>
+    <button onClick="{{ nav.places }}"><span>📍</span><small>Places</small></button>
+    <button onClick="{{ nav.contacts }}"><span>📱</span><small>Contacts</small></button>
+    <button onClick="{{ nav.admin }}"><span>⚙️</span><small>Admin</small></button>
+  </div>
 </div>
 
 </x-dc>
@@ -3217,6 +3223,45 @@ window.reokePlay=function(){
   document.getElementById('reoke-yt-area').style.display='block';
   document.getElementById('reoke-yt-area').scrollIntoView({behavior:'smooth',block:'center'});
 };
+})();
+</script>
+
+
+<script>
+(function(){
+  // inject the FAB button outside x-dc so it doesn't get re-rendered
+  var fab = document.createElement('button');
+  fab.className = 'pfw-fab';
+  fab.id = 'pfw-fab';
+  fab.innerHTML = '☰';
+  fab.setAttribute('aria-label','Navigation');
+  fab.onclick = function(){
+    var grid = document.getElementById('pfw-grid');
+    var open = grid && grid.classList.contains('show');
+    if(grid){ grid.classList.toggle('show'); }
+    fab.classList.toggle('open');
+    fab.innerHTML = open ? '☰' : '✕';
+  };
+  document.body.appendChild(fab);
+
+  // close grid when a nav button is tapped
+  document.addEventListener('click', function(e){
+    var grid = document.getElementById('pfw-grid');
+    var fab = document.getElementById('pfw-fab');
+    if(!grid || !fab) return;
+    // if click was on a grid button, close it
+    if(e.target.closest('.pfw-grid button')){
+      grid.classList.remove('show');
+      fab.classList.remove('open');
+      fab.innerHTML = '☰';
+    }
+    // if click was outside grid and fab, close it
+    if(!e.target.closest('.pfw-grid') && !e.target.closest('.pfw-fab') && grid.classList.contains('show')){
+      grid.classList.remove('show');
+      fab.classList.remove('open');
+      fab.innerHTML = '☰';
+    }
+  });
 })();
 </script>
 
