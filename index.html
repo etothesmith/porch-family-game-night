@@ -1411,17 +1411,32 @@ a, a:hover { color:#7B2D8E; }
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Family Contacts</h2>
     </div>
     <div style="padding:0 20px">
+      <!-- ADD YOUR NUMBER -->
+      <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+        <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7B2D8E;margin-bottom:8px">📱 Add your number to the family directory</div>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <input id="self-contact-name" placeholder="Your name" style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid #EDE9FE;font-size:13px;font-family:Outfit,sans-serif">
+          <input id="self-contact-phone" placeholder="Phone number" type="tel" style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid #EDE9FE;font-size:13px;font-family:Outfit,sans-serif">
+        </div>
+        <div style="padding:10px;background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:14px;text-align:center;cursor:pointer" onClick="{{ addSelfContact }}">Add Me</div>
+      </div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#999;margin-bottom:10px">Family Directory</div>
       <sc-for list="{{ contacts }}" as="ct" hint-placeholder-count="6">
-        <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 4px rgba(0,0,0,0.03)">
-          <div style="width:44px;height:44px;border-radius:50%;background:{{ ct.bg }};display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:16px;color:#fff;flex-shrink:0">{{ ct.initials }}</div>
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,0.03)">
+          <div style="width:42px;height:42px;border-radius:50%;background:{{ ct.bg }};display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:14px;color:#fff;flex-shrink:0">{{ ct.initials }}</div>
           <div style="flex:1">
             <div style="font-weight:600;font-size:14px;color:#1a1a1a">{{ ct.name }}</div>
             <div style="font-size:12px;color:#888">{{ ct.role }}</div>
+            <sc-if value="{{ ct.hasPhone }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12px;color:#7B2D8E;margin-top:2px">{{ ct.phone }}</div>
+            </sc-if>
           </div>
-          <div style="display:flex;gap:8px">
-            <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#e9d5ff"><pf-icon name="phone" size="16" color="#7B2D8E"></pf-icon></div>
-            <div style="width:36px;height:36px;border-radius:50%;background:#f3e8ff;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#e9d5ff"><pf-icon name="message" size="16" color="#7B2D8E"></pf-icon></div>
-          </div>
+          <sc-if value="{{ ct.hasPhone }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:6px">
+              <a href="{{ ct.callUrl }}" style="width:34px;height:34px;border-radius:50%;background:#F0FDF4;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px">📞</a>
+              <a href="{{ ct.smsUrl }}" style="width:34px;height:34px;border-radius:50%;background:#EDE9FE;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px">💬</a>
+            </div>
+          </sc-if>
         </div>
       </sc-for>
     </div>
@@ -1682,6 +1697,30 @@ class Component extends DCLogic {
   }
 
 
+
+  // ===== SELF-SERVICE CONTACTS =====
+  _addSelfContact(){
+    const nameEl = document.getElementById('self-contact-name');
+    const phoneEl = document.getElementById('self-contact-phone');
+    const name = nameEl ? nameEl.value.trim() : '';
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    if(!name || !phone) return;
+    const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const colors = ['#7B2D8E','#D97706','#EC4899','#0EA5E9','#16A34A','#7C3AED','#F97316','#DC2626','#059669','#6D28D9'];
+    const bg = colors[Math.floor(Math.random()*colors.length)];
+    const contacts = JSON.parse(JSON.stringify(this._getContacts()));
+    // check for duplicate
+    const existing = contacts.findIndex(c => c.name.toLowerCase() === name.toLowerCase());
+    if(existing >= 0){
+      contacts[existing].phone = phone;
+    } else {
+      contacts.push({name:name, role:'Family', initials:initials, bg:bg, phone:phone});
+    }
+    this._persist('contacts', contacts);
+    this.setState({customContacts: contacts});
+    if(nameEl) nameEl.value = '';
+    if(phoneEl) phoneEl.value = '';
+  }
 
   // ===== MESSAGE BOARD =====
   _postMessage(){
@@ -1993,7 +2032,7 @@ class Component extends DCLogic {
     const d = this.state.adminEditData;
     if (this.state.adminEditIdx === -1) {
       const initials = (d.name||'NN').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-      contacts.push({name:d.name||'New Contact',role:d.role||'',initials,bg:'#7B2D8E'});
+      contacts.push({name:d.name||'New Contact',role:d.role||'',initials,bg:'#7B2D8E',phone:d.phone||''});
     } else {
       const c = contacts[this.state.adminEditIdx];
       if (c) { c.name=d.name||c.name; c.role=d.role||c.role; c.initials=(d.name||c.name).split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
@@ -2473,6 +2512,8 @@ class Component extends DCLogic {
     const startReokePlayer = () => this._startReokePlayer();
     const reokeMenu        = () => this._reokeMenu();
 
+    const addSelfContact = () => this._addSelfContact();
+
     // ===== Player name gate =====
     const playerName      = s.playerName;
     const playerNameSet   = s.playerNameSet;
@@ -2814,6 +2855,7 @@ class Component extends DCLogic {
       boardPosts, hasBoardPosts, postMessage, boardMsgKey,
       // Reoke mode
       reokeOff, reokeHost, reokePlayer, startReokeHost, startReokePlayer, reokeMenu,
+      addSelfContact,
       // Player / host gates
       playerName, playerNameSet, playerNotSet, setPlayerName, playerNameKey,
       hostVerified, hostNotVerified, checkHostPass, hostPassError, hostPassKey,
@@ -2883,7 +2925,11 @@ class Component extends DCLogic {
       // Menu
       menuDays, menuMeals,
       // Contacts
-      contacts: this._getContacts(),
+      contacts: this._getContacts().map(function(c){return Object.assign({},c,{
+        hasPhone:!!c.phone,
+        callUrl:c.phone?'tel:'+c.phone.replace(/[^+\d]/g,''):'',
+        smsUrl:c.phone?'sms:'+c.phone.replace(/[^+\d]/g,''):''
+      });}),
       // Admin
       adminLocked: !s.adminAuth, adminUnlocked: s.adminAuth, adminError: s.adminError,
       adminLogin: this._adminLogin, adminKeyDown: this._adminKeyDown,
