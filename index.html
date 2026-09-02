@@ -2480,7 +2480,7 @@ class Component extends DCLogic {
     const navColors = {
       home: scr==='home'?active:inactive,
       schedule: scr==='schedule'?active:inactive,
-      games: ['games','deal','reoke','runner','bingo','auction'].includes(scr)?active:inactive,
+      games: ['games','deal','reoke','runner','bingo','auction','board'].includes(scr)?active:inactive,
       contacts: scr==='contacts'?active:inactive
     };
 
@@ -2894,7 +2894,7 @@ class Component extends DCLogic {
 
     return {
       screenHome: scr==='home', screenSchedule: scr==='schedule', screenHistory: scr==='history',
-      screenQuiz: scr==='quiz', screenRunner: scr==='runner', screenBingo: scr==='bingo', screenAuction: scr==='auction', screenGames: scr==='games',
+      screenQuiz: scr==='quiz', screenRunner: scr==='runner', screenBingo: scr==='bingo', screenAuction: scr==='auction', screenBoard: scr==='board', screenGames: scr==='games',
       screenDeal: scr==='deal', screenReoke: scr==='reoke', screenPlaces: scr==='places',
       screenMenu: scr==='menu', screenContacts: scr==='contacts', screenAdmin: scr==='admin',
       showBottomNav: !['runner','admin'].includes(scr),
