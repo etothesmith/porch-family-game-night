@@ -265,9 +265,40 @@ a, a:hover { color:#7B2D8E; }
     </div>
     <div style="padding:24px 20px 0">
 
-      <!-- ANNOUNCEMENTS BANNER -->
-      <sc-if value="{{ hasAnnouncements }}" hint-placeholder-val="{{ false }}">
-        <div style="padding:0 20px;margin-top:14px">
+      <!-- ANNOUNCEMENTS SECTION -->
+      <div style="padding:0 20px;margin-top:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#7B2D8E;display:flex;align-items:center;gap:6px">📢 Announcements</div>
+        </div>
+
+        <!-- POST (password-gated) -->
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:12px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.03)">
+          <sc-if value="{{ announceLocked }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;gap:6px">
+              <input id="announce-pass-home" type="password" placeholder="Password to post" onKeyDown="{{ announcePassKey }}"
+                style="flex:1;padding:9px 12px;border-radius:10px;border:2px solid #EDE9FE;font-size:12px;font-family:Outfit,sans-serif">
+              <div style="padding:9px 14px;background:#7B2D8E;border-radius:10px;color:#fff;font-weight:700;font-size:12px;cursor:pointer" onClick="{{ checkAnnouncePass }}">Unlock</div>
+            </div>
+            <sc-if value="{{ announcePassError }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:10px;color:#DC2626;margin-top:4px">Wrong password.</div>
+            </sc-if>
+          </sc-if>
+          <sc-if value="{{ announceUnlocked }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:6px">
+              <input id="announce-input-home" placeholder="Type an announcement..." onKeyDown="{{ announceKeyDownHome }}"
+                style="flex:1;padding:9px 12px;border-radius:10px;border:2px solid #EDE9FE;font-size:13px;font-family:Outfit,sans-serif">
+              <div style="padding:9px 16px;background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:10px;color:#fff;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap" onClick="{{ postAnnouncementHome }}">Send</div>
+            </div>
+            <sc-if value="{{ hasAnnouncements }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;justify-content:flex-end;margin-top:6px">
+                <div style="font-size:10px;color:#DC2626;cursor:pointer;font-weight:600" onClick="{{ clearAnnouncements }}">Clear all</div>
+              </div>
+            </sc-if>
+          </sc-if>
+        </div>
+
+        <!-- DISPLAY -->
+        <sc-if value="{{ hasAnnouncements }}" hint-placeholder-val="{{ false }}">
           <sc-for list="{{ announcements }}" as="ann" hint-placeholder-count="1">
             <div style="background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:8px;box-shadow:0 4px 16px rgba(123,45,142,0.18)">
               <div style="display:flex;align-items:flex-start;gap:10px">
@@ -279,8 +310,11 @@ a, a:hover { color:#7B2D8E; }
               </div>
             </div>
           </sc-for>
-        </div>
-      </sc-if>
+        </sc-if>
+        <sc-if value="{{ noAnnouncements }}" hint-placeholder-val="{{ true }}">
+          <div style="text-align:center;padding:12px;color:#bbb;font-size:12px">No announcements yet.</div>
+        </sc-if>
+      </div>
       <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;margin:0 0 14px;color:#1a1a1a">This Weekend</h3>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div style="background:#fff;border-radius:var(--radius-lg);padding:20px 16px;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04)" style-hover="transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.08)" onClick="{{ nav.schedule }}">
@@ -550,6 +584,11 @@ a, a:hover { color:#7B2D8E; }
         </div>
       </div>
       <!-- POSTS -->
+      <sc-if value="{{ hasBoardPosts }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+          <div style="font-size:11px;color:#DC2626;cursor:pointer;font-weight:600;padding:6px 12px;background:#FEF2F2;border-radius:999px" onClick="{{ clearMessages }}">🗑 Clear All Messages</div>
+        </div>
+      </sc-if>
       <sc-for list="{{ boardPosts }}" as="bp" hint-placeholder-count="0">
         <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
           <div style="display:flex;align-items:flex-start;gap:10px">
@@ -1715,6 +1754,16 @@ class Component extends DCLogic {
     if (el) el.scrollTop = 0;
     this.setState({ screen: s });
   };
+  _postAnnouncementHome(){
+    const el=document.getElementById('announce-input-home');
+    const msg=el?el.value.trim():'';
+    if(!msg) return;
+    const a={text:msg, time:new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}), id:Date.now()};
+    const list=[a,...(this.state.announcements||[])].slice(0,20);
+    this.setState({announcements:list});
+    this._persist('announcements', list);
+    if(el) el.value='';
+  }
   _postAnnouncement(){
     const el=document.getElementById('announce-input');
     const msg=el?el.value.trim():'';
@@ -1734,7 +1783,7 @@ class Component extends DCLogic {
 
   // ===== FEATURE PASSWORDS =====
   _checkAnnouncePass(){
-    const el = document.getElementById('announce-pass');
+    const el = document.getElementById('announce-pass') || document.getElementById('announce-pass-home');
     const p = el ? el.value.trim() : '';
     if(p === 'porchfamilyannounce'){
       this.setState({announceUnlocked: true, announcePassError: false});
@@ -1807,6 +1856,11 @@ class Component extends DCLogic {
     this.setState({messageBoard:board});
     this._persist('messageBoard', board);
     if(el) el.value='';
+  }
+
+  _clearMessages(){
+    this.setState({messageBoard:[]});
+    this._persist('messageBoard', []);
   }
 
   // ===== REOKE MODE =====
@@ -2557,6 +2611,7 @@ class Component extends DCLogic {
       doReply: ()=> this._replyMessage(p.id)
     }));
     const hasBoardPosts = boardPosts.length > 0;
+    const clearMessages = () => this._clearMessages();
     const postMessage = () => this._postMessage();
     const boardMsgKey = (e) => { if(e.key==='Enter') this._postMessage(); };
 
@@ -2680,6 +2735,8 @@ class Component extends DCLogic {
     const hasAnnouncements = announcements.length > 0;
     const noAnnouncements  = announcements.length === 0;
     const postAnnouncement = () => this._postAnnouncement();
+    const postAnnouncementHome = () => this._postAnnouncementHome();
+    const announceKeyDownHome = (e) => { if(e.key==='Enter') this._postAnnouncementHome(); };
     const clearAnnouncements = () => this._clearAnnouncements();
     const announceKeyDown = (e) => { if(e.key==='Enter') this._postAnnouncement(); };
 
@@ -2920,7 +2977,7 @@ class Component extends DCLogic {
       runnerFinalScore: s.runnerScore, runnerBest: s.runnerBest,
       runnerStart: () => this._startRunner(),
       // Message Board
-      boardPosts, hasBoardPosts, postMessage, boardMsgKey,
+      boardPosts, hasBoardPosts, postMessage, boardMsgKey, clearMessages,
       // Reoke mode
       reokeOff, reokeHost, reokePlayer, startReokeHost, startReokePlayer, reokeMenu,
       announceUnlocked, announceLocked, announcePassError, checkAnnouncePass, announcePassKey,
@@ -2942,7 +2999,7 @@ class Component extends DCLogic {
       startBingoHost, startBingoPlayer, drawBall, callBingo, newCard, bingoMenu,
       // Announcements
       announcements, hasAnnouncements, noAnnouncements,
-      postAnnouncement, clearAnnouncements, announceKeyDown,
+      postAnnouncement, postAnnouncementHome, clearAnnouncements, announceKeyDown, announceKeyDownHome,
       // Stage / wheel
       wheelStyle, wheelMsg, stageClass, playersVal, spinWheel, setPlayers, bulbs, ladderRungs,
       // Porch of a Deal (doors)
