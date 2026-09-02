@@ -282,6 +282,70 @@ function showErr(msg){
   if(el){ el.style.display='block'; el.textContent='⚠ '+msg; }
   console.error('[RaceToReunion]',msg);
 }
+
+/* ===== LIVE LEADERBOARD via Firebase ===== */
+let leaderboard = [];
+function loadLeaderboard(){
+  try {
+    const saved = localStorage.getItem('pfw_runnerBoard');
+    if(saved) leaderboard = JSON.parse(saved);
+  } catch(e){}
+  // pull from Firebase if available
+  if(window.PorchLive && window.PorchLive.on){
+    try {
+      const intv = setInterval(()=>{
+        if(!window.firebase || !window.firebase.database) return;
+        clearInterval(intv);
+        window.firebase.database().ref('weekend/runnerBoard').on('value', snap=>{
+          const val = snap.val();
+          if(val && Array.isArray(val)){ leaderboard = val; renderBoard(); }
+        });
+      }, 500);
+    } catch(e){}
+  }
+}
+function submitScore(name, charName, sc, dist, won){
+  const entry = { name:name, char:charName, score:sc, dist:Math.floor(dist), won:won, time:Date.now() };
+  leaderboard.push(entry);
+  leaderboard.sort((a,b)=>b.score-a.score);
+  leaderboard = leaderboard.slice(0,20); // top 20
+  try{ localStorage.setItem('pfw_runnerBoard', JSON.stringify(leaderboard)); }catch(e){}
+  // push to Firebase
+  try{
+    if(window.PorchLive && window.PorchLive.on && window.firebase && window.firebase.database){
+      window.firebase.database().ref('weekend/runnerBoard').set(leaderboard);
+    }
+  }catch(e){}
+  renderBoard();
+}
+function renderBoard(){
+  // also populate the game-over copy
+  setTimeout(()=>{
+    const end = document.getElementById('rg-leaderboard-end');
+    const main = document.getElementById('rg-leaderboard');
+    if(end && main) end.innerHTML = main.innerHTML;
+  },100);
+  const el = document.getElementById('rg-leaderboard');
+  if(!el) return;
+  if(!leaderboard.length){ el.innerHTML='<div style="text-align:center;color:#999;font-size:12px;padding:12px">No runs yet — be the first!</div>'; return; }
+  const medals = ['🥇','🥈','🥉'];
+  el.innerHTML = leaderboard.slice(0,10).map((e,i)=>{
+    const medal = i<3 ? medals[i] : (i+1)+'.';
+    const bg = i===0 ? 'linear-gradient(135deg,#FEF3C7,#FDE68A)' : '#fff';
+    const border = i===0 ? '#F59E0B' : '#eee';
+    const wonBadge = e.won ? '<span style="font-size:9px;background:#D1FAE5;color:#059669;padding:2px 6px;border-radius:999px;font-weight:700">FINISHED</span>' : '';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:${bg};border:1px solid ${border};margin-bottom:4px">
+      <div style="font-size:16px;width:28px;text-align:center">${medal}</div>
+      <div style="flex:1">
+        <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#1a1a1a">${e.name||'Anonymous'} <span style="font-size:11px;color:#999">as ${e.char||''}</span></div>
+        <div style="font-size:11px;color:#999">${e.dist}m ${wonBadge}</div>
+      </div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:#7B2D8E;font-weight:700">${e.score.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+loadLeaderboard();
+
 /* ---------- lifecycle ---------- */
 function rgRefresh(){ if(document.getElementById('rg-roster')) buildRoster(); if(typeof drawHomeSprites==='function') drawHomeSprites(); }
 function buildRoster(){
@@ -557,6 +621,15 @@ function hud(){
     else{a.textContent='✨ AURA';a.disabled=false;}
   }
 }
+function getPlayerName(){
+  try{
+    const app = window.__porchApp;
+    if(app && app.state && app.state.playerName) return app.state.playerName;
+    const n = localStorage.getItem('pfw_playerName');
+    if(n) return n;
+  }catch(e){}
+  return 'Anonymous';
+}
 function finish(won){
   rgOn=false; if(rgRaf)cancelAnimationFrame(rgRaf);
   if(score>bestScore) bestScore=score;
@@ -568,6 +641,7 @@ function finish(won){
     : `<strong>${CHARS[rgSel].name}</strong> got ${Math.floor(dist)}m of ${RG.GOAL}m.`)
     + `<br>Score <strong>${score.toLocaleString()}</strong> · Best ${bestScore.toLocaleString()}`
     + `<br><span style="font-size:.85em;color:#8b93a3">${tokensGot} pickups · peak combo x${peakCombo} · ${villKills} relatives dodged</span>`;
+  submitScore(getPlayerName(), CHARS[rgSel].name, score, dist, won);
   if(won&&typeof fireConfetti==='function') fireConfetti();
   won?sfxFanfare():sfxSad();
 }
@@ -818,6 +892,10 @@ const RG_HTML = `
 <div id="rg-select">
   <div class="rg-roster" id="rg-roster"></div>
   <div style="margin-top:12px"><button class="rg-btn go" id="rg-go" disabled>Pick a runner first</button></div>
+  <div class="rg-card-panel" style="margin-top:14px">
+    <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#7B2D8E;margin-bottom:8px;display:flex;align-items:center;gap:6px">🏆 Leaderboard</div>
+    <div id="rg-leaderboard"></div>
+  </div>
   <div class="rg-card-panel">
     <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#7B2D8E;margin-bottom:6px">How to play</div>
     <div class="rg-legend">
@@ -853,10 +931,15 @@ const RG_HTML = `
     <p id="rg-over-msg" style="font-size:13px;color:#666;text-align:center;line-height:1.6;margin:8px 0 14px"></p>
     <button class="rg-btn amber" id="rg-again">Run it back</button>
     <button class="rg-btn go" id="rg-change" style="margin-top:8px;background:#eee;color:#7B2D8E;box-shadow:none">Change runner</button>
+    <div style="margin-top:14px;text-align:left">
+      <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7B2D8E;margin-bottom:6px">🏆 Leaderboard</div>
+      <div id="rg-leaderboard-end"></div>
+    </div>
   </div>
 </div>`;
 
 function wire(){
+  setTimeout(renderBoard, 200);
   document.getElementById('rg-go').onclick     = ()=>rgStart();
   document.getElementById('rg-again').onclick  = ()=>rgStart();
   document.getElementById('rg-change').onclick = ()=>rgShowSelect();
