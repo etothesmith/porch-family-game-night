@@ -1470,13 +1470,25 @@ a, a:hover { color:#7B2D8E; }
         <div style="font-size:11px;color:#7B2D8E;cursor:pointer;font-weight:600" onClick="{{ adminLogout }}">Sign Out</div>
           <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
             <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#7B2D8E;margin-bottom:10px">📢 Post Announcement</div>
-            <div style="display:flex;gap:8px">
-              <input id="announce-input" placeholder="Type a message for everyone..." onKeyDown="{{ announceKeyDown }}"
-                style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:13px;font-family:Outfit,sans-serif">
-              <div style="padding:11px 18px;background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap" onClick="{{ postAnnouncement }}">Send</div>
-            </div>
-            <sc-if value="{{ hasAnnouncements }}" hint-placeholder-val="{{ false }}">
-              <div style="margin-top:10px;font-size:11px;color:#999;cursor:pointer" onClick="{{ clearAnnouncements }}">Clear all announcements</div>
+            <sc-if value="{{ announceLocked }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;gap:8px">
+                <input id="announce-pass" type="password" placeholder="Announcement password" onKeyDown="{{ announcePassKey }}"
+                  style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:13px;font-family:Outfit,sans-serif">
+                <div style="padding:11px 16px;background:#7B2D8E;border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ checkAnnouncePass }}">Unlock</div>
+              </div>
+              <sc-if value="{{ announcePassError }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11px;color:#DC2626;margin-top:6px">Wrong password.</div>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{ announceUnlocked }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:8px">
+                <input id="announce-input" placeholder="Type a message for everyone..." onKeyDown="{{ announceKeyDown }}"
+                  style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:13px;font-family:Outfit,sans-serif">
+                <div style="padding:11px 18px;background:linear-gradient(135deg,#7B2D8E,#A855F7);border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap" onClick="{{ postAnnouncement }}">Send</div>
+              </div>
+              <sc-if value="{{ hasAnnouncements }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:10px;font-size:11px;color:#999;cursor:pointer" onClick="{{ clearAnnouncements }}">Clear all announcements</div>
+              </sc-if>
             </sc-if>
           </div>
 
@@ -1524,7 +1536,22 @@ a, a:hover { color:#7B2D8E; }
               </div>
             </div>
           </sc-for>
-          <div style="padding:12px;border:2px dashed #d8b4fe;border-radius:var(--radius-md);text-align:center;cursor:pointer;color:#7B2D8E;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px" onClick="{{ adminAddQuiz }}"><pf-icon name="plus" size="16" color="#7B2D8E"></pf-icon> Add Question</div>
+          <sc-if value="{{ quizEditUnlocked }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:12px;border:2px dashed #d8b4fe;border-radius:var(--radius-md);text-align:center;cursor:pointer;color:#7B2D8E;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px" onClick="{{ adminAddQuiz }}"><pf-icon name="plus" size="16" color="#7B2D8E"></pf-icon> Add Question</div>
+          </sc-if>
+          <sc-if value="{{ quizEditLocked }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#fff;border-radius:var(--radius-md);padding:12px;margin-top:8px;box-shadow:0 1px 4px rgba(0,0,0,0.03)">
+              <div style="font-size:12px;color:#7B2D8E;font-weight:600;margin-bottom:6px">🔒 Quiz Editor — password required</div>
+              <div style="display:flex;gap:6px">
+                <input id="quiz-pass" type="password" placeholder="Quiz password" onKeyDown="{{ quizPassKey }}"
+                  style="flex:1;padding:9px 12px;border-radius:10px;border:2px solid #EDE9FE;font-size:12px;font-family:Outfit,sans-serif">
+                <div style="padding:9px 14px;background:#7B2D8E;border-radius:10px;color:#fff;font-weight:700;font-size:12px;cursor:pointer" onClick="{{ checkQuizPass }}">Unlock</div>
+              </div>
+              <sc-if value="{{ quizPassError }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:10px;color:#DC2626;margin-top:4px">Wrong password.</div>
+              </sc-if>
+            </div>
+          </sc-if>
         </div>
       </sc-if>
       <!-- Places Admin -->
@@ -1634,6 +1661,7 @@ class Component extends DCLogic {
     announcements:[], announceInput:'',
     playerName: '', playerNameSet: false, hostVerified: false, hostPassError: false,
     auctionMode:null, auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
+    announceUnlocked:false, announcePassError:false, quizEditUnlocked:false, quizPassError:false,
     messageBoard:[],
     reokeMode:null,
     bingoMode:null, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoSuspense:false, bingoWon:false, bingoPattern:'line',
@@ -1697,6 +1725,30 @@ class Component extends DCLogic {
   }
 
 
+
+  // ===== FEATURE PASSWORDS =====
+  _checkAnnouncePass(){
+    const el = document.getElementById('announce-pass');
+    const p = el ? el.value.trim() : '';
+    if(p === 'porchfamilyannounce'){
+      this.setState({announceUnlocked: true, announcePassError: false});
+      try{ localStorage.setItem('pfw_announcePass','1'); }catch(e){}
+      return true;
+    }
+    this.setState({announcePassError: true});
+    return false;
+  }
+  _checkQuizPass(){
+    const el = document.getElementById('quiz-pass');
+    const p = el ? el.value.trim() : '';
+    if(p === 'Porchfamilyquiz'){
+      this.setState({quizEditUnlocked: true, quizPassError: false});
+      try{ localStorage.setItem('pfw_quizPass','1'); }catch(e){}
+      return true;
+    }
+    this.setState({quizPassError: true});
+    return false;
+  }
 
   // ===== SELF-SERVICE CONTACTS =====
   _addSelfContact(){
@@ -1950,6 +2002,8 @@ class Component extends DCLogic {
   }
   componentDidMount(){ window.__porchApp = this; this._loadPlayerName();
     try{const a=localStorage.getItem('pfw_announcements');if(a)this.setState({announcements:JSON.parse(a)});}catch(e){}
+    try{if(localStorage.getItem('pfw_announcePass'))this.setState({announceUnlocked:true});}catch(e){}
+    try{if(localStorage.getItem('pfw_quizPass'))this.setState({quizEditUnlocked:true});}catch(e){}
     try{const b=localStorage.getItem('pfw_messageBoard');if(b)this.setState({messageBoard:JSON.parse(b)});}catch(e){} if(this._mountedOrig) this._mountedOrig(); }
   _getPlaces() { return this.state.customPlaces || this._places; }
   _getContacts() { return this.state.customContacts || this._contacts; }
@@ -2512,6 +2566,18 @@ class Component extends DCLogic {
     const startReokePlayer = () => this._startReokePlayer();
     const reokeMenu        = () => this._reokeMenu();
 
+    // Feature passwords
+    const announceUnlocked   = s.announceUnlocked;
+    const announceLocked     = !s.announceUnlocked;
+    const announcePassError  = s.announcePassError;
+    const checkAnnouncePass  = () => this._checkAnnouncePass();
+    const announcePassKey    = (e) => { if(e.key==='Enter') this._checkAnnouncePass(); };
+    const quizEditUnlocked   = s.quizEditUnlocked;
+    const quizEditLocked     = !s.quizEditUnlocked;
+    const quizPassError      = s.quizPassError;
+    const checkQuizPass      = () => this._checkQuizPass();
+    const quizPassKey        = (e) => { if(e.key==='Enter') this._checkQuizPass(); };
+
     const addSelfContact = () => this._addSelfContact();
 
     // ===== Player name gate =====
@@ -2855,6 +2921,8 @@ class Component extends DCLogic {
       boardPosts, hasBoardPosts, postMessage, boardMsgKey,
       // Reoke mode
       reokeOff, reokeHost, reokePlayer, startReokeHost, startReokePlayer, reokeMenu,
+      announceUnlocked, announceLocked, announcePassError, checkAnnouncePass, announcePassKey,
+      quizEditUnlocked, quizEditLocked, quizPassError, checkQuizPass, quizPassKey,
       addSelfContact,
       // Player / host gates
       playerName, playerNameSet, playerNotSet, setPlayerName, playerNameKey,
