@@ -182,6 +182,8 @@ x-dc > * { max-width:100%; overflow-x:hidden; }
 
 
 /* ===== BOTTOM NAV BAR ===== */
+/* ensure content clears the fixed nav bar */
+x-dc > sc-if > div { padding-bottom: 80px !important; }
 .pfw-bnav{position:fixed;bottom:0;left:0;right:0;z-index:950;
   background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
   border-top:1px solid #eee;padding:6px 0 env(safe-area-inset-bottom,6px);
@@ -2795,12 +2797,12 @@ class Component extends DCLogic {
   }
   window.pfwBack = function(){ history.back(); };
   window.pfwAdmin = function(){
-    var b = document.querySelector('[onClick*="nav.admin"]');
-    if (b) b.click();
+    var app = window.__porchApp;
+    if (app && app._go) { app._go('admin'); }
   };
   window.pfwHome = function(){
-    var b = document.querySelector('[onClick*="nav.home"]');
-    if (b) b.click();
+    var app = window.__porchApp;
+    if (app && app._go) { app._go('home'); }
   };
   // seed two entries so there is always something to pop back into
   history.replaceState({pfw:'home'}, '');
@@ -2809,9 +2811,9 @@ class Component extends DCLogic {
   window.addEventListener('popstate', function(){
     if (leaving) return;
     // try to go to the app's home screen instead of unloading the page
-    var homeBtn = document.querySelector('[onClick*="nav.home"]');
-    if (homeBtn) {
-      homeBtn.click();
+    var app = window.__porchApp;
+    if (app && app._go) {
+      app._go('home');
       history.pushState({pfw:'app'}, '');   // re-arm so back works again
     } else {
       leaving = true;
