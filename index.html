@@ -194,6 +194,36 @@ x-dc > * { max-width:100%; overflow-x:hidden; }
 
 
 
+
+/* ===== TV/PROJECTOR MODE — host screens scale up ===== */
+@media(min-width:1200px){
+  /* Ball stage gets massive */
+  .bingo-ball{width:200px !important;height:200px !important;}
+  .bingo-ball div:last-child{font-size:72px !important;}
+  .bingo-ball div:first-child{font-size:22px !important;}
+  .bingo-chip{width:48px !important;height:48px !important;font-size:14px !important;}
+  .bingo-history{gap:8px !important;}
+  
+  /* Auction stage scales */
+  .auc-stage{padding:40px 30px !important;}
+  .auc-stage h3{font-size:32px !important;}
+  
+  /* Game show stages */
+  .gs-stage{padding:0 0 20px !important;}
+  .gs-title{font-size:28px !important;}
+  .gs-wheel{width:280px !important;height:280px !important;}
+  .gs-ladder{gap:8px !important;}
+  .gs-rung{font-size:14px !important;padding:6px 14px !important;}
+  
+  /* Door grid bigger */
+  .gs-stage + div .bingo-card,
+  [style*="grid-template-columns:repeat(5,1fr)"] {gap:8px !important;}
+  
+  /* General text scaling */
+  x-dc h2{font-size:28px !important;}
+  x-dc h3{font-size:22px !important;}
+}
+
 </style>
 
 <helmet>
@@ -300,6 +330,10 @@ a, a:hover { color:#7B2D8E; }
                 <div style="flex:1">
                   <div style="font-size:14px;color:#fff;line-height:1.5;font-weight:500">{{ ann.text }}</div>
                   <div style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:4px">{{ ann.time }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+                  <div style="font-size:10px;color:rgba(255,255,255,0.6);cursor:pointer" onClick="{{ ann.onEdit }}">✏️</div>
+                  <div style="font-size:10px;color:rgba(255,255,255,0.6);cursor:pointer" onClick="{{ ann.onDelete }}">🗑</div>
                 </div>
               </div>
             </div>
@@ -512,9 +546,14 @@ a, a:hover { color:#7B2D8E; }
               </sc-if>
             </div>
           </sc-if>
-          <div style="background:linear-gradient(135deg,#3182CE,#2B6CB0);border-radius:var(--radius-lg);padding:22px;cursor:pointer" onClick="{{ startBingoPlayer }}">
-            <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:0 0 4px">🎴 I'm a Player</h3>
-            <p style="font-size:12px;color:rgba(255,255,255,0.82);margin:0">Get a random card and mark your numbers.</p>
+          <div style="background:linear-gradient(135deg,#3182CE,#2B6CB0);border-radius:var(--radius-lg);padding:22px">
+            <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:0 0 8px">🎴 I'm a Player</h3>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="font-size:13px;color:rgba(255,255,255,0.8)">How many cards?</div>
+              <input type="number" min="1" max="10" value="{{ bingoCardPick }}" onInput="{{ setBingoCards }}"
+                style="width:60px;padding:6px 10px;border-radius:8px;border:none;font-size:15px;font-family:'Fredoka',sans-serif;text-align:center">
+            </div>
+            <div style="padding:12px;background:rgba(255,255,255,0.15);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:15px;text-align:center;cursor:pointer" onClick="{{ startBingoPlayer }}">Get My Cards</div>
           </div>
           <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;margin-top:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
             <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7B2D8E;margin-bottom:6px">How to play</div>
@@ -550,16 +589,7 @@ a, a:hover { color:#7B2D8E; }
           <div class="bingo-history">
             <sc-for list="{{ bingoHistory }}" as="bh" hint-placeholder-count="0"><div class="bingo-chip" style="background:{{ bh.bg }}">{{ bh.text }}</div></sc-for>
           </div>
-          <div style="margin-top:18px">
-            <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7B2D8E;text-align:center;margin-bottom:8px">Your Card</div>
-            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:300px;margin:0 auto 4px"><div class="bingo-header" style="background:#E53E3E">B</div><div class="bingo-header" style="background:#3182CE">I</div><div class="bingo-header" style="background:#38A169">N</div><div class="bingo-header" style="background:#D69E2E">G</div><div class="bingo-header" style="background:#805AD5">O</div></div>
-            <div class="bingo-card" style="max-width:300px"><sc-for list="{{ bingoCardCells }}" as="bc" hint-placeholder-count="25"><div class="bingo-cell" style="background:{{ bc.bg }};color:{{ bc.fg }};border-color:{{ bc.border }}" onClick="{{ bc.onClick }}">{{ bc.num }}</div></sc-for></div>
-            <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
-              <div style="padding:12px 22px;background:linear-gradient(135deg,#38A169,#276749);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer" onClick="{{ callBingo }}">Call BINGO!</div>
-              <div style="padding:12px 22px;background:#f3e8ff;border-radius:999px;color:#7B2D8E;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ newCard }}">New Card</div>
-            </div>
-            <sc-if value="{{ bingoWon }}" hint-placeholder-val="{{ false }}"><div class="bingo-win" style="margin-top:14px">🎉 B I N G O ! 🎉</div></sc-if>
-          </div>
+          
         </div>
       </sc-if>
       <sc-if value="{{ bingoPlayerOn }}" hint-placeholder-val="{{ false }}">
@@ -567,6 +597,11 @@ a, a:hover { color:#7B2D8E; }
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#3182CE">Your Bingo Card</div>
             <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ bingoMenu }}">Exit</div>
+          </div>
+          <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:8px">
+            <sc-for list="{{ bingoCardTabs }}" as="ct" hint-placeholder-count="1">
+              <div style="padding:5px 12px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;background:{{ ct.bg }};color:{{ ct.fg }}" onClick="{{ ct.onClick }}">{{ ct.label }}</div>
+            </sc-for>
           </div>
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:340px;margin:0 auto 4px"><div class="bingo-header" style="background:#E53E3E">B</div><div class="bingo-header" style="background:#3182CE">I</div><div class="bingo-header" style="background:#38A169">N</div><div class="bingo-header" style="background:#D69E2E">G</div><div class="bingo-header" style="background:#805AD5">O</div></div>
           <div class="bingo-card"><sc-for list="{{ bingoCardCells }}" as="pc" hint-placeholder-count="25"><div class="bingo-cell" style="background:{{ pc.bg }};color:{{ pc.fg }};border-color:{{ pc.border }}" onClick="{{ pc.onClick }}">{{ pc.num }}</div></sc-for></div>
@@ -616,7 +651,13 @@ a, a:hover { color:#7B2D8E; }
                 <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#1a1a1a">{{ bp.name }}</div>
                 <div style="font-size:10px;color:#bbb">{{ bp.time }}</div>
               </div>
-              <div style="font-size:13.5px;color:#444;line-height:1.55;margin-top:4px">{{ bp.text }}</div>
+              <div style="display:flex;align-items:flex-start;gap:6px;margin-top:4px">
+                <div style="font-size:13.5px;color:#444;line-height:1.55;flex:1">{{ bp.text }}</div>
+                <div style="display:flex;gap:4px;flex-shrink:0">
+                  <span style="font-size:11px;cursor:pointer;opacity:0.4" onClick="{{ bp.onEdit }}">✏️</span>
+                  <span style="font-size:11px;cursor:pointer;opacity:0.4" onClick="{{ bp.onDelete }}">🗑</span>
+                </div>
+              </div>
             </div>
           </div>
           <!-- REPLIES -->
@@ -628,7 +669,10 @@ a, a:hover { color:#7B2D8E; }
                     <div style="font-family:'Fredoka',sans-serif;font-size:12px;color:#7C3AED">{{ rp.name }}</div>
                     <div style="font-size:9px;color:#ccc">{{ rp.time }}</div>
                   </div>
-                  <div style="font-size:12.5px;color:#555;line-height:1.5;margin-top:2px">{{ rp.text }}</div>
+                  <div style="display:flex;align-items:flex-start;gap:4px;margin-top:2px">
+                    <div style="font-size:12.5px;color:#555;line-height:1.5;flex:1">{{ rp.text }}</div>
+                    <span style="font-size:10px;cursor:pointer;opacity:0.3" onClick="{{ rp.onDelete }}">🗑</span>
+                  </div>
                 </div>
               </sc-for>
             </div>
@@ -1721,7 +1765,7 @@ class Component extends DCLogic {
     announceUnlocked:false, announcePassError:false, quizEditUnlocked:false, quizPassError:false,
     messageBoard:[], boardLastSeen:0,
     reokeMode:null,
-    bingoMode:null, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoSuspense:false, bingoWon:false, bingoPattern:'line',
+    bingoMode:null, bingoCards:[], bingoMarkedAll:[], bingoActiveCard:0, bingoNumCards:1, bingoWonCard:-1, bingoCardPick:1, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoSuspense:false, bingoWon:false, bingoPattern:'line',
     players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
     doorPlan: [], doors: [], dealQ: [], dealQi: 0, dealRevealed: false, dealLastDoor: null, dealWins: 0, dealGags: 0,
     trivOrder: [], trivIdx: 0, trivRevealed: false, trivStreak: 0, trivBanked: 0, trivOffer: 0, trivPhase: 'ask',
@@ -1792,6 +1836,20 @@ class Component extends DCLogic {
     this.setState({announcements:list, announceInput:''});
     this._persist('announcements', list);
     if(el) el.value='';
+  }
+  _deleteAnnouncement(id){
+    const list = (this.state.announcements||[]).filter(a => a.id !== id);
+    this.setState({announcements: list});
+    this._persist('announcements', list);
+  }
+  _editAnnouncement(id){
+    const ann = (this.state.announcements||[]).find(a => a.id === id);
+    if(!ann) return;
+    const newText = prompt('Edit announcement:', ann.text);
+    if(newText === null || !newText.trim()) return;
+    const list = (this.state.announcements||[]).map(a => a.id === id ? {...a, text: newText.trim()} : a);
+    this.setState({announcements: list});
+    this._persist('announcements', list);
   }
   _clearAnnouncements(){
     this.setState({announcements:[]});
@@ -1884,6 +1942,28 @@ class Component extends DCLogic {
     if(el) el.value='';
   }
 
+  _deleteMessage(id){
+    const board = (this.state.messageBoard||[]).filter(p => p.id !== id);
+    this.setState({messageBoard: board});
+    this._persist('messageBoard', board);
+  }
+  _deleteReply(postId, replyId){
+    const board = (this.state.messageBoard||[]).map(p => {
+      if(p.id === postId){ return {...p, replies: (p.replies||[]).filter(r => r.id !== replyId)}; }
+      return p;
+    });
+    this.setState({messageBoard: board});
+    this._persist('messageBoard', board);
+  }
+  _editMessage(id){
+    const post = (this.state.messageBoard||[]).find(p => p.id === id);
+    if(!post) return;
+    const newText = prompt('Edit message:', post.text);
+    if(newText === null || !newText.trim()) return;
+    const board = (this.state.messageBoard||[]).map(p => p.id === id ? {...p, text: newText.trim()} : p);
+    this.setState({messageBoard: board});
+    this._persist('messageBoard', board);
+  }
   _clearMessages(){
     this.setState({messageBoard:[]});
     this._persist('messageBoard', []);
@@ -1990,23 +2070,30 @@ class Component extends DCLogic {
     });
     return card; // card[col][row], card[2][2] = free space
   }
-  _startBingo(isHost){
+  _startBingo(isHost, numCards){
     const allBalls=[];
     this._bingoRanges.forEach(([lo,hi],c)=>{for(let n=lo;n<=hi;n++) allBalls.push({letter:this._bingoLetters[c],num:n});});
     for(let a=allBalls.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[allBalls[a],allBalls[b]]=[allBalls[b],allBalls[a]];}
-    const card=this._genCard();
+    const n = isHost ? 0 : Math.max(1, Math.min(10, numCards||1));
+    const cards=[]; const marked=[];
+    for(let i=0;i<Math.max(1,n);i++){
+      const c=this._genCard(); cards.push(c);
+      marked.push(c.map((col,ci)=>col.map((_,r)=>ci===2&&r===2)));
+    }
     this.setState({
       bingoMode: isHost?'host':'player',
-      bingoCard: card,
-      bingoMarked: card.map((col,c)=>col.map((_,r)=>c===2&&r===2)),
-      bingoBalls: allBalls,
-      bingoDrawn: [],
-      bingoIdx: -1,
-      bingoCurrent: null,
-      bingoAnimating: false,
-      bingoWon: false,
-      bingoPattern: 'line'
+      bingoCards: cards, bingoMarkedAll: marked,
+      bingoCard: cards[0]||[], bingoMarked: marked[0]||[],
+      bingoActiveCard: 0, bingoNumCards: n,
+      bingoBalls: allBalls, bingoDrawn: [], bingoIdx: -1,
+      bingoCurrent: null, bingoAnimating: false, bingoSuspense: false,
+      bingoWon: false, bingoWonCard: -1, bingoPattern: 'line'
     });
+  }
+  _switchCard(i){
+    const cards=this.state.bingoCards; const marked=this.state.bingoMarkedAll;
+    if(i<0||i>=cards.length) return;
+    this.setState({bingoActiveCard:i, bingoCard:cards[i], bingoMarked:marked[i]});
   }
   _drawBall(){
     if(this.state.bingoAnimating) return;
@@ -2020,9 +2107,13 @@ class Component extends DCLogic {
     }, 3000);
     // auto-mark after the ball lands (3s suspense + 2.2s animation)
     setTimeout(()=>{
-      const marked=this.state.bingoMarked.map(c=>[...c]);
-      const card=this.state.bingoCard;
-      for(let c=0;c<5;c++) for(let r=0;r<5;r++) if(card[c][r]===ball.num) marked[c][r]=true;
+      const allM=this.state.bingoMarkedAll.map(card=>card.map(c=>[...c]));
+      const allC=this.state.bingoCards;
+      allC.forEach((card,ci)=>{
+        for(let c=0;c<5;c++) for(let r=0;r<5;r++) if(card[c][r]===ball.num) allM[ci][c][r]=true;
+      });
+      const ai=this.state.bingoActiveCard||0;
+      const marked=allM[ai]||allM[0];
       const drawn=[...this.state.bingoDrawn, ball];
       // persist to Firebase so player devices see it
       this._persist('bingoState', {drawn:drawn, idx:idx});
@@ -2030,13 +2121,16 @@ class Component extends DCLogic {
     }, 5400);
   }
   _toggleMark(c,r){
-    if(c===2&&r===2) return; // free space
-    const marked=this.state.bingoMarked.map(col=>[...col]);
-    marked[c][r]=!marked[c][r];
-    this.setState({bingoMarked:marked});
+    if(c===2&&r===2) return;
+    const i=this.state.bingoActiveCard||0;
+    const all=this.state.bingoMarkedAll.map(card=>card.map(col=>[...col]));
+    all[i][c][r]=!all[i][c][r];
+    this.setState({bingoMarkedAll:all, bingoMarked:all[i]});
   }
   _checkBingo(){
-    const m=this.state.bingoMarked;
+    const all=this.state.bingoMarkedAll||[this.state.bingoMarked];
+    for(let ci=0;ci<all.length;ci++){
+      const m=all[ci]; if(!m||!m.length) continue;
     // rows
     for(let r=0;r<5;r++){let w=true;for(let c=0;c<5;c++) if(!m[c][r])w=false; if(w) return true;}
     // columns
@@ -2045,10 +2139,12 @@ class Component extends DCLogic {
     let d1=true,d2=true;for(let i=0;i<5;i++){if(!m[i][i])d1=false;if(!m[i][4-i])d2=false;}
     if(d1||d2) return true;
     // four corners
-    if(m[0][0]&&m[4][0]&&m[0][4]&&m[4][4]) return true;
+    if(m[0][0]&&m[4][0]&&m[0][4]&&m[4][4]){ this.setState({bingoWonCard:ci}); return true; }
     // full card (blackout)
-    let all=true;for(let c=0;c<5;c++)for(let r=0;r<5;r++)if(!m[c][r])all=false;
-    return all;
+    let full=true;for(let c=0;c<5;c++)for(let r=0;r<5;r++)if(!m[c][r])full=false;
+    if(full){ this.setState({bingoWonCard:ci}); return true; }
+    }
+    return false;
   }
   _callBingo(){
     if(this._checkBingo()){
@@ -2058,12 +2154,10 @@ class Component extends DCLogic {
     }
   }
   _newCard(){
-    const card=this._genCard();
-    this.setState({
-      bingoCard:card,
-      bingoMarked:card.map((col,c)=>col.map((_,r)=>c===2&&r===2)),
-      bingoWon:false
-    });
+    const n=this.state.bingoNumCards||1;
+    const cards=[];const marked=[];
+    for(let i=0;i<n;i++){const c=this._genCard();cards.push(c);marked.push(c.map((col,ci)=>col.map((_,r)=>ci===2&&r===2)));}
+    this.setState({bingoCards:cards,bingoMarkedAll:marked,bingoCard:cards[0],bingoMarked:marked[0],bingoActiveCard:0,bingoWon:false,bingoWonCard:-1});
   }
   _bingoMenu(){ this.setState({bingoMode:null}); }
 
@@ -2635,7 +2729,9 @@ class Component extends DCLogic {
     // ===== Message Board =====
     const boardPosts = (s.messageBoard||[]).map(p=>({
       ...p,
-      replies: (p.replies||[]).map(r=>({...r})),
+      replies: (p.replies||[]).map(r=>({...r, onDelete: ()=>this._deleteReply(p.id,r.id)})),
+      onDelete: ()=>this._deleteMessage(p.id),
+      onEdit: ()=>this._editMessage(p.id),
       hasReplies: (p.replies||[]).length > 0,
       replyId: 'reply-'+p.id,
       doReply: ()=> this._replyMessage(p.id)
@@ -2765,15 +2861,28 @@ class Component extends DCLogic {
     }
     const bingoWon = s.bingoWon;
     const bingoNotWon = !s.bingoWon;
-    const startBingoHost   = () => this._startBingo(true);
-    const startBingoPlayer = () => this._startBingo(false);
+    const bingoNumCards = s.bingoNumCards||1;
+    const bingoCardTabs = (s.bingoCards||[]).map((_,i)=>({
+      label: 'Card '+(i+1),
+      active: i===(s.bingoActiveCard||0),
+      bg: i===(s.bingoActiveCard||0) ? '#7B2D8E' : '#f3e8ff',
+      fg: i===(s.bingoActiveCard||0) ? '#fff' : '#7B2D8E',
+      onClick: ()=>this._switchCard(i)
+    }));
+    const bingoCardPick = s.bingoCardPick||1;
+    const setBingoCards = (e)=> this.setState({bingoCardPick: Math.max(1,Math.min(10,parseInt(e&&e.target?e.target.value:'1',10)||1))});
+    const startBingoHost   = () => this._startBingo(true, 0);
+    const startBingoPlayer = () => this._startBingo(false, s.bingoCardPick||1);
     const drawBall    = () => this._drawBall();
     const callBingo   = () => this._callBingo();
     const newCard     = () => this._newCard();
     const bingoMenu   = () => this._bingoMenu();
 
     // ===== Announcements =====
-    const announcements = (s.announcements||[]).map(a=>({text:a.text,time:a.time,id:a.id}));
+    const announcements = (s.announcements||[]).map(a=>({text:a.text,time:a.time,id:a.id,
+      onDelete: ()=>this._deleteAnnouncement(a.id),
+      onEdit: ()=>this._editAnnouncement(a.id)
+    }));
     const hasAnnouncements = announcements.length > 0;
     const noAnnouncements  = announcements.length === 0;
     const postAnnouncement = () => this._postAnnouncement();
@@ -3038,7 +3147,7 @@ class Component extends DCLogic {
       bingoMenuOn, bingoHostOn, bingoPlayerOn, bingoAnimate,
       bingoBallLetter, bingoBallNum, bingoBallFull, bingoBallColor,
       bingoDrawCount, bingoHistory, bingoCardCells,
-      bingoSuspense, bingoReady, bingoWon, bingoNotWon,
+      bingoSuspense, bingoReady, bingoCardTabs, bingoNumCards, bingoCardPick, setBingoCards, bingoWon, bingoNotWon,
       startBingoHost, startBingoPlayer, drawBall, callBingo, newCard, bingoMenu,
       // Announcements
       announcements, hasAnnouncements, noAnnouncements,
