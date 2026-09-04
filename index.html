@@ -1510,6 +1510,28 @@ a, a:hover { color:#7B2D8E; }
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Family Contacts</h2>
     </div>
     <div style="padding:0 20px">
+      <!-- EMERGENCY / REUNION CONTACTS (pinned) -->
+      <div style="background:linear-gradient(135deg,#FEF2F2,#FFF1F2);border:2px solid #FECACA;border-radius:var(--radius-lg);padding:16px;margin-bottom:14px">
+        <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#DC2626;margin-bottom:10px;display:flex;align-items:center;gap:6px">🚨 Reunion Issues / Concerns</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <a href="tel:4233098082" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border-radius:10px;text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+            <div style="width:36px;height:36px;border-radius:50%;background:#DC2626;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fredoka',sans-serif;font-size:13px;flex-shrink:0">K</div>
+            <div style="flex:1"><div style="font-weight:600;font-size:13px;color:#1a1a1a">Kim</div><div style="font-size:12px;color:#DC2626">(423) 309-8082</div></div>
+            <div style="font-size:18px">📞</div>
+          </a>
+          <a href="tel:4235046260" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border-radius:10px;text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+            <div style="width:36px;height:36px;border-radius:50%;background:#DC2626;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fredoka',sans-serif;font-size:13px;flex-shrink:0">M</div>
+            <div style="flex:1"><div style="font-weight:600;font-size:13px;color:#1a1a1a">Monica</div><div style="font-size:12px;color:#DC2626">(423) 504-6260</div></div>
+            <div style="font-size:18px">📞</div>
+          </a>
+          <a href="tel:4075756722" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border-radius:10px;text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+            <div style="width:36px;height:36px;border-radius:50%;background:#DC2626;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fredoka',sans-serif;font-size:13px;flex-shrink:0">G</div>
+            <div style="flex:1"><div style="font-weight:600;font-size:13px;color:#1a1a1a">Gwen</div><div style="font-size:12px;color:#DC2626">407-575-6722</div></div>
+            <div style="font-size:18px">📞</div>
+          </a>
+        </div>
+      </div>
+
       <!-- ADD YOUR NUMBER -->
       <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
         <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7B2D8E;margin-bottom:8px">📱 Add your number to the family directory</div>
@@ -2105,19 +2127,11 @@ class Component extends DCLogic {
     setTimeout(()=>{
       this.setState({bingoCurrent:ball, bingoSuspense:false});
     }, 3000);
-    // auto-mark after the ball lands (3s suspense + 2.2s animation)
+    // after animation, record the drawn ball — NO auto-marking, players tap their own cards
     setTimeout(()=>{
-      const allM=this.state.bingoMarkedAll.map(card=>card.map(c=>[...c]));
-      const allC=this.state.bingoCards;
-      allC.forEach((card,ci)=>{
-        for(let c=0;c<5;c++) for(let r=0;r<5;r++) if(card[c][r]===ball.num) allM[ci][c][r]=true;
-      });
-      const ai=this.state.bingoActiveCard||0;
-      const marked=allM[ai]||allM[0];
       const drawn=[...this.state.bingoDrawn, ball];
-      // persist to Firebase so player devices see it
       this._persist('bingoState', {drawn:drawn, idx:idx});
-      this.setState({bingoMarked:marked, bingoDrawn:drawn, bingoAnimating:false});
+      this.setState({bingoDrawn:drawn, bingoAnimating:false});
     }, 5400);
   }
   _toggleMark(c,r){
@@ -2171,6 +2185,7 @@ class Component extends DCLogic {
                      announcements:'announcements',
                      messageBoard:'messageBoard',
                      bingoState:'bingoState',
+                     runnerBoard:'runnerBoard',
                      auctionLive:'auctionLive'};
         if (map[key]) window.PorchLive.push(map[key], data);
       }
