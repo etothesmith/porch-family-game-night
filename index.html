@@ -2232,7 +2232,7 @@ class Component extends DCLogic {
     let wn=[];try{const s=localStorage.getItem('pfw_wheelNames');if(s)wn=JSON.parse(s);}catch(e){}
     this.setState({dealMode:'active',dealPhase:'intro',dealMuted:false,dealTimer:0,dealTimerOn:false,
       dealCurrentQ:null,dealSelectedAnswer:null,dealCorrect:null,dealDoorPick:null,
-      dealDoorCountdown:0,dealDoorRevealing:false,dealPool:pool,dealQi:0,
+      dealDoorCountdown:0,dealDoorRevealing:false,dealPool:pool,dealQi:0,dealPickHistory:[],dealPickCounts:{},
       wheelNames:wn,wheelDeg:0,wheelPick:'',dealIntroStep:0});
     setTimeout(()=>this.setState({dealIntroStep:1}),2000);
     setTimeout(()=>this.setState({dealIntroStep:2}),5000);
@@ -2260,14 +2260,32 @@ class Component extends DCLogic {
   _spinDealWheel(){
     if(this.state.dealPhase==='spinning')return;
     const names=this.state.wheelNames||[];if(!names.length)return;
-    const pick=Math.floor(Math.random()*names.length);const sl=360/names.length;
+    const history=this.state.dealPickHistory||[];
+    const counts=this.state.dealPickCounts||{};
+    // filter: not picked in last 5 spins, and picked fewer than 2 times total
+    let eligible=names.filter(n=>{
+      if(history.slice(-5).includes(n)) return false;
+      if((counts[n]||0)>=2) return false;
+      return true;
+    });
+    // if everyone's exhausted, reset cooldown but keep the 2x cap
+    if(!eligible.length) eligible=names.filter(n=>(counts[n]||0)<2);
+    // if still empty (everyone hit 2x), reset everything
+    if(!eligible.length){ eligible=[...names]; }
+    // shuffle eligible
+    for(let a=eligible.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[eligible[a],eligible[b]]=[eligible[b],eligible[a]];}
+    const chosen=eligible[0];
+    const pickIdx=names.indexOf(chosen);
+    const sl=360/names.length;
     const turns=5+Math.floor(Math.random()*3);
-    const target=(this.state.wheelDeg||0)+turns*360+(360-(pick*sl+sl/2));
-    this.setState({dealPhase:'spinning',wheelDeg:target});
+    const target=(this.state.wheelDeg||0)+turns*360+(360-(pickIdx*sl+sl/2));
+    const newHistory=[...history,chosen];
+    const newCounts={...counts};newCounts[chosen]=(newCounts[chosen]||0)+1;
+    this.setState({dealPhase:'spinning',wheelDeg:target,dealPickHistory:newHistory,dealPickCounts:newCounts});
     setTimeout(()=>{
       const qi=this.state.dealQi;const pool=this.state.dealPool;const q=this._trivia[pool[qi]];
       const opts=[...q.o];const aIdx=opts.indexOf(q.a);
-      this.setState({dealPhase:'question',wheelPick:names[pick],dealSelectedAnswer:null,dealCorrect:null,
+      this.setState({dealPhase:'question',wheelPick:chosen,dealSelectedAnswer:null,dealCorrect:null,
         dealTimer:0,dealTimerOn:false,dealCurrentQ:{...q,correctIdx:aIdx},dealQi:(qi+1)%pool.length});
     },4800);
   }
