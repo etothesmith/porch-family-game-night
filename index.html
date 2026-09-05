@@ -2494,7 +2494,7 @@ class Component extends DCLogic {
       home: mkNav('home'), schedule: mkNav('schedule'), history: mkNav('history'),
       quiz: () => { this.setState({quizIdx:0,quizScore:0,quizSelected:null,quizFinished:false,quizOrder:this._shuffleQuiz()}); this._go('quiz'); },
       runner: mkNav('runner'), bingo: mkNav('bingo'), auction: mkNav('auction'), board: () => { this._markBoardSeen(); this._go('board'); }, games: mkNav('games'),
-      deal: () => { this._initDeal(); this.setState({dealMode:'menu', photoRevealed:false}); this._go('deal'); },
+      deal: () => { this.setState({dealMode:null, dealPhase:null}); this._go('deal'); },
       reoke: mkNav('reoke'), places: mkNav('places'), menu: mkNav('menu'), contacts: mkNav('contacts'),
       admin: () => this._go('admin')
     };

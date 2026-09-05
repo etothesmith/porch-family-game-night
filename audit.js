@@ -30,6 +30,7 @@ const screens=[...h.matchAll(/\{\{\s*(screen[A-Z]\w*)\s*\}\}/g)].map(m=>m[1]);
   h.includes(s+': scr===')||h.includes(s+':scr===') ? ok(s) : bad(s+' in template but NOT in return block');
 });
 
+
 console.log('\n=== 4. RETURN BLOCK: every expose resolves ===');
 const code=dc[1];
 const ri=code.lastIndexOf('return {');
@@ -53,6 +54,24 @@ const exposed=[...ret.matchAll(/(?:^|,)\s*([A-Za-z_$][\w$]*)\s*(?=,|\n|$)/gm)].m
 const missing=[...new Set(exposed)].filter(x=>!declared.has(x));
 missing.length?missing.forEach(x=>bad(x+' exposed but never declared')):ok(`all ${new Set(exposed).size} exposes resolve`);
 
+
+console.log('\n=== 3b. GAME SCREENS render on entry (mode guard vs nav+init) ===');
+{
+  const st=(code.match(/state\s*=\s*\{([\s\S]*?)\n  \};/)||[])[1]||'';
+  const navB=code.slice(code.indexOf('const nav = {'), code.indexOf('};',code.indexOf('const nav = {')));
+  [['dealMode','dealOff'],['bingoMode','bingoMenuOn'],['auctionMode','aucOff'],['reokeMode','reokeOff']].forEach(([m,g])=>{
+    const init=((st.match(new RegExp(m+':\\s*([^,\\n]+)'))||[])[1]||'MISSING').trim();
+    const expr=((code.match(new RegExp('const '+g+'\\s*=\\s*([^;]+)'))||[])[1]||'MISSING').trim();
+    // find the nav handler that navigates to this screen
+    const scr=m.replace('Mode','').toLowerCase();
+    const navLine=navB.split('\n').find(l=>l.trim().startsWith(scr+':'))||'';
+    const navSets=(navLine.match(new RegExp(m+':\\s*([^,}]+)'))||[])[1];
+    const effective=navSets?navSets.trim():init;
+    const renders = expr.startsWith('!s.') ? (effective==='null'||effective==='undefined') : null;
+    if(renders===false) bad(`${scr} screen: nav sets ${m}=${effective} but guard is ${expr} → renders BLANK`);
+    else ok(`${scr}: ${m}=${effective}, guard ${g} → shows menu`);
+  });
+}
 
 console.log('\n=== 4b. METHOD CALLS resolve (this._x) ===');
 {
