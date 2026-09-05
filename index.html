@@ -2930,6 +2930,18 @@ class Component extends DCLogic {
       runnerShowStart: s.runnerState==='idle', runnerShowOver: s.runnerState==='over',
       runnerFinalScore: s.runnerScore, runnerBest: s.runnerBest,
       runnerStart: () => this._startRunner(),
+      // Menu / Places / Contacts
+      menuDays, menuMeals,
+      places: this._getPlaces().map(function(p){return Object.assign({},p,{
+        mapUrl: p.address ? 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.address) : ''
+      });}),
+      contacts: this._getContacts().map(function(c){return Object.assign({},c,{
+        hasPhone: !!c.phone,
+        callUrl: c.phone ? 'tel:'+c.phone.replace(/[^+\d]/g,'') : '',
+        smsUrl:  c.phone ? 'sms:'+c.phone.replace(/[^+\d]/g,'') : ''
+      });}),
+      dealDoorPick: s.dealDoorPick,
+      adminModalTitle, adminModalFields,
       // Message Board
       boardPosts, hasBoardPosts, postMessage, boardMsgKey, clearMessages, boardCount, boardNewCount, hasBoardNew, boardBadge,
       // Reoke mode
