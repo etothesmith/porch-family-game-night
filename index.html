@@ -939,46 +939,137 @@ a, a:hover { color:#7B2D8E; }
     </div>
     <div style="padding:0 16px">
 
-      <!-- START SCREEN -->
-      <sc-if value="{{ dealOff }}" hint-placeholder-val="{{ true }}">
+      <!-- ROLE SELECT -->
+      <sc-if value="{{ dealRoleSelect }}" hint-placeholder-val="{{ true }}">
         <div class="gs-stage open" style="margin-top:8px">
-          <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
+          <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
           <div class="gs-lights"><i></i><i></i></div><div class="gs-floor"></div>
-          <div class="gs-inner" style="padding:30px 20px">
-            <div style="font-size:48px;margin-bottom:6px">🚪</div>
-            <div class="gs-title" style="font-size:26px">PORCH OF A DEAL</div>
-            <div class="gs-sub">Spin the wheel · Answer the question · Pick a door</div>
+          <div class="gs-inner" style="padding:28px 20px">
+            <div style="font-size:44px;margin-bottom:6px">🚪</div>
+            <div class="gs-title" style="font-size:24px">PORCH OF A DEAL</div>
+            <div class="gs-sub">Spin · Answer · Pick a Door</div>
           </div>
         </div>
-        <div style="padding:16px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:18px;text-align:center;cursor:pointer;margin-top:14px" onClick="{{ startDeal2 }}">🎬 START THE SHOW</div>
-        <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
-          <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#D97706;margin-bottom:8px">Add Players to the Wheel</div>
-          <div style="display:flex;gap:6px;margin-bottom:8px">
-            <input id="deal-add-name" placeholder="Player name" onKeyDown="{{ wheelNameKey }}" style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid #FEF3C7;font-size:13px;font-family:Outfit,sans-serif">
-            <div style="padding:10px 16px;background:#F59E0B;border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
+        <div style="background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:var(--radius-lg);padding:20px;margin-top:14px">
+          <h3 style="font-family:'Fredoka',sans-serif;font-size:17px;color:#fff;margin:0 0 8px">🎙️ I'm the Host</h3>
+          <div style="display:flex;gap:6px">
+            <input id="deal-host-pass" type="password" placeholder="Host password" onKeyDown="{{ dealHostPassKey }}"
+              style="flex:1;padding:11px 14px;border-radius:10px;border:none;font-size:13px;font-family:Outfit,sans-serif">
+            <div style="padding:11px 18px;background:#1a1a1a;border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ dealHostLogin }}">Enter</div>
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:4px">
-            <sc-for list="{{ wheelNames }}" as="wn" hint-placeholder-count="0">
-              <div style="padding:4px 10px;background:#FEF3C7;border-radius:999px;font-size:12px;color:#92400E;display:flex;align-items:center;gap:4px">{{ wn.name }} <span style="cursor:pointer;opacity:0.5" onClick="{{ wn.onRemove }}">✕</span></div>
-            </sc-for>
-          </div>
+          <sc-if value="{{ dealPassError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:11px;color:#7F1D1D;margin-top:6px;background:rgba(255,255,255,0.8);padding:4px 8px;border-radius:6px;display:inline-block">Wrong password.</div>
+          </sc-if>
+        </div>
+        <div style="background:linear-gradient(135deg,#7C3AED,#6D28D9);border-radius:var(--radius-lg);padding:20px;margin-top:12px;cursor:pointer" onClick="{{ dealJoinPlayer }}">
+          <h3 style="font-family:'Fredoka',sans-serif;font-size:17px;color:#fff;margin:0 0 4px">🙋 I'm a Player</h3>
+          <p style="font-size:12px;color:rgba(255,255,255,0.82);margin:0">Add your name to the wheel and wait for your turn!</p>
         </div>
       </sc-if>
 
-      <!-- INTRO SEQUENCE -->
+      <!-- PLAYER: JOIN THE WHEEL -->
+      <sc-if value="{{ dealPlayerJoin }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 12px">
+          <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#7C3AED">🙋 Join the Wheel</div>
+          <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ dealBackRoles }}">Back</div>
+        </div>
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7C3AED;margin-bottom:10px">Add your name</div>
+          <div style="display:flex;gap:6px">
+            <input id="deal-add-name" placeholder="Your name" onKeyDown="{{ wheelNameKey }}"
+              style="flex:1;padding:12px 14px;border-radius:10px;border:2px solid #EDE9FE;font-size:14px;font-family:Outfit,sans-serif">
+            <div style="padding:12px 20px;background:linear-gradient(135deg,#7C3AED,#6D28D9);border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ addWheelName }}">Add Me</div>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+          <div style="font-size:12px;color:#999;margin-bottom:8px">On the wheel ({{ dealWheelCount }}):</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">
+            <sc-for list="{{ wheelNames }}" as="pw" hint-placeholder-count="0">
+              <div style="padding:6px 12px;background:#EDE9FE;border-radius:999px;font-size:13px;color:#5B21B6;font-family:'Fredoka',sans-serif">{{ pw.name }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="text-align:center;padding:18px;color:#bbb;font-size:13px">Waiting for the host to start the show…</div>
+      </sc-if>
+
+      <!-- HOST LOBBY -->
+      <sc-if value="{{ dealLobby }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 12px">
+          <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#D97706">🎙️ Host Lobby</div>
+          <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ dealBackRoles }}">Exit</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:2px solid #F59E0B;border-radius:var(--radius-lg);padding:18px;text-align:center">
+          <div style="font-family:'Fredoka',sans-serif;font-size:38px;color:#92400E;line-height:1">{{ dealWheelCount }}</div>
+          <div style="font-size:13px;color:#92400E;font-weight:600">players on the wheel</div>
+          <div style="font-size:11px;color:#B45309;margin-top:4px">Names appear here as family members join from their phones</div>
+        </div>
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+          <div style="font-size:12px;color:#999;margin-bottom:8px">Players joined:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;min-height:30px">
+            <sc-for list="{{ wheelNames }}" as="lw" hint-placeholder-count="0">
+              <div style="padding:5px 12px;background:#FEF3C7;border-radius:999px;font-size:13px;color:#92400E;display:flex;align-items:center;gap:6px">{{ lw.name }} <span style="cursor:pointer;opacity:0.45" onClick="{{ lw.onRemove }}">✕</span></div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:10px">
+            <input id="deal-add-name" placeholder="Add a player manually" onKeyDown="{{ wheelNameKey }}"
+              style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid #FEF3C7;font-size:13px;font-family:Outfit,sans-serif">
+            <div style="padding:10px 16px;background:#F59E0B;border-radius:10px;color:#fff;font-weight:700;font-size:12px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
+          </div>
+        </div>
+        <div style="padding:18px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:18px;text-align:center;cursor:pointer;margin-top:16px;box-shadow:0 6px 24px rgba(245,158,11,0.35)" onClick="{{ startDeal2 }}">🎬 START NEW GAME</div>
+        <div style="font-size:11px;color:#bbb;text-align:center;margin-top:8px">The theme song plays in full — plenty of time for latecomers to join</div>
+      </sc-if>
+
+      <!-- INTRO SEQUENCE (full song) -->
       <sc-if value="{{ dealIntro }}" hint-placeholder-val="{{ false }}">
-        <div class="gs-stage open" style="margin-top:8px;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center">
-          <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
+        <div class="gs-stage open" style="margin-top:8px;min-height:340px">
+          <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
           <div class="gs-lights"><i></i><i></i></div><div class="gs-floor"></div>
-          <div class="gs-inner" style="padding:40px 20px">
-            <div class="gs-title" style="font-size:28px;animation:aucPulse 1.5s ease-in-out infinite">🎰 PORCH OF A DEAL 🎰</div>
+          <div class="gs-inner" style="padding:34px 20px">
+            <div style="font-size:52px;animation:aucPulse 1.2s ease-in-out infinite">🚪</div>
+            <div class="gs-title" style="font-size:26px;margin-top:10px;animation:aucPulse 2s ease-in-out infinite">PORCH OF A DEAL</div>
+
             <sc-if value="{{ dealIntro1 }}" hint-placeholder-val="{{ false }}">
-              <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:rgba(255,255,255,0.7);margin-top:14px;animation:fadeIn 0.8s">Live from the Porch Family Reunion 2026!</div>
+              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:rgba(255,255,255,0.65);margin-top:16px;animation:fadeIn 1s">Live from Chattanooga, Tennessee!</div>
             </sc-if>
             <sc-if value="{{ dealIntro2 }}" hint-placeholder-val="{{ false }}">
-              <div style="font-family:'Fredoka',sans-serif;font-size:22px;color:#F5C542;margin-top:18px;animation:fadeIn 0.8s;text-shadow:0 0 20px rgba(245,197,66,0.6)">Your host... Coach Elliott Smith!</div>
+              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:rgba(255,255,255,0.65);margin-top:8px;animation:fadeIn 1s">The Porch Family Reunion — 2026!</div>
             </sc-if>
-            <div style="margin-top:20px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.4)" onClick="{{ dealSkipIntro }}">Skip intro ›</div>
+            <sc-if value="{{ dealIntro3 }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#F5C542;margin-top:14px;animation:fadeIn 1s">Three doors. One question. Everything to win.</div>
+            </sc-if>
+            <sc-if value="{{ dealIntro4 }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;animation:fadeIn 1s">
+                <div style="width:44px;height:62px;background:linear-gradient(160deg,#F0C24B,#C9A100);border:2px solid #F59E0B;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:18px;color:#4A3200">1</div>
+                <div style="width:44px;height:62px;background:linear-gradient(160deg,#F0C24B,#C9A100);border:2px solid #F59E0B;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:18px;color:#4A3200">2</div>
+                <div style="width:44px;height:62px;background:linear-gradient(160deg,#F0C24B,#C9A100);border:2px solid #F59E0B;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:18px;color:#4A3200">3</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ dealIntro5 }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:rgba(255,255,255,0.6);margin-top:16px;animation:fadeIn 1s">{{ dealWheelCount }} players are on the wheel tonight…</div>
+            </sc-if>
+            <sc-if value="{{ dealIntro6 }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:rgba(255,255,255,0.75);margin-top:16px;animation:fadeIn 1s">And now… your host…</div>
+            </sc-if>
+            <sc-if value="{{ dealIntro7 }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family:'Fredoka',sans-serif;font-size:26px;color:#F5C542;margin-top:10px;animation:bounceIn 0.8s;text-shadow:0 0 26px rgba(245,197,66,0.75)">COACH ELLIOTT SMITH!</div>
+            </sc-if>
+
+            <div style="margin-top:22px;display:flex;gap:8px;justify-content:center">
+              <div style="padding:8px 16px;background:rgba(255,255,255,0.12);border-radius:999px;font-size:12px;color:rgba(255,255,255,0.7);cursor:pointer" onClick="{{ dealSkipIntro }}">Skip to wheel ›</div>
+              <div style="padding:8px 14px;background:rgba(255,255,255,0.12);border-radius:999px;font-size:12px;color:rgba(255,255,255,0.7);cursor:pointer" onClick="{{ dealToggleMute }}">
+                <sc-if value="{{ dealMuted }}" hint-placeholder-val="{{ false }}">🔇 Unmute</sc-if>
+                <sc-if value="{{ dealNotMuted }}" hint-placeholder-val="{{ true }}">🔊 Mute</sc-if>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+          <div style="font-size:12px;color:#999;margin-bottom:6px">Still joining? Add a name:</div>
+          <div style="display:flex;gap:6px">
+            <input id="deal-add-name" placeholder="Player name" onKeyDown="{{ wheelNameKey }}"
+              style="flex:1;padding:9px 12px;border-radius:8px;border:1.5px solid #FEF3C7;font-size:12px;font-family:Outfit,sans-serif">
+            <div style="padding:9px 14px;background:#F59E0B;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
           </div>
         </div>
       </sc-if>
@@ -1549,7 +1640,7 @@ class Component extends DCLogic {
     dealMode: null, dealPhase: null, dealMuted: false, dealTimer: 0, dealTimerOn: false,
     dealCurrentQ: null, dealSelectedAnswer: null, dealCorrect: null, dealDoorPick: null,
     dealDoorCountdown: 0, dealDoorRevealing: false, dealPool: [], dealQi: 0,
-    dealPickHistory: [], dealPickCounts: {}, dealIntroStep: 0,
+    dealPickHistory: [], dealPickCounts: {}, dealIntroStep: 0, dealPassError: false, dealLobbyMsg: '',
     wheelNames: [], wheelDeg: 0, wheelPick: '',
     photoIdx: 0, photoRevealed: false, photoOrder: [],
     announcements:[], announceInput:'',
@@ -2243,20 +2334,56 @@ class Component extends DCLogic {
   _sfxStop(){['intro','cd','cdLoop'].forEach(k=>{const a=this._dealSfx[k];if(a){a.pause();a.currentTime=0;}});}
   _sfxMute(){this._dealSfx.muted=!this._dealSfx.muted;this.setState({dealMuted:this._dealSfx.muted});if(this._dealSfx.muted)this._sfxStop();}
 
+  _dealHostLogin(){
+    const el=document.getElementById('deal-host-pass');
+    const p=el?el.value.trim():'';
+    if(p==='porchgamenight'||p==='porchfamilyweekend'){
+      this.setState({dealMode:'lobby',dealPassError:false,hostVerified:true});
+    } else { this.setState({dealPassError:true}); }
+  }
+  _dealJoinAsPlayer(){ this.setState({dealMode:'player'}); }
+  _dealBackToRoles(){ this._sfxStop(); this.setState({dealMode:null,dealPhase:null}); }
+
   _startDeal2(){
-    this._initDealSfx();this._sfxPlay('intro');
+    const names=this.state.wheelNames||[];
+    if(!names.length){ this.setState({dealLobbyMsg:'Add at least one player first!'}); return; }
+    this._initDealSfx();
     const pool=[...Array(this._trivia.length).keys()];
     for(let a=pool.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[pool[a],pool[b]]=[pool[b],pool[a]];}
-    let wn=[];try{const s=localStorage.getItem('pfw_wheelNames');if(s)wn=JSON.parse(s);}catch(e){}
     this.setState({dealMode:'active',dealPhase:'intro',dealMuted:false,dealTimer:0,dealTimerOn:false,
       dealCurrentQ:null,dealSelectedAnswer:null,dealCorrect:null,dealDoorPick:null,
-      dealDoorCountdown:0,dealDoorRevealing:false,dealPool:pool,dealQi:0,dealPickHistory:[],dealPickCounts:{},
-      wheelNames:wn,wheelDeg:0,wheelPick:'',dealIntroStep:0});
-    setTimeout(()=>this.setState({dealIntroStep:1}),2000);
-    setTimeout(()=>this.setState({dealIntroStep:2}),5000);
-    setTimeout(()=>this.setState({dealPhase:'wheel',dealIntroStep:3}),8000);
+      dealDoorCountdown:0,dealDoorRevealing:false,dealPool:pool,dealQi:0,
+      dealPickHistory:[],dealPickCounts:{},wheelDeg:0,wheelPick:'',dealIntroStep:0});
+    // play the FULL song; graphics beat along, wheel appears when the song ends
+    const song=this._dealSfx.intro;
+    if(song && !this._dealSfx.muted){
+      song.currentTime=0;
+      song.play().catch(()=>{});
+      song.onended=()=>{ this.setState({dealPhase:'wheel',dealIntroStep:9}); };
+      // graphic beats across the song
+      this._introTimers=[
+        setTimeout(()=>this.setState({dealIntroStep:1}),3000),
+        setTimeout(()=>this.setState({dealIntroStep:2}),12000),
+        setTimeout(()=>this.setState({dealIntroStep:3}),25000),
+        setTimeout(()=>this.setState({dealIntroStep:4}),40000),
+        setTimeout(()=>this.setState({dealIntroStep:5}),55000),
+        setTimeout(()=>this.setState({dealIntroStep:6}),70000),
+        setTimeout(()=>this.setState({dealIntroStep:7}),82000)
+      ];
+      // safety net if onended never fires
+      this._introFallback=setTimeout(()=>{
+        if(this.state.dealPhase==='intro') this.setState({dealPhase:'wheel',dealIntroStep:9});
+      },100000);
+    } else {
+      this.setState({dealPhase:'wheel',dealIntroStep:9});
+    }
   }
-  _dealSkipIntro(){this._sfxStop();this.setState({dealPhase:'wheel',dealIntroStep:3});}
+  _dealSkipIntro(){
+    this._sfxStop();
+    (this._introTimers||[]).forEach(t=>clearTimeout(t));
+    if(this._introFallback) clearTimeout(this._introFallback);
+    this.setState({dealPhase:'wheel',dealIntroStep:9});
+  }
   _addWheelName(){
     const el=document.getElementById('deal-add-name');const n=el?el.value.trim():'';if(!n)return;
     const names=[...(this.state.wheelNames||[])];if(!names.includes(n))names.push(n);
@@ -2736,6 +2863,21 @@ class Component extends DCLogic {
     const announceKeyDown = (e) => { if(e.key==='Enter') this._postAnnouncement(); };
 
     // ===== Porch of a Deal (redesigned) =====
+    const dealRoleSelect = !s.dealMode;
+    const dealLobby      = s.dealMode==='lobby';
+    const dealPlayerJoin = s.dealMode==='player';
+    const dealPassError  = s.dealPassError;
+    const dealLobbyMsg   = s.dealLobbyMsg||'';
+    const dealWheelCount = (s.wheelNames||[]).length;
+    const dealHostLogin  = ()=>this._dealHostLogin();
+    const dealHostPassKey= (e)=>{if(e.key==='Enter')this._dealHostLogin();};
+    const dealJoinPlayer = ()=>this._dealJoinAsPlayer();
+    const dealBackRoles  = ()=>this._dealBackToRoles();
+    const dealIntro3 = s.dealIntroStep>=3;
+    const dealIntro4 = s.dealIntroStep>=4;
+    const dealIntro5 = s.dealIntroStep>=5;
+    const dealIntro6 = s.dealIntroStep>=6;
+    const dealIntro7 = s.dealIntroStep>=7;
     const deal2On = s.dealMode==='active';
     const dealOff = !s.dealMode;
     const dealIntro = s.dealPhase==='intro';
@@ -2986,6 +3128,9 @@ class Component extends DCLogic {
       announcements, hasAnnouncements, noAnnouncements,
       postAnnouncement, postAnnouncementHome, clearAnnouncements, announceKeyDown, announceKeyDownHome,
       // Porch of a Deal
+      dealRoleSelect, dealLobby, dealPlayerJoin, dealPassError, dealLobbyMsg, dealWheelCount,
+      dealHostLogin, dealHostPassKey, dealJoinPlayer, dealBackRoles,
+      dealIntro3, dealIntro4, dealIntro5, dealIntro6, dealIntro7,
       deal2On, dealOff, dealIntro, dealWheel, dealSpinning, dealQuestion, dealWrong,
       dealDoors, dealRevealPhase, dealPrize, dealTimer, dealTimerOn, dealTimerNotOn, dealTimerColor,
       dealWheelStyle, dealWheelPick, dealMuted, dealNotMuted, dealIntroStep, dealIntro1, dealIntro2,
