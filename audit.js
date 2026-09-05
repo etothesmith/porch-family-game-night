@@ -137,7 +137,7 @@ console.log('\n=== 11. DUPLICATE ELEMENT IDs (getElementById returns first only)
   const d=Object.entries(c).filter(([k,v])=>v>1);
   if(!d.length) ok('all '+ids.length+' element IDs unique');
   else d.forEach(([k,v])=>{
-    h.includes("getElementById('"+k+"')")
+    (h.includes("getElementById('"+k+"')") || h.includes("'"+k+"'"))
       ? bad(k+' ×'+v+' and READ by getElementById — only first match is ever read')
       : warn(k+' ×'+v+' (not read by JS)');
   });

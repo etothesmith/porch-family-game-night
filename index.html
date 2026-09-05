@@ -77,7 +77,7 @@
 
 /* prize-wheel */
 .gs-wheelwrap{position:relative;display:inline-block;margin:10px auto 4px;}
-.gs-wheel{display:block;border-radius:50%;
+.gs-wheel{display:block;border-radius:50%;position:relative;
   box-shadow:0 0 0 5px #F5C542,0 0 0 9px #2a1a05,0 0 28px rgba(245,197,66,.35);
   transition:transform 4.6s cubic-bezier(.15,.83,.2,1);}
 .gs-ptr{position:absolute;top:-5px;left:50%;transform:translateX(-50%);
@@ -1067,48 +1067,51 @@ a, a:hover { color:#7B2D8E; }
         <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
           <div style="font-size:12px;color:#999;margin-bottom:6px">Still joining? Add a name:</div>
           <div style="display:flex;gap:6px">
-            <input id="deal-name-wheel" placeholder="Player name" onKeyDown="{{ wheelNameKey }}"
+            <input id="deal-name-intro2" placeholder="Player name" onKeyDown="{{ wheelNameKey }}"
               style="flex:1;padding:9px 12px;border-radius:8px;border:1.5px solid #FEF3C7;font-size:12px;font-family:Outfit,sans-serif">
             <div style="padding:9px 14px;background:#F59E0B;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
           </div>
         </div>
       </sc-if>
 
-      <!-- WHEEL -->
-      <sc-if value="{{ dealWheel }}" hint-placeholder-val="{{ false }}">
+      <!-- WHEEL (one persistent element so the CSS transition can animate) -->
+      <sc-if value="{{ dealWheelOrSpin }}" hint-placeholder-val="{{ false }}">
         <div class="gs-stage open" style="margin-top:8px">
           <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
           <div class="gs-lights"><i></i><i></i></div><div class="gs-floor"></div>
           <div class="gs-inner">
-            <div class="gs-title">WHO'S UP NEXT?</div>
-            <div class="gs-wheelwrap"><div class="gs-ptr"></div><div class="gs-wheel" style="{{ dealWheelStyle }}"></div><div class="gs-hub"></div></div>
-            <div style="padding:14px 28px;background:linear-gradient(135deg,#F5C542,#E0A008);border-radius:999px;color:#1a1000;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer;display:inline-block;margin-top:12px" onClick="{{ spinDealWheel }}">SPIN THE WHEEL</div>
+            <div class="gs-title">{{ dealWheelTitle }}</div>
+            <div class="gs-wheelwrap">
+              <div class="gs-ptr"></div>
+              <div class="gs-wheel" style="{{ dealWheelStyle }}">
+                <sc-for list="{{ wheelLabels }}" as="wl" hint-placeholder-count="0">
+                  <span style="{{ wl.style }}">{{ wl.name }}</span>
+                </sc-for>
+              </div>
+              <div class="gs-hub"></div>
+            </div>
+            <sc-if value="{{ dealWheel }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:14px 28px;background:linear-gradient(135deg,#F5C542,#E0A008);border-radius:999px;color:#1a1000;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer;display:inline-block;margin-top:12px" onClick="{{ spinDealWheel }}">SPIN THE WHEEL</div>
+            </sc-if>
+            <sc-if value="{{ dealSpinning }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#F5C542;margin-top:16px;animation:aucPulse 0.8s ease-in-out infinite">Spinning…</div>
+            </sc-if>
           </div>
         </div>
-        <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
-          <div style="font-size:12px;color:#999;margin-bottom:6px">Players on the wheel:</div>
-          <div style="display:flex;flex-wrap:wrap;gap:4px">
-            <sc-for list="{{ wheelNames }}" as="wn2" hint-placeholder-count="0">
-              <div style="padding:4px 10px;background:#FEF3C7;border-radius:999px;font-size:12px;color:#92400E">{{ wn2.name }}</div>
-            </sc-for>
+        <sc-if value="{{ dealWheel }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+            <div style="font-size:12px;color:#999;margin-bottom:6px">Players on the wheel ({{ dealWheelCount }}):</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px">
+              <sc-for list="{{ wheelNames }}" as="wn2" hint-placeholder-count="0">
+                <div style="padding:4px 10px;background:#FEF3C7;border-radius:999px;font-size:12px;color:#92400E;display:flex;align-items:center;gap:5px">{{ wn2.name }} <span style="cursor:pointer;opacity:0.45" onClick="{{ wn2.onRemove }}">✕</span></div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px">
+              <input id="deal-name-wheel" placeholder="Add player" onKeyDown="{{ wheelNameKey }}" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid #FEF3C7;font-size:12px;font-family:Outfit,sans-serif">
+              <div style="padding:8px 12px;background:#F59E0B;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
+            </div>
           </div>
-          <div style="display:flex;gap:6px;margin-top:8px">
-            <input id="deal-name-intro" placeholder="Add player" onKeyDown="{{ wheelNameKey }}" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid #FEF3C7;font-size:12px;font-family:Outfit,sans-serif">
-            <div style="padding:8px 12px;background:#F59E0B;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
-          </div>
-        </div>
-      </sc-if>
-
-      <!-- SPINNING -->
-      <sc-if value="{{ dealSpinning }}" hint-placeholder-val="{{ false }}">
-        <div class="gs-stage open" style="margin-top:8px">
-          <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
-          <div class="gs-lights"><i></i><i></i></div><div class="gs-floor"></div>
-          <div class="gs-inner">
-            <div class="gs-title">SPINNING...</div>
-            <div class="gs-wheelwrap"><div class="gs-ptr"></div><div class="gs-wheel" style="{{ dealWheelStyle }}"></div><div class="gs-hub"></div></div>
-          </div>
-        </div>
+        </sc-if>
       </sc-if>
 
       <!-- QUESTION -->
@@ -2391,7 +2394,7 @@ class Component extends DCLogic {
   }
   _addWheelName(){
     // whichever of the four name inputs is currently rendered and has text
-    const ids=['deal-name-lobby','deal-name-player','deal-name-wheel','deal-name-intro'];
+    const ids=['deal-name-lobby','deal-name-player','deal-name-wheel','deal-name-intro','deal-name-intro2'];
     let el=null;
     for(const id of ids){
       const c=document.getElementById(id);
@@ -2905,6 +2908,21 @@ class Component extends DCLogic {
     const dealTimerOn = s.dealTimerOn;
     const dealTimerNotOn = !s.dealTimerOn;
     const dealTimerColor = s.dealTimer<=5?'#DC2626':s.dealTimer<=10?'#F59E0B':'#10B981';
+    const dealWheelOrSpin = s.dealPhase==='wheel' || s.dealPhase==='spinning';
+    const dealWheelTitle  = s.dealPhase==='spinning' ? 'ROUND AND ROUND...' : "WHO'S UP NEXT?";
+    const _wn = s.wheelNames||[];
+    const wheelLabels = _wn.map(function(n,i){
+      const slice = 360/_wn.length;
+      const mid = i*slice + slice/2;           // center of this slice
+      const radius = 66;                        // px from hub
+      return {
+        name: n.length>9 ? n.slice(0,8)+'…' : n,
+        style: 'position:absolute;left:50%;top:50%;transform-origin:0 0;'
+             + 'transform:rotate('+mid+'deg) translate(-50%,-'+radius+'px) rotate(90deg);'
+             + 'font-family:Fredoka,sans-serif;font-size:11px;color:#fff;white-space:nowrap;'
+             + 'text-shadow:0 1px 3px rgba(0,0,0,.7);pointer-events:none;font-weight:600;'
+      };
+    });
     const dealWheelBg = this._wheelBg();
     const dealWheelStyle = 'transform:rotate('+(s.wheelDeg||0)+'deg);background:'+this._wheelBg()+';width:200px;height:200px;';
     const dealWheelPick = s.wheelPick||'';
@@ -3146,7 +3164,7 @@ class Component extends DCLogic {
       dealIntro3, dealIntro4, dealIntro5, dealIntro6, dealIntro7,
       deal2On, dealOff, dealIntro, dealWheel, dealSpinning, dealQuestion, dealWrong,
       dealDoors, dealRevealPhase, dealPrize, dealTimer, dealTimerOn, dealTimerNotOn, dealTimerColor,
-      dealWheelStyle, dealWheelPick, dealMuted, dealNotMuted, dealIntroStep, dealIntro1, dealIntro2,
+      dealWheelOrSpin, dealWheelTitle, wheelLabels, dealWheelStyle, dealWheelPick, dealMuted, dealNotMuted, dealIntroStep, dealIntro1, dealIntro2,
       dealDoorCountdown, wheelNames, hasWheelNames, dealQText, dealAnswers,
       startDeal2, spinDealWheel, startDealTimer, addWheelName, wheelNameKey,
       dealDoor1, dealDoor2, dealDoor3, dealBackToWheel, dealSkipIntro, dealToggleMute, dealExit,
