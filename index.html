@@ -2765,6 +2765,82 @@ class Component extends DCLogic {
     const dealToggleMute = ()=>this._sfxMute();
     const dealExit = ()=>this._dealExit();
 
+    const goBankerRules = () => this._bankerRules();
+    const bankerRulesOn = s.dealMode === 'bankerRules';
+    const bulbs = Array.from({length:22},(_,i)=>({i:i}));
+    const ladderRungs = this._ladder.map((v,i)=>({
+      label:'$'+(v>=1000? (v/1000)+'k' : v),
+      cls: i < s.trivStreak ? 'gs-rung hit' : (i === s.trivStreak ? 'gs-rung now' : 'gs-rung')
+    }));
+
+    // Trivia round
+    const trivModeOn = s.dealMode === 'trivia';
+    const _tq  = this._qAt(s.trivOrder[s.trivIdx]);
+    const trivHasImg = !!_tq.img;
+    const trivImgSrc = _tq.img ? (this._photoSrc[_tq.img]||'') : '';
+    const trivQuestion = _tq.q;
+    const trivIsTask   = !_tq.o || _tq.o.length === 0;
+    const trivOptions  = (_tq.o||[]).map(t=>({
+      text:t,
+      bg: s.trivRevealed ? (t===_tq.a ? '#F0FDF4' : '#fafafa') : '#fafafa',
+      border: s.trivRevealed ? (t===_tq.a ? '#16A34A' : '#eee') : '#eee',
+      textColor: s.trivRevealed ? (t===_tq.a ? '#166534' : '#bbb') : '#333'
+    }));
+    const trivAnswer   = _tq.a;
+    const trivCat = _tq.c==='f' ? 'Porch Family' : _tq.c==='t' ? 'Challenge' : 'Pop Culture';
+    const trivCatBg = _tq.c==='f' ? '#FEF3C7' : _tq.c==='t' ? '#FCE7F3' : '#E0F2FE';
+    const trivCatFg = _tq.c==='f' ? '#92400E' : _tq.c==='t' ? '#9D174D' : '#075985';
+    const trivPhaseAsk    = trivModeOn && s.trivPhase==='ask';
+    const trivPhaseOffer  = trivModeOn && s.trivPhase==='offer';
+    const trivPhaseBust   = trivModeOn && s.trivPhase==='bust';
+    const trivPhaseBanked = trivModeOn && s.trivPhase==='banked';
+    const trivNotRevealed = !s.trivRevealed;
+    const trivIsRevealed  = s.trivRevealed;
+    const trivStreakTxt   = s.trivStreak + ' in a row';
+    const trivPotTxt      = '$' + (this._ladder[Math.min(Math.max(s.trivStreak-1,0), this._ladder.length-1)]||0).toLocaleString();
+    const trivBankedTxt   = '$' + s.trivBanked.toLocaleString();
+    const trivOfferTxt    = '$' + s.trivOffer.toLocaleString();
+    const startTrivia  = () => this._startTrivia();
+    const trivReveal   = () => this._trivReveal();
+    const trivRight    = () => this._trivJudge(true);
+    const trivWrong    = () => this._trivJudge(false);
+    const trivDeal     = () => this._trivDeal();
+    const trivNoDeal   = () => this._trivNoDeal();
+    const trivRestart  = () => this._trivRestart();
+    const trivKeepGoing= () => this.setState({trivPhase:'ask'}, ()=>this._trivNext());
+
+    // Photo trivia
+    const photoModeMenu   = s.dealMode === 'menu';
+    const photoModeActive = s.dealMode === 'photo';
+    const photoModeCases  = s.dealMode === 'cases';
+    const _pi   = s.photoOrder.length ? s.photoOrder[s.photoIdx] : 0;
+    const _pq   = this._photoTrivia[_pi] || {img:'',q:'',a:''};
+    const photoSrc      = this._photoSrc[_pq.img] || '';
+    const photoQuestion = _pq.q;
+    const photoAnswer   = _pq.a;
+    const photoCounter  = (s.photoIdx+1) + ' of ' + (s.photoOrder.length || this._photoTrivia.length);
+    const photoNotRevealed = !s.photoRevealed;
+    const photoIsRevealed  = s.photoRevealed;
+    const startPhotoTrivia = () => this._startPhotoTrivia();
+    const startCases       = () => this._startCases();
+    const dealMenu         = () => this._dealMenu();
+    const photoReveal      = () => this._photoReveal();
+    const photoNext        = () => this._photoNext();
+
+    // Deal game
+    const dealCases = this.state.dealValues.map((v,i) => {
+      const isPlayer = i === s.dealPlayerCase;
+      const isOpened = s.dealOpened.includes(i);
+      if (s.dealPhase === 'pick') {
+        return { label: i+1, bg: '#FFFBEB', border: '#F59E0B', textColor: '#D97706', onClick: () => this._pickCase(i) };
+      }
+      if (isPlayer) return { label: '📦', bg: '#FEF3C7', border: '#F59E0B', textColor: '#D97706', onClick: () => {} };
+      if (isOpened) return { label: '$'+v.toLocaleString(), bg: '#f5f5f5', border: '#e5e5e5', textColor: '#999', onClick: () => {} };
+      return { label: i+1, bg: '#FFFBEB', border: '#F59E0B', textColor: '#D97706', onClick: () => this._pickCase(i) };
+    });
+    const dealRemainingCases = s.dealPhase === 'open' ? dealCases.filter((_,i) => i !== s.dealPlayerCase) : [];
+    const casesToOpenMsg = s.dealRound <= 2 ? 'Open 3 cases' : 'Open 2 cases';
+
     // Menu
     const menuDays = this._menuData.map((d,i) => ({
       label: d.day, active: i===s.menuDay?'#7B2D8E':'#f3e8ff',
@@ -2886,63 +2962,15 @@ class Component extends DCLogic {
       dealDoorCountdown, wheelNames, hasWheelNames, dealQText, dealAnswers,
       startDeal2, spinDealWheel, startDealTimer, addWheelName, wheelNameKey,
       dealDoor1, dealDoor2, dealDoor3, dealBackToWheel, dealSkipIntro, dealToggleMute, dealExit,
-      // Stage / wheel
- wheelMsg, stageClass, playersVal, spinWheel, setPlayers, bulbs, ladderRungs,
-      // Porch of a Deal (doors)
- dealRulesOn, dealPlayOn, bankerRulesOn,
-      planPrize, planGag, planReady, planNotReady, setupDoors,
-      dealQuestion, dealHasImg, dealImgSrc, dealIsTask, dealAnswer, dealOptions,
- dealCatBg, dealCatFg,
- dealDoors, dealZonk, dealResult, dealNotRev, dealIsRev,
-      gameDoors, lastDoorEmoji, lastDoorNum, lastDoorWin, lastDoorGag, dealTally,
- toggleAuto1, toggleAuto2, toggleAuto3, goDealRules, startDealPlay,
- dealRight, dealWrong, dealNextQ, goBankerRules,
-      trivHasImg, trivImgSrc,
-      // Trivia round
+      // The Porch Banker
+      goBankerRules, bankerRulesOn,
       trivModeOn, trivQuestion, trivOptions, trivAnswer, trivIsTask,
-      trivCat, trivCatBg, trivCatFg,
+      trivHasImg, trivImgSrc, trivCat, trivCatBg, trivCatFg,
       trivPhaseAsk, trivPhaseOffer, trivPhaseBust, trivPhaseBanked,
       trivNotRevealed, trivIsRevealed,
       trivStreakTxt, trivPotTxt, trivBankedTxt, trivOfferTxt,
       startTrivia, trivReveal, trivRight, trivWrong, trivDeal, trivNoDeal, trivRestart, trivKeepGoing,
-      // Photo trivia
-      photoModeMenu, photoModeActive, photoModeCases,
-      photoSrc, photoQuestion, photoAnswer, photoCounter,
-      photoNotRevealed, photoIsRevealed,
-      startPhotoTrivia, startCases, dealMenu, photoReveal, photoNext,
-      // Deal
-      dealPhase0: s.dealPhase==='pick' && photoModeCases, dealPhase1: s.dealPhase==='open' && photoModeCases,
-      dealOffer: s.dealPhase==='offer' && photoModeCases, dealFinished: s.dealPhase==='done' && photoModeCases,
-      dealCases, dealRemainingCases, dealPlayerCase: s.dealPlayerCase!==null?s.dealPlayerCase+1:'',
-      dealInstructions: casesToOpenMsg,
-      dealOfferAmount: '$'+s.dealOfferAmt.toLocaleString(),
-      dealNoDeal: () => {
-        const remaining = this.state.dealValues.filter((_,i) => i!==s.dealPlayerCase && !s.dealOpened.includes(i));
-        if (remaining.length <= 1) {
-          const won = this.state.dealValues[s.dealPlayerCase];
-          this.setState({dealPhase:'done',dealResult:{won,took:'case'}});
-        } else {
-          this.setState(p=>({dealPhase:'open',dealRound:p.dealRound+1}));
-        }
-      },
-      dealAccept: () => this.setState({dealPhase:'done',dealResult:{won:s.dealOfferAmt,took:'offer'}}),
-      dealResultEmoji: s.dealResult?.won>=10000?'🎉':s.dealResult?.won>=1000?'😊':'🤷',
-      dealResultTitle: s.dealResult?.took==='offer'?'You took the deal!':'You kept your case!',
-      dealResultDesc: s.dealResult?.took==='case'?'Your case had...':'The banker paid you',
-      dealResultAmount: s.dealResult?'$'+s.dealResult.won.toLocaleString():'',
-      dealRestart: () => this._initDeal(),
-      // Reoke
-      reokeSongs,
-      // Places
-      places: this._getPlaces(),
-      // Menu
-      menuDays, menuMeals,
-      // Contacts
-      contacts: this._getContacts().map(function(c){return Object.assign({},c,{
-        hasPhone:!!c.phone,
-        callUrl:c.phone?'tel:'+c.phone.replace(/[^+\d]/g,''):'',
-        smsUrl:c.phone?'sms:'+c.phone.replace(/[^+\d]/g,''):''
-      });}),
+      ladderRungs, bulbs,
       // Admin
       adminLocked: !s.adminAuth, adminUnlocked: s.adminAuth, adminError: s.adminError,
       adminLogin: this._adminLogin, adminKeyDown: this._adminKeyDown,
