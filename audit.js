@@ -53,6 +53,25 @@ const exposed=[...ret.matchAll(/(?:^|,)\s*([A-Za-z_$][\w$]*)\s*(?=,|\n|$)/gm)].m
 const missing=[...new Set(exposed)].filter(x=>!declared.has(x));
 missing.length?missing.forEach(x=>bad(x+' exposed but never declared')):ok(`all ${new Set(exposed).size} exposes resolve`);
 
+
+console.log('\n=== 4b. METHOD CALLS resolve (this._x) ===');
+{
+  const calls=[...new Set([...code.matchAll(/this\.(_\w+)\s*\(/g)].map(m=>m[1]))];
+  const defined=new Set();
+  [...code.matchAll(/^\s{2}(_\w+)\s*[\(=]/gm)].forEach(m=>defined.add(m[1]));
+  const miss=calls.filter(c=>!defined.has(c));
+  miss.length?miss.forEach(m=>bad('this.'+m+'() called but never defined')):ok(`all ${calls.length} method calls resolve`);
+}
+
+console.log('\n=== 4c. STATE FIELDS referenced in render exist in state ===');
+{
+  const stateBlock=(code.match(/state\s*=\s*\{([\s\S]*?)\n  \};/)||[])[1]||'';
+  const stateKeys=new Set([...stateBlock.matchAll(/(\w+)\s*:/g)].map(m=>m[1]));
+  const used=[...new Set([...code.matchAll(/\bs\.(\w+)/g)].map(m=>m[1]))];
+  const miss=used.filter(u=>!stateKeys.has(u));
+  miss.length?warn('s.'+miss.join(', s.')+' read but not in initial state (may be fine if set later)'):ok(`all ${used.length} state reads declared`);
+}
+
 console.log('\n=== 5. TEMPLATE BINDINGS resolve to return block ===');
 const bindings=[...h.matchAll(/\{\{\s*([a-z][\w$]*)\s*\}\}/g)].map(m=>m[1]);
 const retNames=new Set([...ret.matchAll(/([A-Za-z_$][\w$]*)\s*[,:]/g)].map(m=>m[1]));

@@ -1546,7 +1546,12 @@ class Component extends DCLogic {
     quizIdx: 0, quizScore: 0, quizSelected: null, quizFinished: false, quizOrder: null,
     runnerState: 'idle', runnerScore: 0, runnerBest: parseInt(localStorage.getItem('pfw_runner_best')||'0'),
     runnerY: 0, runnerVY: 0, runnerObstacles: [], runnerCoins: [],
-    dealMode: 'menu', photoIdx: 0, photoRevealed: false, photoOrder: [],
+    dealMode: null, dealPhase: null, dealMuted: false, dealTimer: 0, dealTimerOn: false,
+    dealCurrentQ: null, dealSelectedAnswer: null, dealCorrect: null, dealDoorPick: null,
+    dealDoorCountdown: 0, dealDoorRevealing: false, dealPool: [], dealQi: 0,
+    dealPickHistory: [], dealPickCounts: {}, dealIntroStep: 0,
+    wheelNames: [], wheelDeg: 0, wheelPick: '',
+    photoIdx: 0, photoRevealed: false, photoOrder: [],
     announcements:[], announceInput:'',
     playerName: '', playerPhone: '', playerNameSet: false, hostVerified: false, hostPassError: false,
     auctionMode:null, auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
@@ -2213,6 +2218,19 @@ class Component extends DCLogic {
 
 
   // ===== GAME SHOW STAGE (wheel + curtains) =====
+  _buildPool(){
+    const pool = [];
+    this._trivia.forEach((q,i)=>pool.push({k:'t',i:i}));
+    this._photoTrivia.forEach((q,i)=>pool.push({k:'p',i:i}));
+    for(let a=pool.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));const t=pool[a];pool[a]=pool[b];pool[b]=t;}
+    return pool;
+  }
+  _qAt(ref){
+    if(!ref) return {q:'',o:[],a:'',c:'f',img:null};
+    if(ref.k==='p'){ const p=this._photoTrivia[ref.i]; return {q:p.q,o:[],a:p.a,c:'f',img:p.img}; }
+    const t=this._trivia[ref.i]; return {q:t.q,o:t.o||[],a:t.a,c:t.c,img:null};
+  }
+
   // ===== PORCH OF A DEAL (redesigned) =====
   _dealSfx={intro:null,cd:null,cdLoop:null,muted:false};
   _initDealSfx(){
