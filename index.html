@@ -921,427 +921,170 @@ a, a:hover { color:#7B2D8E; }
       </sc-if>
   </sc-if>
 
-  <!-- DEAL GAME -->
+  <!-- PORCH OF A DEAL (redesigned) -->
   <sc-if value="{{ screenDeal }}" hint-placeholder-val="{{ false }}">
   <div style="animation:fadeIn 0.3s ease-out;padding-bottom:56px">
-    <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:12px">
-      <div style="width:36px;height:36px;border-radius:50%;background:#FEF3C7;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#D97706">←</span></div>
-      <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Porch of a Deal</h2>
+    <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;border-radius:50%;background:#FEF3C7;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ nav.games }}"><span style="font-size:18px;color:#D97706">&#8592;</span></div>
+      <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a;flex:1">Porch of a Deal</h2>
+      <sc-if value="{{ deal2On }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:6px">
+          <div style="padding:5px 10px;border-radius:8px;font-size:11px;cursor:pointer" onClick="{{ dealToggleMute }}" style="background:#f5f5f5">
+            <sc-if value="{{ dealMuted }}" hint-placeholder-val="{{ false }}">🔇</sc-if>
+            <sc-if value="{{ dealNotMuted }}" hint-placeholder-val="{{ true }}">🔊</sc-if>
+          </div>
+          <div style="padding:5px 10px;background:#fee;border-radius:8px;color:#DC2626;font-size:11px;font-weight:700;cursor:pointer" onClick="{{ dealExit }}">Exit</div>
+        </div>
+      </sc-if>
     </div>
-    <div style="padding:0 20px">
+    <div style="padding:0 16px">
 
-      <!-- MODE MENU -->
-      <sc-if value="{{ photoModeMenu }}" hint-placeholder-val="{{ true }}">
-        <div style="padding:8px 0 20px">
-          <p style="font-size:13px;color:#888;margin:0 0 16px;text-align:center">Pick your round.</p>
-
-          <sc-if value="{{ hostVerified }}" hint-placeholder-val="{{ false }}">
-            <div style="background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:var(--radius-lg);padding:22px;cursor:pointer;margin-bottom:12px" onClick="{{ startDealSetup }}">
-              <div style="font-size:30px;margin-bottom:6px">&#128682;</div>
-              <h3 style="font-family:'Fredoka',sans-serif;font-size:19px;color:#fff;margin:0 0 4px">Porch of a Deal</h3>
-              <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Answer right, then pick a door. Prize or gag?</p>
-            </div>
-          </sc-if>
-          <sc-if value="{{ hostNotVerified }}" hint-placeholder-val="{{ true }}">
-            <div style="background:rgba(245,158,11,0.08);border-radius:var(--radius-lg);padding:18px;margin-bottom:12px">
-              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#D97706;margin-bottom:2px">🚪 Porch of a Deal</div>
-              <div style="font-size:12px;color:#999">Host-only — enter password above to unlock</div>
-            </div>
-          </sc-if>
-          <div style="background:rgba(245,158,11,0.06);border:2px solid #FEF3C7;border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;cursor:pointer" onClick="{{ goDealRules }}">
-            <div style="display:flex;align-items:center;gap:10px">
-              <div style="font-size:24px">🚪</div>
-              <div style="flex:1">
-                <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#D97706">Porch of a Deal — Rules</div>
-                <div style="font-size:11px;color:#999">Read how it works before your turn!</div>
-              </div>
-            </div>
-          </div>
-
-          <sc-if value="{{ hostVerified }}" hint-placeholder-val="{{ false }}">
-            <div style="background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:var(--radius-lg);padding:22px;cursor:pointer;margin-bottom:12px" onClick="{{ goBankerRules }}">
-              <div style="font-size:30px;margin-bottom:6px">&#9742;</div>
-              <h3 style="font-family:'Fredoka',sans-serif;font-size:19px;color:#fff;margin:0 0 4px">The Porch Banker</h3>
-              <p style="font-size:12px;color:rgba(255,255,255,0.88);margin:0">Build a pot. Take the deal, or risk it all.</p>
-            </div>
-          </sc-if>
-          <sc-if value="{{ hostNotVerified }}" hint-placeholder-val="{{ true }}">
-            <div style="background:rgba(14,165,233,0.08);border-radius:var(--radius-lg);padding:18px;margin-bottom:12px">
-              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#0369A1;margin-bottom:2px">☎️ The Porch Banker</div>
-              <div style="font-size:12px;color:#999">Host-only — enter password above to unlock</div>
-            </div>
-          </sc-if>
-          <div style="background:rgba(14,165,233,0.06);border:2px solid #E0F2FE;border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;cursor:pointer" onClick="{{ goBankerRules }}">
-            <div style="display:flex;align-items:center;gap:10px">
-              <div style="font-size:24px">☎️</div>
-              <div style="flex:1">
-                <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#0369A1">The Porch Banker — Rules</div>
-                <div style="font-size:11px;color:#999">Learn the stakes before you play!</div>
-              </div>
-            </div>
-          </div>
-
-
-
-
-        </div>
-      </sc-if>
-
-      <!-- DOOR SETUP (host only) -->
-      <sc-if value="{{ dealSetupOn }}" hint-placeholder-val="{{ false }}">
-        <div style="padding:4px 0 20px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div style="font-family:'Fredoka',sans-serif;font-size:17px;color:#D97706">Host: set the doors</div>
-            <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ dealMenu }}">Cancel</div>
-          </div>
-          <p style="font-size:12px;color:#888;margin:0 0 12px;line-height:1.5">Tap each door to cycle <b style="color:#16A34A">PRIZE</b> &rarr; <b style="color:#DC2626">GAG</b> &rarr; blank. Do this before anyone else is looking!</p>
-          <div style="display:flex;gap:8px;margin-bottom:12px">
-            <div style="flex:1;background:#F0FDF4;border-radius:10px;padding:8px;text-align:center">
-              <div style="font-size:10px;color:#16A34A;font-weight:700">PRIZES</div>
-              <div style="font-family:'Fredoka',sans-serif;font-size:18px;color:#16A34A">{{ planPrize }}</div>
-            </div>
-            <div style="flex:1;background:#FEF2F2;border-radius:10px;padding:8px;text-align:center">
-              <div style="font-size:10px;color:#DC2626;font-weight:700">GAGS</div>
-              <div style="font-family:'Fredoka',sans-serif;font-size:18px;color:#DC2626">{{ planGag }}</div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:12px">
-            <sc-for list="{{ setupDoors }}" as="sd" hint-placeholder-count="20">
-              <div style="aspect-ratio:0.78;background:{{ sd.bg }};border:2px solid {{ sd.border }};border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" onClick="{{ sd.onClick }}">
-                <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:{{ sd.fg }}">{{ sd.n }}</div>
-                <div style="font-size:7.5px;font-weight:800;color:{{ sd.fg }};letter-spacing:.5px">{{ sd.label }}</div>
-              </div>
-            </sc-for>
-          </div>
-          <div style="display:flex;gap:6px;margin-bottom:12px">
-            <div style="flex:1;padding:10px;background:#f3e8ff;border-radius:999px;text-align:center;font-size:12px;font-weight:700;color:#7B2D8E;cursor:pointer" onClick="{{ toggleAuto1 }}">10 / 10</div>
-            <div style="flex:1;padding:10px;background:#f3e8ff;border-radius:999px;text-align:center;font-size:12px;font-weight:700;color:#7B2D8E;cursor:pointer" onClick="{{ toggleAuto2 }}">Generous</div>
-            <div style="flex:1;padding:10px;background:#f3e8ff;border-radius:999px;text-align:center;font-size:12px;font-weight:700;color:#7B2D8E;cursor:pointer" onClick="{{ toggleAuto3 }}">Brutal</div>
-          </div>
-          <sc-if value="{{ planReady }}" hint-placeholder-val="{{ false }}">
-            <div style="padding:15px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;text-align:center;cursor:pointer" onClick="{{ goDealRules }}">Next: the rules &rarr;</div>
-          </sc-if>
-          <sc-if value="{{ planNotReady }}" hint-placeholder-val="{{ true }}">
-            <div style="padding:15px;background:#eee;border-radius:999px;color:#aaa;font-family:'Fredoka',sans-serif;font-size:15px;text-align:center">Assign all 20 doors first</div>
-          </sc-if>
-        </div>
-      </sc-if>
-
-      <!-- DEAL RULES -->
-      <sc-if value="{{ dealRulesOn }}" hint-placeholder-val="{{ false }}">
-        <div style="padding:4px 0 20px">
-          <div style="background:#fff;border-radius:var(--radius-lg);padding:22px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-            <div style="font-size:30px;text-align:center">&#128682;</div>
-            <h3 style="font-family:'Fredoka',sans-serif;font-size:20px;color:#D97706;text-align:center;margin:6px 0 14px">How to play Porch of a Deal</h3>
-            <div style="font-size:13.5px;color:#555;line-height:2">
-              <b style="color:#1a1a1a">1.</b> The host reads the question out loud.<br>
-              <b style="color:#1a1a1a">2.</b> The player answers, then the host taps <b>Reveal Answer</b>.<br>
-              <b style="color:#1a1a1a">3.</b> Host marks it right or wrong.<br>
-              <b style="color:#1a1a1a">4.</b> Get it right and you pick any unopened door.<br>
-              <b style="color:#1a1a1a">5.</b> Behind it: a real prize, or a gag gift!<br>
-              <b style="color:#1a1a1a">6.</b> Miss it and you're zonked &mdash; no door, next player up.
-            </div>
-            <div style="background:#FFFBEB;border-radius:10px;padding:12px;margin-top:14px;font-size:12px;color:#92400E;line-height:1.6">
-              Questions include family history, pop culture, photo rounds and physical challenges &mdash; and they reshuffle every single game.
-            </div>
-            <div style="padding:15px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;text-align:center;cursor:pointer;margin-top:16px" onClick="{{ startDealPlay }}">Let's make a deal!</div>
+      <!-- START SCREEN -->
+      <sc-if value="{{ dealOff }}" hint-placeholder-val="{{ true }}">
+        <div class="gs-stage open" style="margin-top:8px">
+          <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
+          <div class="gs-lights"><i></i><i></i></div><div class="gs-floor"></div>
+          <div class="gs-inner" style="padding:30px 20px">
+            <div style="font-size:48px;margin-bottom:6px">🚪</div>
+            <div class="gs-title" style="font-size:26px">PORCH OF A DEAL</div>
+            <div class="gs-sub">Spin the wheel · Answer the question · Pick a door</div>
           </div>
         </div>
-      </sc-if>
-
-      <!-- BANKER RULES -->
-      <sc-if value="{{ bankerRulesOn }}" hint-placeholder-val="{{ false }}">
-        <div style="padding:4px 0 20px">
-          <div style="background:#fff;border-radius:var(--radius-lg);padding:22px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-            <div style="font-size:30px;text-align:center">&#9742;</div>
-            <h3 style="font-family:'Fredoka',sans-serif;font-size:20px;color:#0369A1;text-align:center;margin:6px 0 14px">How to play The Porch Banker</h3>
-            <div style="font-size:13.5px;color:#555;line-height:2">
-              <b style="color:#1a1a1a">1.</b> Answer questions to build up a pot.<br>
-              <b style="color:#1a1a1a">2.</b> Each correct answer climbs the money ladder.<br>
-              <b style="color:#1a1a1a">3.</b> Every 3rd correct answer, the Banker calls with an offer.<br>
-              <b style="color:#1a1a1a">4.</b> Take the <b>DEAL</b> and it's banked for good.<br>
-              <b style="color:#1a1a1a">5.</b> Say <b>NO DEAL</b> and keep climbing &mdash; but one wrong answer wipes the un-banked pot.
-            </div>
-            <div style="background:#F0F9FF;border-radius:10px;padding:12px;margin-top:14px;font-size:12px;color:#075985;line-height:1.6">
-              Same question bank as Porch of a Deal &mdash; family history, pop culture, photos and challenges &mdash; reshuffled each game.
-            </div>
-            <div style="padding:15px;background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;text-align:center;cursor:pointer;margin-top:16px" onClick="{{ startTrivia }}">Start the round</div>
+        <div style="padding:16px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:18px;text-align:center;cursor:pointer;margin-top:14px" onClick="{{ startDeal2 }}">🎬 START THE SHOW</div>
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#D97706;margin-bottom:8px">Add Players to the Wheel</div>
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <input id="deal-add-name" placeholder="Player name" onKeyDown="{{ wheelNameKey }}" style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid #FEF3C7;font-size:13px;font-family:Outfit,sans-serif">
+            <div style="padding:10px 16px;background:#F59E0B;border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
           </div>
-        </div>
-      </sc-if>
-
-      <!-- DEAL: PLAY -->
-      <sc-if value="{{ dealPlayOn }}" hint-placeholder-val="{{ false }}">
-        <div style="padding:4px 0 20px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px">
-            <div style="font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px;background:{{ dealCatBg }};color:{{ dealCatFg }}">{{ dealCatTxt }}</div>
-            <div style="font-size:11px;color:#999">{{ dealTally }}</div>
-            <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ dealMenu }}">Exit</div>
-          </div>
-
-          <div id="gs-host" style="margin-bottom:14px"></div>
-
-          <div class="{{ stageClass }}">
-            <div class="gs-marquee">
-              <sc-for list="{{ bulbs }}" as="b" hint-placeholder-count="22"><div class="gs-bulb"></div></sc-for>
-            </div>
-            <div class="gs-lights"><i></i><i></i></div>
-            <div class="gs-floor"></div>
-            <div class="gs-curtain l"></div>
-            <div class="gs-curtain r"></div>
-            <div class="gs-inner">
-              <div class="gs-title">PORCH OF A DEAL</div>
-              <div class="gs-sub">Spin to see who's up</div>
-              <div class="gs-wheelwrap">
-                <div class="gs-ptr"></div>
-                <div class="gs-wheel" style="{{ wheelStyle }}"></div>
-                <div class="gs-hub"></div>
-              </div>
-              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#fff;min-height:20px;margin-top:2px">{{ wheelMsg }}</div>
-              <div style="padding:11px 20px;background:linear-gradient(135deg,#F5C542,#E0A008);border-radius:999px;color:#2a1a05;font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer;display:inline-block;margin-top:9px" onClick="{{ spinWheel }}">SPIN THE WHEEL</div>
-              <input value="{{ playersVal }}" onInput="{{ setPlayers }}" placeholder="Player names, comma separated"
-                style="width:100%;margin-top:11px;padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.32);color:#fff;font-size:12px;font-family:Outfit,sans-serif">
-            </div>
-          </div>
-          <sc-if value="{{ dealAsk }}" hint-placeholder-val="{{ true }}">
-            <div style="background:#fff;border-radius:var(--radius-lg);padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-              <sc-if value="{{ dealHasImg }}" hint-placeholder-val="{{ false }}">
-                <div style="background:#000;border-radius:12px;overflow:hidden;margin-bottom:14px">
-                  <img src="{{ dealImgSrc }}" style="width:100%;display:block;max-height:42vh;object-fit:contain;background:#000" alt="Family photo">
-                </div>
-              </sc-if>
-              <h3 style="font-family:'Fredoka',sans-serif;font-size:17px;margin:0 0 16px;color:#1a1a1a;line-height:1.45">{{ dealQuestion }}</h3>
-              <sc-if value="{{ dealIsTask }}" hint-placeholder-val="{{ false }}">
-                <p style="font-size:12px;color:#9D174D;background:#FCE7F3;padding:10px;border-radius:10px;margin:0 0 14px">The family decides if they pulled it off!</p>
-              </sc-if>
-              <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:14px">
-                <sc-for list="{{ dealOptions }}" as="dopt" hint-placeholder-count="4">
-                  <div style="padding:13px 15px;border-radius:var(--radius-md);border:2px solid {{ dopt.border }};background:{{ dopt.bg }};font-size:14px;font-weight:600;color:{{ dopt.fg }};transition:all .25s">{{ dopt.text }}</div>
-                </sc-for>
-              </div>
-              <sc-if value="{{ dealNotRev }}" hint-placeholder-val="{{ true }}">
-                <div style="padding:15px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;text-align:center;cursor:pointer" onClick="{{ dealRevealBtn }}">Reveal Answer</div>
-              </sc-if>
-              <sc-if value="{{ dealIsRev }}" hint-placeholder-val="{{ false }}">
-                <div style="background:#F0FDF4;border:2px solid #16A34A;border-radius:12px;padding:14px;text-align:center;margin-bottom:12px">
-                  <div style="font-size:10px;color:#16A34A;font-weight:700;letter-spacing:1px">ANSWER</div>
-                  <div style="font-family:'Fredoka',sans-serif;font-size:18px;color:#166534;margin-top:4px">{{ dealAnswer }}</div>
-                </div>
-                <div style="display:flex;gap:8px">
-                  <div style="flex:1;padding:14px;background:#16A34A;border-radius:999px;color:#fff;font-weight:700;font-size:14px;text-align:center;cursor:pointer" onClick="{{ dealRight }}">Correct &mdash; pick a door!</div>
-                  <div style="flex:1;padding:14px;background:#DC2626;border-radius:999px;color:#fff;font-weight:700;font-size:14px;text-align:center;cursor:pointer" onClick="{{ dealWrong }}">Zonk</div>
-                </div>
-              </sc-if>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ dealDoors }}" hint-placeholder-val="{{ false }}">
-            <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-              <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#D97706;text-align:center;margin:0 0 4px">Pick a door!</h3>
-              <p style="font-size:12px;color:#888;text-align:center;margin:0 0 14px">Any door that's still closed.</p>
-              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px">
-                <sc-for list="{{ gameDoors }}" as="gd" hint-placeholder-count="20">
-                  <div style="aspect-ratio:0.78;background:{{ gd.bg }};border:2px solid {{ gd.border }};border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" onClick="{{ gd.onClick }}">
-                    <div style="font-family:'Fredoka',sans-serif;font-size:{{ gd.size }};color:{{ gd.fg }}">{{ gd.face }}</div>
-                    <div style="font-size:7.5px;font-weight:800;color:{{ gd.fg }}">{{ gd.sub }}</div>
-                  </div>
-                </sc-for>
-              </div>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ dealResult }}" hint-placeholder-val="{{ false }}">
-            <div style="background:#fff;border-radius:var(--radius-lg);padding:26px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-              <div style="font-size:11px;color:#999;font-weight:700;letter-spacing:1px">{{ lastDoorNum }}</div>
-              <div style="font-size:52px;margin:8px 0">{{ lastDoorEmoji }}</div>
-              <sc-if value="{{ lastDoorWin }}" hint-placeholder-val="{{ true }}">
-                <h3 style="font-family:'Fredoka',sans-serif;font-size:23px;color:#16A34A;margin:0 0 6px">It's a PRIZE!</h3>
-              </sc-if>
-              <sc-if value="{{ lastDoorGag }}" hint-placeholder-val="{{ false }}">
-                <h3 style="font-family:'Fredoka',sans-serif;font-size:23px;color:#DC2626;margin:0 0 6px">Gag gift!</h3>
-              </sc-if>
-              <p style="font-size:12px;color:#999;margin:0 0 18px">{{ dealTally }}</p>
-              <div style="padding:15px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer" onClick="{{ dealNextQ }}">Next player &rarr;</div>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ dealZonk }}" hint-placeholder-val="{{ false }}">
-            <div style="background:#fff;border-radius:var(--radius-lg);padding:26px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-              <div style="font-size:44px">&#128560;</div>
-              <h3 style="font-family:'Fredoka',sans-serif;font-size:23px;color:#DC2626;margin:8px 0 6px">ZONK!</h3>
-              <p style="font-size:13px;color:#666;margin:0 0 18px">No door this time. Next player up!</p>
-              <div style="padding:15px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer" onClick="{{ dealNextQ }}">Next player &rarr;</div>
-            </div>
-          </sc-if>
-        </div>
-      </sc-if>
-
-      <!-- TRIVIA ROUND -->
-      <sc-if value="{{ trivModeOn }}" hint-placeholder-val="{{ false }}">
-        <div style="padding:4px 0 20px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px">
-            <div style="font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px;background:{{ trivCatBg }};color:{{ trivCatFg }}">{{ trivCat }}</div>
-            <div style="font-size:12px;color:#999;cursor:pointer;font-weight:600" onClick="{{ dealMenu }}">Exit round</div>
-          </div>
-
-          <div style="display:flex;gap:8px;margin-bottom:14px">
-            <div style="flex:1;background:#F0F9FF;border-radius:12px;padding:10px;text-align:center">
-              <div style="font-size:10px;color:#0369A1;font-weight:700">STREAK</div>
-              <div style="font-family:'Fredoka',sans-serif;font-size:17px;color:#0EA5E9">{{ trivStreakTxt }}</div>
-            </div>
-            <div style="flex:1;background:#FFFBEB;border-radius:12px;padding:10px;text-align:center">
-              <div style="font-size:10px;color:#92400E;font-weight:700">POT</div>
-              <div style="font-family:'Fredoka',sans-serif;font-size:17px;color:#D97706">{{ trivPotTxt }}</div>
-            </div>
-            <div style="flex:1;background:#F0FDF4;border-radius:12px;padding:10px;text-align:center">
-              <div style="font-size:10px;color:#166534;font-weight:700">BANKED</div>
-              <div style="font-family:'Fredoka',sans-serif;font-size:17px;color:#16A34A">{{ trivBankedTxt }}</div>
-            </div>
-          </div>
-
-          <div class="gs-stage open">
-            <div class="gs-marquee">
-              <sc-for list="{{ bulbs }}" as="b2" hint-placeholder-count="22"><div class="gs-bulb"></div></sc-for>
-            </div>
-            <div class="gs-lights"><i></i><i></i></div>
-            <div class="gs-floor"></div>
-            <div class="gs-inner">
-              <div class="gs-title">THE PORCH BANKER</div>
-              <div class="gs-sub">Climb the ladder — then decide</div>
-              <div class="gs-ladder">
-                <sc-for list="{{ ladderRungs }}" as="lr" hint-placeholder-count="10">
-                  <div class="{{ lr.cls }}">{{ lr.label }}</div>
-                </sc-for>
-              </div>
-            </div>
-          </div>
-          <!-- ASK -->
-          <sc-if value="{{ trivPhaseAsk }}" hint-placeholder-val="{{ true }}">
-            <div style="background:#fff;border-radius:var(--radius-lg);padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-              <sc-if value="{{ trivHasImg }}" hint-placeholder-val="{{ false }}">
-                <div style="background:#000;border-radius:12px;overflow:hidden;margin-bottom:14px">
-                  <img src="{{ trivImgSrc }}" style="width:100%;display:block;max-height:42vh;object-fit:contain;background:#000" alt="Family photo">
-                </div>
-              </sc-if>
-              <h3 style="font-family:'Fredoka',sans-serif;font-size:17px;margin:0 0 16px;color:#1a1a1a;line-height:1.45">{{ trivQuestion }}</h3>
-              <sc-if value="{{ trivIsTask }}" hint-placeholder-val="{{ false }}">
-                <p style="font-size:12px;color:#9D174D;background:#FCE7F3;padding:10px;border-radius:10px;margin:0 0 14px">Physical challenge — the family decides if they pulled it off!</p>
-              </sc-if>
-              <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:14px">
-                <sc-for list="{{ trivOptions }}" as="to" hint-placeholder-count="4">
-                  <div style="padding:13px 15px;border-radius:var(--radius-md);border:2px solid {{ to.border }};background:{{ to.bg }};font-size:14px;font-weight:600;color:{{ to.textColor }};transition:all .25s">{{ to.text }}</div>
-                </sc-for>
-              </div>
-              <sc-if value="{{ trivNotRevealed }}" hint-placeholder-val="{{ true }}">
-                <div style="padding:15px;background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;text-align:center;cursor:pointer" onClick="{{ trivReveal }}">Reveal Answer</div>
-              </sc-if>
-              <sc-if value="{{ trivIsRevealed }}" hint-placeholder-val="{{ false }}">
-                <div style="background:#F0FDF4;border:2px solid #16A34A;border-radius:12px;padding:14px;text-align:center;margin-bottom:12px">
-                  <div style="font-size:10px;color:#16A34A;font-weight:700;letter-spacing:1px">ANSWER</div>
-                  <div style="font-family:'Fredoka',sans-serif;font-size:18px;color:#166534;margin-top:4px">{{ trivAnswer }}</div>
-                </div>
-                <div style="display:flex;gap:8px">
-                  <div style="flex:1;padding:14px;background:#16A34A;border-radius:999px;color:#fff;font-weight:700;font-size:14px;text-align:center;cursor:pointer" onClick="{{ trivRight }}">Got it right</div>
-                  <div style="flex:1;padding:14px;background:#DC2626;border-radius:999px;color:#fff;font-weight:700;font-size:14px;text-align:center;cursor:pointer" onClick="{{ trivWrong }}">Missed it</div>
-                </div>
-              </sc-if>
-            </div>
-          </sc-if>
-
-          <!-- BANKER OFFER -->
-          <sc-if value="{{ trivPhaseOffer }}" hint-placeholder-val="{{ false }}">
-            <div style="background:linear-gradient(135deg,#1E293B,#0F172A);border-radius:var(--radius-lg);padding:26px;text-align:center;animation:bounceIn .45s ease-out">
-              <div style="font-size:30px">☎️</div>
-              <div style="font-family:'Fredoka',sans-serif;font-size:15px;color:#94A3B8;margin:6px 0">The Porch Banker is calling…</div>
-              <div style="font-size:11px;color:#64748B;margin-bottom:6px">OFFER TO STOP HERE</div>
-              <div style="font-family:'Fredoka',sans-serif;font-size:38px;color:#FBBF24">{{ trivOfferTxt }}</div>
-              <p style="font-size:12px;color:#94A3B8;margin:10px 0 18px;line-height:1.5">Bank it and it's yours for good — or keep answering and risk the whole pot.</p>
-              <div style="display:flex;gap:10px">
-                <div style="flex:1;padding:15px;background:#16A34A;border-radius:999px;color:#fff;font-weight:700;font-size:15px;cursor:pointer" onClick="{{ trivDeal }}">DEAL</div>
-                <div style="flex:1;padding:15px;background:#DC2626;border-radius:999px;color:#fff;font-weight:700;font-size:15px;cursor:pointer" onClick="{{ trivNoDeal }}">NO DEAL</div>
-              </div>
-            </div>
-          </sc-if>
-
-          <!-- BUST -->
-          <sc-if value="{{ trivPhaseBust }}" hint-placeholder-val="{{ false }}">
-            <div style="background:#fff;border-radius:var(--radius-lg);padding:26px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-              <div style="font-size:38px">😬</div>
-              <h3 style="font-family:'Fredoka',sans-serif;font-size:21px;color:#DC2626;margin:8px 0 4px">Pot wiped!</h3>
-              <p style="font-size:13px;color:#666;margin:0 0 6px">That one got away. The un-banked pot is gone.</p>
-              <p style="font-size:13px;color:#166534;font-weight:700;margin:0 0 18px">Still safely banked: {{ trivBankedTxt }}</p>
-              <div style="padding:14px;background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer" onClick="{{ trivRestart }}">Next player</div>
-            </div>
-          </sc-if>
-
-          <!-- BANKED -->
-          <sc-if value="{{ trivPhaseBanked }}" hint-placeholder-val="{{ false }}">
-            <div style="background:#fff;border-radius:var(--radius-lg);padding:26px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-              <div style="font-size:38px">🤝</div>
-              <h3 style="font-family:'Fredoka',sans-serif;font-size:21px;color:#16A34A;margin:8px 0 4px">Deal made!</h3>
-              <p style="font-size:13px;color:#666;margin:0 0 6px">Locked in and safe.</p>
-              <div style="font-family:'Fredoka',sans-serif;font-size:30px;color:#16A34A;margin:8px 0 18px">{{ trivBankedTxt }}</div>
-              <div style="padding:14px;background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer;margin-bottom:8px" onClick="{{ trivKeepGoing }}">Keep playing</div>
-              <div style="padding:13px;background:#f3e8ff;border-radius:999px;color:#7B2D8E;font-weight:700;font-size:14px;cursor:pointer" onClick="{{ dealMenu }}">Back to rounds</div>
-            </div>
-          </sc-if>
-        </div>
-      </sc-if>
-
-      
-
-      <sc-if value="{{ dealPhase0 }}" hint-placeholder-val="{{ true }}">
-        <div style="text-align:center;padding:20px 0">
-          <h3 style="font-family:'Fredoka',sans-serif;font-size:20px;color:#D97706;margin:0 0 8px">Choose Your Case!</h3>
-          <p style="font-size:13px;color:#888;margin:0 0 20px">Pick one case to keep, then we'll start opening the rest.</p>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-            <sc-for list="{{ dealCases }}" as="dc" hint-placeholder-count="12">
-              <div style="aspect-ratio:1;background:{{ dc.bg }};border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-family:'Fredoka',sans-serif;font-size:18px;color:{{ dc.textColor }};border:2px solid {{ dc.border }}" style-hover="transform:scale(1.08)" onClick="{{ dc.onClick }}">{{ dc.label }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            <sc-for list="{{ wheelNames }}" as="wn" hint-placeholder-count="0">
+              <div style="padding:4px 10px;background:#FEF3C7;border-radius:999px;font-size:12px;color:#92400E;display:flex;align-items:center;gap:4px">{{ wn.name }} <span style="cursor:pointer;opacity:0.5" onClick="{{ wn.onRemove }}">✕</span></div>
             </sc-for>
           </div>
         </div>
       </sc-if>
-      <sc-if value="{{ dealPhase1 }}" hint-placeholder-val="{{ false }}">
-        <div style="text-align:center;padding:20px 0">
-          <div style="background:#FFFBEB;border-radius:var(--radius-lg);padding:16px;margin-bottom:16px">
-            <div style="font-size:12px;color:#92400E">Your case</div>
-            <div style="font-family:'Fredoka',sans-serif;font-size:28px;color:#D97706">📦 #{{ dealPlayerCase }}</div>
-          </div>
-          <p style="font-size:14px;color:#666;margin:0 0 16px">{{ dealInstructions }}</p>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-            <sc-for list="{{ dealRemainingCases }}" as="rc" hint-placeholder-count="8">
-              <div style="aspect-ratio:1;background:{{ rc.bg }};border-radius:var(--radius-md);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:{{ rc.cursor }};transition:all 0.2s;font-family:'Fredoka',sans-serif;font-size:{{ rc.fontSize }};color:{{ rc.textColor }};opacity:{{ rc.opacity }}" style-hover="transform:{{ rc.hoverScale }}" onClick="{{ rc.onClick }}">
-                <div>{{ rc.label }}</div>
-                <sc-if value="{{ rc.showValue }}" hint-placeholder-val="{{ false }}"><div style="font-size:10px;margin-top:2px">{{ rc.value }}</div></sc-if>
-              </div>
-            </sc-for>
+
+      <!-- INTRO SEQUENCE -->
+      <sc-if value="{{ dealIntro }}" hint-placeholder-val="{{ false }}">
+        <div class="gs-stage open" style="margin-top:8px;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
+          <div class="gs-lights"><i></i><i></i></div><div class="gs-floor"></div>
+          <div class="gs-inner" style="padding:40px 20px">
+            <div class="gs-title" style="font-size:28px;animation:aucPulse 1.5s ease-in-out infinite">🎰 PORCH OF A DEAL 🎰</div>
+            <sc-if value="{{ dealIntro1 }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:rgba(255,255,255,0.7);margin-top:14px;animation:fadeIn 0.8s">Live from the Porch Family Reunion 2026!</div>
+            </sc-if>
+            <sc-if value="{{ dealIntro2 }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family:'Fredoka',sans-serif;font-size:22px;color:#F5C542;margin-top:18px;animation:fadeIn 0.8s;text-shadow:0 0 20px rgba(245,197,66,0.6)">Your host... Coach Elliott Smith!</div>
+            </sc-if>
+            <div style="margin-top:20px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.4)" onClick="{{ dealSkipIntro }}">Skip intro ›</div>
           </div>
         </div>
       </sc-if>
-      <sc-if value="{{ dealOffer }}" hint-placeholder-val="{{ false }}">
-        <div style="text-align:center;padding:20px 0;animation:bounceIn 0.4s">
-          <div style="background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:var(--radius-lg);padding:32px 24px;margin-bottom:20px">
-            <div style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:8px">📞 The Banker offers</div>
-            <div style="font-family:'Fredoka',sans-serif;font-size:40px;color:#fff">{{ dealOfferAmount }}</div>
+
+      <!-- WHEEL -->
+      <sc-if value="{{ dealWheel }}" hint-placeholder-val="{{ false }}">
+        <div class="gs-stage open" style="margin-top:8px">
+          <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
+          <div class="gs-lights"><i></i><i></i></div><div class="gs-floor"></div>
+          <div class="gs-inner">
+            <div class="gs-title">WHO'S UP NEXT?</div>
+            <div class="gs-wheelwrap"><div class="gs-ptr"></div><div class="gs-wheel" style="{{ dealWheelStyle }}"></div><div class="gs-hub"></div></div>
+            <div style="padding:14px 28px;background:linear-gradient(135deg,#F5C542,#E0A008);border-radius:999px;color:#1a1000;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer;display:inline-block;margin-top:12px" onClick="{{ spinDealWheel }}">SPIN THE WHEEL</div>
           </div>
+        </div>
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+          <div style="font-size:12px;color:#999;margin-bottom:6px">Players on the wheel:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            <sc-for list="{{ wheelNames }}" as="wn2" hint-placeholder-count="0">
+              <div style="padding:4px 10px;background:#FEF3C7;border-radius:999px;font-size:12px;color:#92400E">{{ wn2.name }}</div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <input id="deal-add-name" placeholder="Add player" onKeyDown="{{ wheelNameKey }}" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid #FEF3C7;font-size:12px;font-family:Outfit,sans-serif">
+            <div style="padding:8px 12px;background:#F59E0B;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- SPINNING -->
+      <sc-if value="{{ dealSpinning }}" hint-placeholder-val="{{ false }}">
+        <div class="gs-stage open" style="margin-top:8px">
+          <div class="gs-marquee"><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div><div class="gs-bulb"></div></div>
+          <div class="gs-lights"><i></i><i></i></div><div class="gs-floor"></div>
+          <div class="gs-inner">
+            <div class="gs-title">SPINNING...</div>
+            <div class="gs-wheelwrap"><div class="gs-ptr"></div><div class="gs-wheel" style="{{ dealWheelStyle }}"></div><div class="gs-hub"></div></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- QUESTION -->
+      <sc-if value="{{ dealQuestion }}" hint-placeholder-val="{{ false }}">
+        <div style="background:linear-gradient(180deg,#1E293B,#0F172A);border-radius:var(--radius-lg);padding:20px;margin-top:8px;text-align:center">
+          <div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#F5C542;margin-bottom:4px">{{ dealWheelPick }}'s Question</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:17px;color:#fff;line-height:1.5;margin-bottom:16px">{{ dealQText }}</div>
+          <sc-if value="{{ dealTimerNotOn }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:12px 24px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer;display:inline-block" onClick="{{ startDealTimer }}">⏱ Start 20s Timer</div>
+          </sc-if>
+          <sc-if value="{{ dealTimerOn }}" hint-placeholder-val="{{ false }}">
+            <div style="font-family:'Fredoka',sans-serif;font-size:52px;color:{{ dealTimerColor }};line-height:1;text-shadow:0 4px 20px rgba(0,0,0,0.5)">{{ dealTimer }}</div>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+          <sc-for list="{{ dealAnswers }}" as="da" hint-placeholder-count="4">
+            <div style="padding:14px 16px;border-radius:14px;background:{{ da.bg }};border:2px solid {{ da.border }};color:{{ da.fg }};font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer;text-align:center" onClick="{{ da.onClick }}">{{ da.text }}</div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- WRONG ANSWER -->
+      <sc-if value="{{ dealWrong }}" hint-placeholder-val="{{ false }}">
+        <div style="background:linear-gradient(180deg,#7F1D1D,#450A0A);border-radius:var(--radius-lg);padding:40px 20px;text-align:center;margin-top:8px">
+          <div style="font-size:48px;margin-bottom:8px">❌</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:24px;color:#FCA5A5">Wrong!</div>
+          <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:8px">Better luck next spin, {{ dealWheelPick }}.</div>
+        </div>
+        <div style="padding:14px;background:#F59E0B;border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;text-align:center;cursor:pointer;margin-top:14px" onClick="{{ dealBackToWheel }}">Back to the Wheel</div>
+      </sc-if>
+
+      <!-- THREE DOORS -->
+      <sc-if value="{{ dealDoors }}" hint-placeholder-val="{{ false }}">
+        <div style="background:linear-gradient(180deg,#1E293B,#0F172A);border-radius:var(--radius-lg);padding:24px 16px;text-align:center;margin-top:8px">
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#F5C542;margin-bottom:4px">{{ dealWheelPick }}, choose your door!</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:20px;color:#fff;margin-bottom:20px">🚪 Pick a Door 🚪</div>
           <div style="display:flex;gap:12px;justify-content:center">
-            <div style="flex:1;padding:14px;background:#DC2626;border-radius:999px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;text-align:center" onClick="{{ dealNoDeal }}">No Deal!</div>
-            <div style="flex:1;padding:14px;background:#16A34A;border-radius:999px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;text-align:center" onClick="{{ dealAccept }}">Deal!</div>
+            <div style="width:90px;height:130px;background:linear-gradient(160deg,#F0C24B,#C9A100);border:3px solid #F59E0B;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'Fredoka',sans-serif;font-size:28px;color:#4A3200;box-shadow:0 6px 20px rgba(0,0,0,0.3);transition:transform 0.15s" onClick="{{ dealDoor1 }}">1</div>
+            <div style="width:90px;height:130px;background:linear-gradient(160deg,#F0C24B,#C9A100);border:3px solid #F59E0B;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'Fredoka',sans-serif;font-size:28px;color:#4A3200;box-shadow:0 6px 20px rgba(0,0,0,0.3);transition:transform 0.15s" onClick="{{ dealDoor2 }}">2</div>
+            <div style="width:90px;height:130px;background:linear-gradient(160deg,#F0C24B,#C9A100);border:3px solid #F59E0B;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'Fredoka',sans-serif;font-size:28px;color:#4A3200;box-shadow:0 6px 20px rgba(0,0,0,0.3);transition:transform 0.15s" onClick="{{ dealDoor3 }}">3</div>
           </div>
         </div>
       </sc-if>
-      <sc-if value="{{ dealFinished }}" hint-placeholder-val="{{ false }}">
-        <div style="text-align:center;padding:20px 0;animation:bounceIn 0.4s">
-          <div style="font-size:52px;margin-bottom:12px">{{ dealResultEmoji }}</div>
-          <h3 style="font-family:'Fredoka',sans-serif;font-size:24px;color:#1a1a1a;margin:0 0 8px">{{ dealResultTitle }}</h3>
-          <p style="font-size:15px;color:#666;margin:0 0 8px">{{ dealResultDesc }}</p>
-          <div style="font-family:'Fredoka',sans-serif;font-size:36px;color:#D97706;margin:16px 0">{{ dealResultAmount }}</div>
-          <div style="padding:14px 28px;background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:999px;color:#fff;font-weight:600;font-size:14px;cursor:pointer;display:inline-block;margin-top:8px" onClick="{{ dealRestart }}">Play Again</div>
+
+      <!-- DOOR REVEAL COUNTDOWN -->
+      <sc-if value="{{ dealRevealPhase }}" hint-placeholder-val="{{ false }}">
+        <div style="background:linear-gradient(180deg,#1E293B,#0F172A);border-radius:var(--radius-lg);padding:50px 20px;text-align:center;margin-top:8px">
+          <div style="font-family:'Fredoka',sans-serif;font-size:18px;color:rgba(255,255,255,0.6);margin-bottom:6px">Behind door #{{ dealDoorPick }}...</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:22px;color:#F5C542;margin-bottom:14px">You've won a...</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:80px;color:#fff;line-height:1;animation:aucPulse 0.8s ease-in-out infinite;text-shadow:0 8px 30px rgba(0,0,0,0.5)">{{ dealDoorCountdown }}</div>
         </div>
       </sc-if>
+
+      <!-- PRIZE REVEAL -->
+      <sc-if value="{{ dealPrize }}" hint-placeholder-val="{{ false }}">
+        <div style="background:linear-gradient(180deg,#064E3B,#022C22);border-radius:var(--radius-lg);padding:40px 20px;text-align:center;margin-top:8px">
+          <div style="font-size:52px;margin-bottom:8px">🎁</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:28px;color:#F5C542;text-shadow:0 0 20px rgba(245,197,66,0.5)">Reveal your gift in person!</div>
+          <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:10px">The host will present what's behind door #{{ dealDoorPick }}.</div>
+        </div>
+        <div style="padding:14px;background:#F59E0B;border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;text-align:center;cursor:pointer;margin-top:14px" onClick="{{ dealBackToWheel }}">Next Player — Back to Wheel</div>
+      </sc-if>
+
     </div>
   </div>
   </sc-if>
+
 
   <!-- REOKE -->
   <sc-if value="{{ screenReoke }}" hint-placeholder-val="{{ false }}">
@@ -2470,92 +2213,98 @@ class Component extends DCLogic {
 
 
   // ===== GAME SHOW STAGE (wheel + curtains) =====
-  _spinWheel(){
-    if(this.state.wheelSpinning) return;
-    const names = (this.state.players||'').split(',').map(n=>n.trim()).filter(Boolean);
-    if(!names.length){ this.setState({wheelMsg:'Add players in the box above first!'}); return; }
-    const pick = Math.floor(Math.random()*names.length);
-    const slice = 360/names.length;
-    // land the chosen slice under the pointer, plus 5-7 whole turns for drama
-    const turns = 5 + Math.floor(Math.random()*3);
-    const target = turns*360 + (360 - (pick*slice + slice/2));
-    this.setState({ wheelSpinning:true, wheelDeg:(this.state.wheelDeg||0)+target, wheelMsg:'Spinning…' });
-    setTimeout(()=>{
-      this.setState({ wheelSpinning:false, wheelPick:names[pick], wheelMsg:names[pick]+" — you're up!", curtainOpen:true });
-    }, 4700);
+  // ===== PORCH OF A DEAL (redesigned) =====
+  _dealSfx={intro:null,cd:null,cdLoop:null,muted:false};
+  _initDealSfx(){
+    this._dealSfx.intro=new Audio('sounds/three_big_doors.mp3');
+    this._dealSfx.cd=new Audio('sounds/Countdown.mp3');
+    this._dealSfx.cdLoop=new Audio('sounds/Countdown_sound.mp3');
+    this._dealSfx.cdLoop.loop=true;
   }
-  _wheelSlices(){
-    const names=(this.state.players||'').split(',').map(n=>n.trim()).filter(Boolean);
+  _sfxPlay(k){if(this._dealSfx.muted)return;this._sfxStop();const a=this._dealSfx[k];if(a){a.currentTime=0;a.play().catch(()=>{});}}
+  _sfxStop(){['intro','cd','cdLoop'].forEach(k=>{const a=this._dealSfx[k];if(a){a.pause();a.currentTime=0;}});}
+  _sfxMute(){this._dealSfx.muted=!this._dealSfx.muted;this.setState({dealMuted:this._dealSfx.muted});if(this._dealSfx.muted)this._sfxStop();}
+
+  _startDeal2(){
+    this._initDealSfx();this._sfxPlay('intro');
+    const pool=[...Array(this._trivia.length).keys()];
+    for(let a=pool.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[pool[a],pool[b]]=[pool[b],pool[a]];}
+    let wn=[];try{const s=localStorage.getItem('pfw_wheelNames');if(s)wn=JSON.parse(s);}catch(e){}
+    this.setState({dealMode:'active',dealPhase:'intro',dealMuted:false,dealTimer:0,dealTimerOn:false,
+      dealCurrentQ:null,dealSelectedAnswer:null,dealCorrect:null,dealDoorPick:null,
+      dealDoorCountdown:0,dealDoorRevealing:false,dealPool:pool,dealQi:0,
+      wheelNames:wn,wheelDeg:0,wheelPick:'',dealIntroStep:0});
+    setTimeout(()=>this.setState({dealIntroStep:1}),2000);
+    setTimeout(()=>this.setState({dealIntroStep:2}),5000);
+    setTimeout(()=>this.setState({dealPhase:'wheel',dealIntroStep:3}),8000);
+  }
+  _dealSkipIntro(){this._sfxStop();this.setState({dealPhase:'wheel',dealIntroStep:3});}
+  _addWheelName(){
+    const el=document.getElementById('deal-add-name');const n=el?el.value.trim():'';if(!n)return;
+    const names=[...(this.state.wheelNames||[])];if(!names.includes(n))names.push(n);
+    this.setState({wheelNames:names});
+    try{localStorage.setItem('pfw_wheelNames',JSON.stringify(names));}catch(e){}
+    this._persist('wheelNames',names);if(el)el.value='';
+  }
+  _removeWheelName(n){
+    const names=(this.state.wheelNames||[]).filter(x=>x!==n);this.setState({wheelNames:names});
+    try{localStorage.setItem('pfw_wheelNames',JSON.stringify(names));}catch(e){}
+    this._persist('wheelNames',names);
+  }
+  _wheelBg(){
+    const names=this.state.wheelNames||[];
     const cols=['#c2185b','#0277bd','#00897b','#f9a825','#7b1fa2','#ef6c00','#00838f','#d81b60','#00c853','#ff8f00'];
-    if(!names.length) return '';
-    const slice=360/names.length;
-    const stops=names.map((n,i)=>`${cols[i%cols.length]} ${i*slice}deg ${(i+1)*slice}deg`).join(',');
-    return `conic-gradient(${stops})`;
+    if(!names.length)return'#333';const sl=360/names.length;
+    return'conic-gradient('+names.map((n,i)=>cols[i%cols.length]+' '+(i*sl)+'deg '+((i+1)*sl)+'deg').join(',')+')';
   }
-  // ===== SHARED QUESTION POOL (trivia + photos) — both games draw from this =====
-  _buildPool(){
-    const pool = [];
-    this._trivia.forEach((q,i)=>pool.push({k:'t',i:i}));
-    this._photoTrivia.forEach((q,i)=>pool.push({k:'p',i:i}));
-    for(let a=pool.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));const t=pool[a];pool[a]=pool[b];pool[b]=t;}
-    return pool;
+  _spinDealWheel(){
+    if(this.state.dealPhase==='spinning')return;
+    const names=this.state.wheelNames||[];if(!names.length)return;
+    const pick=Math.floor(Math.random()*names.length);const sl=360/names.length;
+    const turns=5+Math.floor(Math.random()*3);
+    const target=(this.state.wheelDeg||0)+turns*360+(360-(pick*sl+sl/2));
+    this.setState({dealPhase:'spinning',wheelDeg:target});
+    setTimeout(()=>{
+      const qi=this.state.dealQi;const pool=this.state.dealPool;const q=this._trivia[pool[qi]];
+      const opts=[...q.o];const aIdx=opts.indexOf(q.a);
+      this.setState({dealPhase:'question',wheelPick:names[pick],dealSelectedAnswer:null,dealCorrect:null,
+        dealTimer:0,dealTimerOn:false,dealCurrentQ:{...q,correctIdx:aIdx},dealQi:(qi+1)%pool.length});
+    },4800);
   }
-  _qAt(ref){
-    if(!ref) return {q:'',o:[],a:'',c:'f',img:null};
-    if(ref.k==='p'){ const p=this._photoTrivia[ref.i]; return {q:p.q,o:[],a:p.a,c:'f',img:p.img}; }
-    const t=this._trivia[ref.i]; return {q:t.q,o:t.o||[],a:t.a,c:t.c,img:null};
+  _startDealTimer(){
+    if(this._dealInterval)clearInterval(this._dealInterval);
+    this.setState({dealTimer:20,dealTimerOn:true});
+    this._sfxPlay('cd');
+    if(!this._dealSfx.muted)setTimeout(()=>{
+      if(this.state.dealTimerOn&&!this._dealSfx.muted){this._dealSfx.cdLoop.currentTime=0;this._dealSfx.cdLoop.play().catch(()=>{});}
+    },500);
+    this._dealInterval=setInterval(()=>{
+      const t=this.state.dealTimer-1;
+      if(t<=0){clearInterval(this._dealInterval);this._sfxStop();
+        this.setState({dealTimer:0,dealTimerOn:false,dealCorrect:false,dealPhase:'wrong'});
+      }else this.setState({dealTimer:t});
+    },1000);
   }
+  _dealPickAnswer(idx){
+    if(this.state.dealSelectedAnswer!==null)return;
+    if(this._dealInterval)clearInterval(this._dealInterval);this._sfxStop();
+    const q=this.state.dealCurrentQ;if(!q)return;
+    const correct=idx===q.correctIdx;
+    this.setState({dealSelectedAnswer:idx,dealCorrect:correct,dealTimerOn:false});
+    setTimeout(()=>{if(correct)this.setState({dealPhase:'doors'});else this.setState({dealPhase:'wrong'});},1800);
+  }
+  _dealPickDoor(d){
+    if(this.state.dealDoorRevealing)return;
+    this.setState({dealDoorPick:d,dealDoorRevealing:true,dealDoorCountdown:3,dealPhase:'reveal'});
+    const tick=setInterval(()=>{
+      const c=this.state.dealDoorCountdown-1;
+      if(c<=0){clearInterval(tick);this.setState({dealDoorCountdown:0,dealPhase:'prize'});if(typeof fireConfetti==='function')fireConfetti();}
+      else this.setState({dealDoorCountdown:c});
+    },1000);
+  }
+  _dealBackToWheel(){this.setState({dealPhase:'wheel',dealSelectedAnswer:null,dealCorrect:null,dealCurrentQ:null,dealDoorPick:null,dealDoorRevealing:false});}
+  _dealExit(){this._sfxStop();if(this._dealInterval)clearInterval(this._dealInterval);this.setState({dealMode:null,dealPhase:null});}
 
-  // ===== PORCH OF A DEAL — Let's Make a Deal with 20 doors =====
-  _startDealSetup(){
-    this.setState({ dealMode:'setup', doorPlan:Array(20).fill('') });
-  }
-  _toggleDoor(i){
-    const p=[...this.state.doorPlan];
-    p[i] = p[i]==='' ? 'prize' : p[i]==='prize' ? 'gag' : '';
-    this.setState({doorPlan:p});
-  }
-  _autoDoors(mode){
-    const n = mode==='even'?10 : mode==='nice'?14 : 6;
-    const a = Array(n).fill('prize').concat(Array(20-n).fill('gag'));
-    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}
-    this.setState({doorPlan:a});
-  }
-  _dealRules(){ this.setState({dealMode:'rules'}); }
-  _startDealPlay(){
-    try{ if(window.PorchShow) window.PorchShow.curtainReveal("PORCH OF A DEAL"); }catch(e){}
-    const P=['🏆','🎁','💎','🌟','👑','💰','🎯','✨','🥇','🎊'];
-    const G=['🤡','🧦','🪣','💀','🧹','😬','🪤','🐸','🧻','🎃'];
-    let pi=0,gi=0;
-    const doors=this.state.doorPlan.map((t,i)=>({
-      n:i+1, type:t, opened:false,
-      emoji: t==='prize' ? P[pi++%10] : G[gi++%10]
-    }));
-    this.setState({ dealMode:'play', doors:doors, dealQ:this._buildPool(), dealQi:0,
-                    dealRevealed:false, dealPhase:'ask', dealLastDoor:null,
-                    dealWins:0, dealGags:0 });
-  }
-  _dealReveal(){ this.setState({dealRevealed:true}); }
-  _dealJudge(ok){
-    if(ok) this.setState({dealPhase:'doors', dealRevealed:false});
-    else   this.setState({dealPhase:'zonk', dealRevealed:false});
-  }
-  _openDoor(i){
-    if(this.state.dealPhase!=='doors') return;
-    const d=[...this.state.doors];
-    if(d[i].opened) return;
-    d[i]={...d[i],opened:true};
-    this.setState({ doors:d, dealLastDoor:d[i], dealPhase:'result',
-      dealWins:this.state.dealWins+(d[i].type==='prize'?1:0),
-      dealGags:this.state.dealGags+(d[i].type==='gag'?1:0) });
-  }
-  _dealNextQ(){
-    const n=this.state.dealQi+1;
-    if(n>=this.state.dealQ.length) this.setState({dealQ:this._buildPool(),dealQi:0,dealPhase:'ask',dealRevealed:false});
-    else this.setState({dealQi:n,dealPhase:'ask',dealRevealed:false});
-  }
-
-  // TRIVIA BANK (66 questions) — restored, now with banker stakes
   _trivia = [{q:"What is the actual name of the man called 'Grandpa'?",o:["Frank Hall","Frank Porch","James Porch","Jerry Porch"],a:"Frank Porch",c:"f"},{q:"What is 'Grandpa's' wife's actual name?",o:["Mabel Earlene Simmons","Bertha McGill","Lena Moreland","Katherine Hall"],a:"Katherine Hall",c:"f"},{q:"Frank and Katherine's son was named?",o:["James Porch","Frank Porch III","Sam Porch","Eddie Kang Porch"],a:"James Porch",c:"f"},{q:"How many children did Frank and Katherine have?",o:["3","4","5","6"],a:"5",c:"f"},{q:"About what year was Frank Porch born?",o:["1778","1878","1978","1900"],a:"1878",c:"f"},{q:"What Georgia county was Frank Porch from?",o:["Coweta","Henry","Monroe","Pike County"],a:"Pike County",c:"f"},{q:"This stew was always at Frank's birthday.",o:["Brummich (Brunswick) Stew","Oxtail Stew","Onion Stew","Beef Stew"],a:"Brummich (Brunswick) Stew",c:"f"},{q:"Correct birth order of Frank's children?",o:["Frankie, Mattie, Lucy, Alberta, James","Mattie, Lucy, Alberta, James, Frankie","Mattie, Frankie, Lucy, Alberta, James","James, Mattie, Frankie, Lucy, Alberta"],a:"Mattie, Frankie, Lucy, Alberta, James",c:"f"},{q:"Frank was raised by which paternal grandparents?",o:["Lucy and Ricky Porch","Jane and Jerry Porch","Will and Mattie Porch","Mary and Felton Smith"],a:"Jane and Jerry Porch",c:"f"},{q:"How many Hartsfield children did Frankie and Elias have?",o:["7","10","9","8"],a:"8",c:"f"},{q:"How many Dennis children did Lucy and Robert have?",o:["6","7","8","9"],a:"6",c:"f"},{q:"How many surviving Moreland children?",o:["4","5","6","7"],a:"4",c:"f"},{q:"What street did Aunt Alberta live on?",o:["Oakland Avenue","Main Street","Elm Street","Maple Drive"],a:"Oakland Avenue",c:"f"},{q:"What street did the Hartsfields live on?",o:["Cooley Street","Oakland Avenue","Heaton Street","Broad Street"],a:"Cooley Street",c:"f"},{q:"Aunt Alberta's cat was named?",o:["Fluffy","Monkey","Tiger","Sugar"],a:"Monkey",c:"f"},{q:"Aunt Alberta & Uncle Bud's gift for Moreland kids?",o:["Skates","A Pony","Blue Suede Shoes","Bicycles"],a:"Bicycles",c:"f"},{q:"Aunt Alberta's favorite board game?",o:["Monopoly","Sorry","Checkers","Backgammon"],a:"Monopoly",c:"f"},{q:"Aunt Alberta's favorite food?",o:["Fried Catfish","Neck Bones","Fried Chicken","Pinto Beans and Cornbread"],a:"Neck Bones",c:"f"},{q:"Aunt Alberta's favorite spectator sport?",o:["Baseball","Wrestling","Boxing","Football"],a:"Wrestling",c:"f"},{q:"Our maternal DNA links to which Nigerian tribe?",o:["Yoruba","Igbo","Hausa","Fulani"],a:"Fulani",c:"f"},{q:"Aunt Frankie's favorite fruit?",o:["Peaches","Watermelon","Plums","Apples"],a:"Watermelon",c:"f"},{q:"What tobacco did Aunt Alberta chew?",o:["Red Man","Day's Work","Copenhagen","Old Mule"],a:"Day's Work",c:"f"},{q:"Elias Hartsfield's primary workplace?",o:["Eureka Foundry","Mueller","Sisken Steel","Combustion"],a:"Combustion",c:"f"},{q:"How many of Mattie & Will's children didn't survive?",o:["2","4","6","8"],a:"6",c:"f"},{q:"First year of the Porch Family Reunion?",o:["1959","1969","1979","1989"],a:"1979",c:"f"},{q:"The matriarch who traveled from Virginia?",o:["Rhoda","Martha","Bessie","Hattie"],a:"Rhoda",c:"f"},{q:"'One generation plants the tree, another gets the ___.'",o:["Shade","Fruit","Harvest","Blessing"],a:"Shade",c:"f"},{q:"Frank's two children before Katherine?",o:["James & Willie Mae","Bonnie & Clyde","Jane & Jerry","Arthur & Nora"],a:"Arthur & Nora",c:"f"},{q:"Tool for mixing cream into butter?",o:["Butter Churn","Ice Cream Maker","Wash Tub","Grain Mill"],a:"Butter Churn",c:"f"},{q:"Building for curing meat with smoke?",o:["Smokehouse","Greenhouse","Root Cellar","Tool Shed"],a:"Smokehouse",c:"f"},{q:"Clip for securing laundry to a line?",o:["Clothespin","Paperclip","Safety Pin","Hairpin"],a:"Clothespin",c:"f"},{q:"Decorated pole danced around at spring festivals?",o:["Maypole","Totem Pole","Tetherball Pole","Festivus Pole"],a:"Maypole",c:"f"},{q:"Instrument played by plucking against teeth?",o:["Jaw Harp","Harmonica","Kazoo","Ocarina"],a:"Jaw Harp",c:"f"},{q:"Small flute of military marching bands?",o:["Fife","Piccolo","Recorder","Pennywhistle"],a:"Fife",c:"f"},{q:"Underground structure for storing vegetables?",o:["Root Cellar","Bunker","Storm Shelter","Cistern"],a:"Root Cellar",c:"f"},
 {q:"Band, 4-H Club, Glee Club, basketball at Howard High. Who Am I?",o:["Mama Tine","Aunt Jean","Aunt Freddie","Uncle James"],a:"Mama Tine",c:"f"},{q:"Beech school, rock baseball, Jitterbugging at Henry's Place. Who am I?",o:["Aunt Jean","Mama Tine","Aunt Alberta","Aunt Frankie"],a:"Aunt Jean",c:"f"},{q:"W.J. Davenport Honor Society, 'The Stallion,' met husband at bus station. Who?",o:["Aunt Freddie","Mama Tine","Aunt Jean","Aunt Alberta"],a:"Aunt Freddie",c:"f"},{q:"Howard High '62, Scouts, camping in Cherokee, stolen car crash. Who?",o:["Uncle James","Uncle Bud","Frank Porch","Elias"],a:"Uncle James",c:"f"},{q:"Hunting, fishing, Jack Yates High, Dodgers & Cowboys fan. Who?",o:["Norah","Uncle James","Uncle Bud","Frank Porch"],a:"Norah",c:"f"},{q:"'Nell,' civil rights activist, Woolworth sit-in photo in museum. Who?",o:["Aunt Frankie","Aunt Alberta","Aunt Jean","Mama Tine"],a:"Aunt Frankie",c:"f"},
 {q:"What 1951 TV show featured the Ricardos?",o:["I Love Lucy","The Honeymooners","Father Knows Best","Leave It to Beaver"],a:"I Love Lucy",c:"p"},{q:"MLK's 'I Have a Dream' was at what 1963 event?",o:["March on Washington","Selma March","Million Man March","Freedom Rides"],a:"March on Washington",c:"p"},{q:"Motown group that sang 'My Girl'?",o:["The Temptations","The Four Tops","The Supremes","The Miracles"],a:"The Temptations",c:"p"},{q:"1971-79 show with Fred Sanford in a junkyard?",o:["All in the Family","Good Times","The Jeffersons","Sanford and Son"],a:"Sanford and Son",c:"p"},{q:"1977 miniseries tracing a family from slavery?",o:["Roots","Eyes on the Prize","North and South","12 Years a Slave"],a:"Roots",c:"p"},{q:"Bob Barker hosted this for 35 years?",o:["The Price Is Right","Wheel of Fortune","Jeopardy!","Family Feud"],a:"The Price Is Right",c:"p"},{q:"1984 sitcom with the Huxtable family?",o:["The Cosby Show","A Different World","Family Matters","227"],a:"The Cosby Show",c:"p"},{q:"Fresh Prince moved FROM what city?",o:["Philadelphia","New York","Baltimore","Atlanta"],a:"Philadelphia",c:"p"},{q:"1992 Whitney Houston & Kevin Costner movie?",o:["The Bodyguard","Waiting to Exhale","Sparkle","The Preacher's Wife"],a:"The Bodyguard",c:"p"},{q:"This cartoon sponge debuted in 1999.",o:["SpongeBob","Hey Arnold!","CatDog","Rugrats"],a:"SpongeBob",c:"p"},{q:"Marvel movie with Wakanda?",o:["Black Panther","Blade","Luke Cage","Hancock"],a:"Black Panther",c:"p"},{q:"What blue hedgehog got movies?",o:["Sonic","Crash","Mega Man","Pac-Man"],a:"Sonic",c:"p"},{q:"Magical family in 'Encanto'?",o:["The Madrigals","The Riveras","The Garcias","The Castillos"],a:"The Madrigals",c:"p"},{q:"Best-selling block-building game ever?",o:["Minecraft","Roblox","Fortnite","Terraria"],a:"Minecraft",c:"p"},{q:"Disney movie with Polynesian teen saving her island?",o:["Moana","Frozen","Tangled","Brave"],a:"Moana",c:"p"},{q:"First African American woman in space?",o:["Mae Jemison","Katherine Johnson","Dorothy Vaughan","Mary Jackson"],a:"Mae Jemison",c:"p"},{q:"Inventor of traffic light & gas mask?",o:["Garrett Morgan","G.W. Carver","Elijah McCoy","Lewis Latimer"],a:"Garrett Morgan",c:"p"},{q:"Board game with Boardwalk & Park Place?",o:["Monopoly","Life","Clue","Risk"],a:"Monopoly",c:"p"},{q:"Card game — shout its name with one card left?",o:["UNO","Go Fish","Spades","War"],a:"UNO",c:"p"},{q:"June 19th holiday celebrating end of slavery?",o:["Juneteenth","Emancipation Day","Freedom Day","Liberation Day"],a:"Juneteenth",c:"p"},
@@ -2950,6 +2699,54 @@ class Component extends DCLogic {
     const clearAnnouncements = () => this._clearAnnouncements();
     const announceKeyDown = (e) => { if(e.key==='Enter') this._postAnnouncement(); };
 
+    // ===== Porch of a Deal (redesigned) =====
+    const deal2On = s.dealMode==='active';
+    const dealOff = !s.dealMode;
+    const dealIntro = s.dealPhase==='intro';
+    const dealWheel = s.dealPhase==='wheel';
+    const dealSpinning = s.dealPhase==='spinning';
+    const dealQuestion = s.dealPhase==='question';
+    const dealWrong = s.dealPhase==='wrong';
+    const dealDoors = s.dealPhase==='doors';
+    const dealRevealPhase = s.dealPhase==='reveal';
+    const dealPrize = s.dealPhase==='prize';
+    const dealTimer = s.dealTimer;
+    const dealTimerOn = s.dealTimerOn;
+    const dealTimerNotOn = !s.dealTimerOn;
+    const dealTimerColor = s.dealTimer<=5?'#DC2626':s.dealTimer<=10?'#F59E0B':'#10B981';
+    const dealWheelBg = this._wheelBg();
+    const dealWheelStyle = 'transform:rotate('+(s.wheelDeg||0)+'deg);background:'+this._wheelBg()+';width:200px;height:200px;';
+    const dealWheelPick = s.wheelPick||'';
+    const dealMuted = s.dealMuted;
+    const dealNotMuted = !s.dealMuted;
+    const dealIntroStep = s.dealIntroStep||0;
+    const dealIntro1 = s.dealIntroStep>=1;
+    const dealIntro2 = s.dealIntroStep>=2;
+    const dealDoorCountdown = s.dealDoorCountdown;
+    const wheelNames = (s.wheelNames||[]).map(n=>({name:n,onRemove:()=>this._removeWheelName(n)}));
+    const hasWheelNames = (s.wheelNames||[]).length>0;
+    const dq = s.dealCurrentQ||{q:'',o:[],a:'',correctIdx:0};
+    const dealQText = dq.q;
+    const dealAnswers = (dq.o||[]).map((opt,i)=>({
+      text:opt, idx:i,
+      bg: s.dealSelectedAnswer===null?'#fff':(i===s.dealSelectedAnswer?(s.dealCorrect?'#D1FAE5':'#FEE2E2'):(i===dq.correctIdx&&s.dealSelectedAnswer!==null?'#D1FAE5':'#f5f5f5')),
+      border: s.dealSelectedAnswer===null?'#e5e5e5':(i===s.dealSelectedAnswer?(s.dealCorrect?'#16A34A':'#DC2626'):(i===dq.correctIdx&&s.dealSelectedAnswer!==null?'#16A34A':'#eee')),
+      fg: s.dealSelectedAnswer===null?'#1a1a1a':(i===s.dealSelectedAnswer?(s.dealCorrect?'#166534':'#991B1B'):(i===dq.correctIdx&&s.dealSelectedAnswer!==null?'#166534':'#ccc')),
+      onClick:()=>this._dealPickAnswer(i)
+    }));
+    const startDeal2 = ()=>this._startDeal2();
+    const spinDealWheel = ()=>this._spinDealWheel();
+    const startDealTimer = ()=>this._startDealTimer();
+    const addWheelName = ()=>this._addWheelName();
+    const wheelNameKey = (e)=>{if(e.key==='Enter')this._addWheelName();};
+    const dealDoor1 = ()=>this._dealPickDoor(1);
+    const dealDoor2 = ()=>this._dealPickDoor(2);
+    const dealDoor3 = ()=>this._dealPickDoor(3);
+    const dealBackToWheel = ()=>this._dealBackToWheel();
+    const dealSkipIntro = ()=>this._dealSkipIntro();
+    const dealToggleMute = ()=>this._sfxMute();
+    const dealExit = ()=>this._dealExit();
+
     // ===== Stage / wheel =====
     const wheelBg     = this._wheelSlices();
     const wheelStyle  = 'transform:rotate('+(s.wheelDeg||0)+'deg);background:'+(wheelBg||'#333')+';width:180px;height:180px;';
@@ -2963,139 +2760,6 @@ class Component extends DCLogic {
       label:'$'+(v>=1000? (v/1000)+'k' : v),
       cls: i < s.trivStreak ? 'gs-rung hit' : (i === s.trivStreak ? 'gs-rung now' : 'gs-rung')
     }));
-
-    // ===== Porch of a Deal (doors) =====
-    const dealSetupOn = s.dealMode === 'setup';
-    const dealRulesOn = s.dealMode === 'rules';
-    const dealPlayOn  = s.dealMode === 'play';
-    const bankerRulesOn = s.dealMode === 'bankerRules';
-    const planPrize = s.doorPlan.filter(x=>x==='prize').length;
-    const planGag   = s.doorPlan.filter(x=>x==='gag').length;
-    const planReady = s.doorPlan.length===20 && s.doorPlan.every(x=>x!=='');
-    const planNotReady = !planReady;
-    const setupDoors = s.doorPlan.map((t,i)=>({
-      n:i+1,
-      label: t==='prize'?'PRIZE': t==='gag'?'GAG':'',
-      bg: t==='prize'?'#F0FDF4' : t==='gag'?'#FEF2F2' : '#fafafa',
-      border: t==='prize'?'#16A34A' : t==='gag'?'#DC2626' : '#e5e5e5',
-      fg: t==='prize'?'#16A34A' : t==='gag'?'#DC2626' : '#bbb',
-      onClick: () => this._toggleDoor(i)
-    }));
-    const _dq = this._qAt(s.dealQ[s.dealQi]);
-    const dealQuestion = _dq.q;
-    const dealHasImg   = !!_dq.img;
-    const dealImgSrc   = _dq.img ? (this._photoSrc[_dq.img]||'') : '';
-    const dealIsTask   = !_dq.o || _dq.o.length===0;
-    const dealAnswer   = _dq.a;
-    const dealCatTxt   = _dq.img ? 'Photo' : _dq.c==='f' ? 'Porch Family' : _dq.c==='t' ? 'Challenge' : 'Pop Culture';
-    const dealCatBg    = _dq.img ? '#EDE9FE' : _dq.c==='f' ? '#FEF3C7' : _dq.c==='t' ? '#FCE7F3' : '#E0F2FE';
-    const dealCatFg    = _dq.img ? '#5B21B6' : _dq.c==='f' ? '#92400E' : _dq.c==='t' ? '#9D174D' : '#075985';
-    const dealOptions  = (_dq.o||[]).map(t=>({
-      text:t,
-      bg: s.dealRevealed ? (t===_dq.a?'#F0FDF4':'#fafafa') : '#fafafa',
-      border: s.dealRevealed ? (t===_dq.a?'#16A34A':'#eee') : '#eee',
-      fg: s.dealRevealed ? (t===_dq.a?'#166534':'#bbb') : '#333'
-    }));
-    const dealAsk     = dealPlayOn && s.dealPhase==='ask';
-    const dealDoors   = dealPlayOn && s.dealPhase==='doors';
-    const dealZonk    = dealPlayOn && s.dealPhase==='zonk';
-    const dealResult  = dealPlayOn && s.dealPhase==='result';
-    const dealNotRev  = !s.dealRevealed;
-    const dealIsRev   = s.dealRevealed;
-    const gameDoors = s.doors.map((d,i)=>({
-      n:d.n, opened:d.opened,
-      face: d.opened ? d.emoji : String(d.n),
-      sub:  d.opened ? (d.type==='prize'?'WIN!':'GAG!') : '',
-      bg:   d.opened ? (d.type==='prize'?'#F0FDF4':'#FEF2F2') : 'linear-gradient(160deg,#F0C24B,#C9A100)',
-      border: d.opened ? (d.type==='prize'?'#16A34A':'#DC2626') : '#F59E0B',
-      fg:   d.opened ? (d.type==='prize'?'#16A34A':'#DC2626') : '#4A3200',
-      size: d.opened ? '20px' : '17px',
-      onClick: () => this._openDoor(i)
-    }));
-    const lastDoorEmoji = s.dealLastDoor ? s.dealLastDoor.emoji : '';
-    const lastDoorNum   = s.dealLastDoor ? ('Door #'+s.dealLastDoor.n) : '';
-    const lastDoorWin   = !!(s.dealLastDoor && s.dealLastDoor.type==='prize');
-    const lastDoorGag   = !!(s.dealLastDoor && s.dealLastDoor.type==='gag');
-    const dealTally     = s.dealWins+' prizes · '+s.dealGags+' gags';
-    const startDealSetup = () => this._startDealSetup();
-    const toggleAuto1 = () => this._autoDoors('even');
-    const toggleAuto2 = () => this._autoDoors('nice');
-    const toggleAuto3 = () => this._autoDoors('mean');
-    const goDealRules = () => this._dealRules();
-    const startDealPlay = () => this._startDealPlay();
-    const dealRevealBtn = () => this._dealReveal();
-    const dealRight = () => this._dealJudge(true);
-    const dealWrong = () => this._dealJudge(false);
-    const dealNextQ = () => this._dealNextQ();
-    const goBankerRules = () => this._bankerRules();
-
-    // Trivia round
-    const trivModeOn = s.dealMode === 'trivia';
-    const _tq  = this._qAt(s.trivOrder[s.trivIdx]);
-    const trivHasImg = !!_tq.img;
-    const trivImgSrc = _tq.img ? (this._photoSrc[_tq.img]||'') : '';
-    const trivQuestion = _tq.q;
-    const trivIsTask   = !_tq.o || _tq.o.length === 0;
-    const trivOptions  = (_tq.o||[]).map(t=>({
-      text:t,
-      bg: s.trivRevealed ? (t===_tq.a ? '#F0FDF4' : '#fafafa') : '#fafafa',
-      border: s.trivRevealed ? (t===_tq.a ? '#16A34A' : '#eee') : '#eee',
-      textColor: s.trivRevealed ? (t===_tq.a ? '#166534' : '#bbb') : '#333'
-    }));
-    const trivAnswer   = _tq.a;
-    const trivCat = _tq.c==='f' ? 'Porch Family' : _tq.c==='t' ? 'Challenge' : 'Pop Culture';
-    const trivCatBg = _tq.c==='f' ? '#FEF3C7' : _tq.c==='t' ? '#FCE7F3' : '#E0F2FE';
-    const trivCatFg = _tq.c==='f' ? '#92400E' : _tq.c==='t' ? '#9D174D' : '#075985';
-    const trivPhaseAsk    = trivModeOn && s.trivPhase==='ask';
-    const trivPhaseOffer  = trivModeOn && s.trivPhase==='offer';
-    const trivPhaseBust   = trivModeOn && s.trivPhase==='bust';
-    const trivPhaseBanked = trivModeOn && s.trivPhase==='banked';
-    const trivNotRevealed = !s.trivRevealed;
-    const trivIsRevealed  = s.trivRevealed;
-    const trivStreakTxt   = s.trivStreak + ' in a row';
-    const trivPotTxt      = '$' + (this._ladder[Math.min(Math.max(s.trivStreak-1,0), this._ladder.length-1)]||0).toLocaleString();
-    const trivBankedTxt   = '$' + s.trivBanked.toLocaleString();
-    const trivOfferTxt    = '$' + s.trivOffer.toLocaleString();
-    const startTrivia  = () => this._startTrivia();
-    const trivReveal   = () => this._trivReveal();
-    const trivRight    = () => this._trivJudge(true);
-    const trivWrong    = () => this._trivJudge(false);
-    const trivDeal     = () => this._trivDeal();
-    const trivNoDeal   = () => this._trivNoDeal();
-    const trivRestart  = () => this._trivRestart();
-    const trivKeepGoing= () => this.setState({trivPhase:'ask'}, ()=>this._trivNext());
-
-    // Photo trivia
-    const photoModeMenu   = s.dealMode === 'menu';
-    const photoModeActive = s.dealMode === 'photo';
-    const photoModeCases  = s.dealMode === 'cases';
-    const _pi   = s.photoOrder.length ? s.photoOrder[s.photoIdx] : 0;
-    const _pq   = this._photoTrivia[_pi] || {img:'',q:'',a:''};
-    const photoSrc      = this._photoSrc[_pq.img] || '';
-    const photoQuestion = _pq.q;
-    const photoAnswer   = _pq.a;
-    const photoCounter  = (s.photoIdx+1) + ' of ' + (s.photoOrder.length || this._photoTrivia.length);
-    const photoNotRevealed = !s.photoRevealed;
-    const photoIsRevealed  = s.photoRevealed;
-    const startPhotoTrivia = () => this._startPhotoTrivia();
-    const startCases       = () => this._startCases();
-    const dealMenu         = () => this._dealMenu();
-    const photoReveal      = () => this._photoReveal();
-    const photoNext        = () => this._photoNext();
-
-    // Deal game
-    const dealCases = this.state.dealValues.map((v,i) => {
-      const isPlayer = i === s.dealPlayerCase;
-      const isOpened = s.dealOpened.includes(i);
-      if (s.dealPhase === 'pick') {
-        return { label: i+1, bg: '#FFFBEB', border: '#F59E0B', textColor: '#D97706', onClick: () => this._pickCase(i) };
-      }
-      if (isPlayer) return { label: '📦', bg: '#FEF3C7', border: '#F59E0B', textColor: '#D97706', onClick: () => {} };
-      if (isOpened) return { label: '$'+v.toLocaleString(), bg: '#f5f5f5', border: '#e5e5e5', textColor: '#999', onClick: () => {} };
-      return { label: i+1, bg: '#FFFBEB', border: '#F59E0B', textColor: '#D97706', onClick: () => this._pickCase(i) };
-    });
-    const dealRemainingCases = s.dealPhase === 'open' ? dealCases.filter((_,i) => i !== s.dealPlayerCase) : [];
-    const casesToOpenMsg = s.dealRound <= 2 ? 'Open 3 cases' : 'Open 2 cases';
 
     // Menu
     const menuDays = this._menuData.map((d,i) => ({
@@ -3211,17 +2875,24 @@ class Component extends DCLogic {
       // Announcements
       announcements, hasAnnouncements, noAnnouncements,
       postAnnouncement, postAnnouncementHome, clearAnnouncements, announceKeyDown, announceKeyDownHome,
+      // Porch of a Deal
+      deal2On, dealOff, dealIntro, dealWheel, dealSpinning, dealQuestion, dealWrong,
+      dealDoors, dealRevealPhase, dealPrize, dealTimer, dealTimerOn, dealTimerNotOn, dealTimerColor,
+      dealWheelStyle, dealWheelPick, dealMuted, dealNotMuted, dealIntroStep, dealIntro1, dealIntro2,
+      dealDoorCountdown, wheelNames, hasWheelNames, dealQText, dealAnswers,
+      startDeal2, spinDealWheel, startDealTimer, addWheelName, wheelNameKey,
+      dealDoor1, dealDoor2, dealDoor3, dealBackToWheel, dealSkipIntro, dealToggleMute, dealExit,
       // Stage / wheel
-      wheelStyle, wheelMsg, stageClass, playersVal, spinWheel, setPlayers, bulbs, ladderRungs,
+ wheelMsg, stageClass, playersVal, spinWheel, setPlayers, bulbs, ladderRungs,
       // Porch of a Deal (doors)
-      dealSetupOn, dealRulesOn, dealPlayOn, bankerRulesOn,
+ dealRulesOn, dealPlayOn, bankerRulesOn,
       planPrize, planGag, planReady, planNotReady, setupDoors,
       dealQuestion, dealHasImg, dealImgSrc, dealIsTask, dealAnswer, dealOptions,
-      dealCatTxt, dealCatBg, dealCatFg,
-      dealAsk, dealDoors, dealZonk, dealResult, dealNotRev, dealIsRev,
+ dealCatBg, dealCatFg,
+ dealDoors, dealZonk, dealResult, dealNotRev, dealIsRev,
       gameDoors, lastDoorEmoji, lastDoorNum, lastDoorWin, lastDoorGag, dealTally,
-      startDealSetup, toggleAuto1, toggleAuto2, toggleAuto3, goDealRules, startDealPlay,
-      dealRevealBtn, dealRight, dealWrong, dealNextQ, goBankerRules,
+ toggleAuto1, toggleAuto2, toggleAuto3, goDealRules, startDealPlay,
+ dealRight, dealWrong, dealNextQ, goBankerRules,
       trivHasImg, trivImgSrc,
       // Trivia round
       trivModeOn, trivQuestion, trivOptions, trivAnswer, trivIsTask,
