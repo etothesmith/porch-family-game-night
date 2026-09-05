@@ -2765,20 +2765,6 @@ class Component extends DCLogic {
     const dealToggleMute = ()=>this._sfxMute();
     const dealExit = ()=>this._dealExit();
 
-    // ===== Stage / wheel =====
-    const wheelBg     = this._wheelSlices();
-    const wheelStyle  = 'transform:rotate('+(s.wheelDeg||0)+'deg);background:'+(wheelBg||'#333')+';width:180px;height:180px;';
-    const wheelMsg    = s.wheelMsg;
-    const stageClass  = s.curtainOpen ? 'gs-stage open' : 'gs-stage';
-    const playersVal  = s.players;
-    const spinWheel   = () => this._spinWheel();
-    const setPlayers  = (e) => this.setState({players: e && e.target ? e.target.value : ''});
-    const bulbs = Array.from({length:22},(_,i)=>({i:i}));
-    const ladderRungs = this._ladder.map((v,i)=>({
-      label:'$'+(v>=1000? (v/1000)+'k' : v),
-      cls: i < s.trivStreak ? 'gs-rung hit' : (i === s.trivStreak ? 'gs-rung now' : 'gs-rung')
-    }));
-
     // Menu
     const menuDays = this._menuData.map((d,i) => ({
       label: d.day, active: i===s.menuDay?'#7B2D8E':'#f3e8ff',
