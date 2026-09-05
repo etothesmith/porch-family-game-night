@@ -129,5 +129,33 @@ console.log('\n=== 10. PASSWORDS ===');
 [['porchfamilyweekend','admin'],['porchgamenight','game host'],['porchfamilyannounce','announcements'],['Porchfamilyquiz','quiz editor']]
  .forEach(([p,label])=>h.includes(p)?ok(`${label}: ${p}`):bad(`${label} password missing`));
 
+
+console.log('\n=== 11. DUPLICATE ELEMENT IDs (getElementById returns first only) ===');
+{
+  const ids=[...h.matchAll(/id="([^"]+)"/g)].map(m=>m[1]);
+  const c={};ids.forEach(i=>c[i]=(c[i]||0)+1);
+  const d=Object.entries(c).filter(([k,v])=>v>1);
+  if(!d.length) ok('all '+ids.length+' element IDs unique');
+  else d.forEach(([k,v])=>{
+    h.includes("getElementById('"+k+"')")
+      ? bad(k+' ×'+v+' and READ by getElementById — only first match is ever read')
+      : warn(k+' ×'+v+' (not read by JS)');
+  });
+}
+
+console.log('\n=== 12. FIREBASE: persist keys reach the sync layer ===');
+{
+  const live2=fs.readFileSync('firebase-live.js','utf8');
+  const kl=((live2.match(/var KEYS = \[([^\]]+)\]/)||[])[1]||'').split(',').map(s=>s.trim().replace(/'/g,''));
+  const mapBlock=(h.match(/const map = \{([\s\S]*?)\};/)||[])[1]||'';
+  const persistCalls=[...new Set([...h.matchAll(/_persist\('(\w+)'/g)].map(m=>m[1]))];
+  persistCalls.forEach(pc=>{
+    const mapped=new RegExp(pc+":'(\\w+)'").exec(mapBlock);
+    if(!mapped) bad("_persist('"+pc+"') has NO entry in the persist mapper — never syncs");
+    else if(!kl.includes(mapped[1])) bad("_persist('"+pc+"') maps to '"+mapped[1]+"' but firebase-live KEYS lacks it");
+    else ok("_persist('"+pc+"') → "+mapped[1]+" → synced");
+  });
+}
+
 console.log('\n'+'='.repeat(46));
 console.log(FAIL?`❌ ${FAIL} ERROR(S), ${WARN} warning(s)`:`✅ CLEAN — ${WARN} warning(s)`);

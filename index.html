@@ -559,7 +559,7 @@ a, a:hover { color:#7B2D8E; }
             <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
               <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#E53E3E;margin-bottom:8px">🔒 Host: Enter password to be the Caller</div>
               <div style="display:flex;gap:8px">
-                <input id="host-pass-input" type="password" placeholder="Host password" onKeyDown="{{ hostPassKey }}"
+                <input id="host-pass-1" type="password" placeholder="Host password" onKeyDown="{{ hostPassKey }}"
                   style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:13px;font-family:Outfit,sans-serif">
                 <div style="padding:11px 16px;background:#E53E3E;border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ checkHostPass }}">Unlock</div>
               </div>
@@ -746,7 +746,7 @@ a, a:hover { color:#7B2D8E; }
             <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;margin-top:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
               <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#059669;margin-bottom:8px">🔒 Host: Enter password to run the auction</div>
               <div style="display:flex;gap:8px">
-                <input id="host-pass-input" type="password" placeholder="Host password" onKeyDown="{{ hostPassKey }}"
+                <input id="host-pass-2" type="password" placeholder="Host password" onKeyDown="{{ hostPassKey }}"
                   style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:13px;font-family:Outfit,sans-serif">
                 <div style="padding:11px 16px;background:#059669;border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ checkHostPass }}">Unlock</div>
               </div>
@@ -976,7 +976,7 @@ a, a:hover { color:#7B2D8E; }
         <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
           <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7C3AED;margin-bottom:10px">Add your name</div>
           <div style="display:flex;gap:6px">
-            <input id="deal-add-name" placeholder="Your name" onKeyDown="{{ wheelNameKey }}"
+            <input id="deal-name-player" placeholder="Your name" onKeyDown="{{ wheelNameKey }}"
               style="flex:1;padding:12px 14px;border-radius:10px;border:2px solid #EDE9FE;font-size:14px;font-family:Outfit,sans-serif">
             <div style="padding:12px 20px;background:linear-gradient(135deg,#7C3AED,#6D28D9);border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ addWheelName }}">Add Me</div>
           </div>
@@ -1011,7 +1011,7 @@ a, a:hover { color:#7B2D8E; }
             </sc-for>
           </div>
           <div style="display:flex;gap:6px;margin-top:10px">
-            <input id="deal-add-name" placeholder="Add a player manually" onKeyDown="{{ wheelNameKey }}"
+            <input id="deal-name-lobby" placeholder="Add a player manually" onKeyDown="{{ wheelNameKey }}"
               style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid #FEF3C7;font-size:13px;font-family:Outfit,sans-serif">
             <div style="padding:10px 16px;background:#F59E0B;border-radius:10px;color:#fff;font-weight:700;font-size:12px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
           </div>
@@ -1067,7 +1067,7 @@ a, a:hover { color:#7B2D8E; }
         <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
           <div style="font-size:12px;color:#999;margin-bottom:6px">Still joining? Add a name:</div>
           <div style="display:flex;gap:6px">
-            <input id="deal-add-name" placeholder="Player name" onKeyDown="{{ wheelNameKey }}"
+            <input id="deal-name-wheel" placeholder="Player name" onKeyDown="{{ wheelNameKey }}"
               style="flex:1;padding:9px 12px;border-radius:8px;border:1.5px solid #FEF3C7;font-size:12px;font-family:Outfit,sans-serif">
             <div style="padding:9px 14px;background:#F59E0B;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
           </div>
@@ -1093,7 +1093,7 @@ a, a:hover { color:#7B2D8E; }
             </sc-for>
           </div>
           <div style="display:flex;gap:6px;margin-top:8px">
-            <input id="deal-add-name" placeholder="Add player" onKeyDown="{{ wheelNameKey }}" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid #FEF3C7;font-size:12px;font-family:Outfit,sans-serif">
+            <input id="deal-name-intro" placeholder="Add player" onKeyDown="{{ wheelNameKey }}" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid #FEF3C7;font-size:12px;font-family:Outfit,sans-serif">
             <div style="padding:8px 12px;background:#F59E0B;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer" onClick="{{ addWheelName }}">Add</div>
           </div>
         </div>
@@ -1203,7 +1203,7 @@ a, a:hover { color:#7B2D8E; }
             <div style="background:rgba(219,39,119,0.08);border-radius:var(--radius-lg);padding:18px;margin-bottom:12px">
               <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#DB2777;margin-bottom:8px">🔒 Host: Enter password to be the DJ</div>
               <div style="display:flex;gap:8px">
-                <input id="host-pass-input" type="password" placeholder="Host password" onKeyDown="{{ hostPassKey }}"
+                <input id="host-pass-3" type="password" placeholder="Host password" onKeyDown="{{ hostPassKey }}"
                   style="flex:1;padding:11px 14px;border-radius:12px;border:2px solid #e5e5e5;font-size:13px;font-family:Outfit,sans-serif">
                 <div style="padding:11px 16px;background:#DB2777;border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ checkHostPass }}">Unlock</div>
               </div>
@@ -1898,7 +1898,11 @@ class Component extends DCLogic {
 
   // ===== HOST PASSWORD GATE =====
   _checkHostPass(){
-    const el = document.getElementById('host-pass-input');
+    let el=null;
+    for(let i=1;i<=6;i++){
+      const c=document.getElementById('host-pass-'+i);
+      if(c && c.value && c.value.trim()){ el=c; break; }
+    }
     const p = el ? el.value.trim() : '';
     if(p === 'porchgamenight' || p === 'porchfamilyweekend'){
       this.setState({hostVerified: true});
@@ -2067,6 +2071,7 @@ class Component extends DCLogic {
                      messageBoard:'messageBoard',
                      bingoState:'bingoState',
                      runnerBoard:'runnerBoard',
+                     wheelNames:'wheelNames',
                      auctionLive:'auctionLive'};
         if (map[key]) window.PorchLive.push(map[key], data);
       }
@@ -2385,7 +2390,15 @@ class Component extends DCLogic {
     this.setState({dealPhase:'wheel',dealIntroStep:9});
   }
   _addWheelName(){
-    const el=document.getElementById('deal-add-name');const n=el?el.value.trim():'';if(!n)return;
+    // whichever of the four name inputs is currently rendered and has text
+    const ids=['deal-name-lobby','deal-name-player','deal-name-wheel','deal-name-intro'];
+    let el=null;
+    for(const id of ids){
+      const c=document.getElementById(id);
+      if(c && c.value && c.value.trim()){ el=c; break; }
+    }
+    const n=el?el.value.trim():'';
+    if(!n) return;
     const names=[...(this.state.wheelNames||[])];if(!names.includes(n))names.push(n);
     this.setState({wheelNames:names});
     try{localStorage.setItem('pfw_wheelNames',JSON.stringify(names));}catch(e){}
