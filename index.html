@@ -278,6 +278,34 @@ x-dc > * { max-width:100%; overflow-x:hidden; }
 /* keep single column on phones */
 @media (max-width: 899px){ .auc-desk{display:block} .auc-desk .auc-col{margin-bottom:14px} }
 
+
+/* --- new-leader pop-up --- */
+@keyframes aucLeaderIn{
+  0%{transform:scale(.3) translateY(24px);opacity:0}
+  45%{transform:scale(1.18) translateY(0);opacity:1}
+  62%{transform:scale(.94)}
+  78%{transform:scale(1.06)}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes aucLeaderOut{0%{opacity:1}100%{opacity:0;transform:scale(.92)}}
+.auc-leader{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(4,60,30,.92),rgba(3,30,16,.88));
+  animation:aucLeaderIn .55s cubic-bezier(.18,.9,.25,1.3) both, aucLeaderOut .5s ease 2.1s both}
+.auc-leader .lead-label{font-family:'Fredoka',sans-serif;font-size:clamp(11px,2.4vw,16px);
+  letter-spacing:3px;color:rgba(255,255,255,.6);font-weight:700}
+.auc-leader .lead-name{font-family:'Fredoka',sans-serif;font-weight:800;line-height:1;
+  font-size:clamp(40px,13vw,132px);margin-top:4px;
+  background:linear-gradient(90deg,#FFD700,#FFF3C4,#FFA500,#FFD700);
+  background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:aucShimmer 2s linear infinite;text-transform:uppercase;
+  filter:drop-shadow(0 6px 26px rgba(255,190,60,.45))}
+.auc-leader .lead-amt{font-family:'Fredoka',sans-serif;font-size:clamp(20px,5vw,48px);
+  color:#6EE7B7;margin-top:8px}
+
+/* cooldown state on bid buttons */
+.auc-cool{opacity:.42;filter:grayscale(.6);pointer-events:none}
+
 </style>
 
 <helmet>
@@ -966,6 +994,13 @@ a, a:hover { color:#7B2D8E; }
                 <div class="lbl">TOTAL RAISED</div>
                 <div class="amt">{{ aucRaisedTxt }}</div>
               </div>
+              <sc-if value="{{ aucFlashOn }}" hint-placeholder-val="{{ false }}">
+                <div class="auc-leader">
+                  <div class="lead-label">NEW HIGH BIDDER</div>
+                  <div class="lead-name">{{ aucFlashName }}</div>
+                  <div class="lead-amt">{{ aucFlashAmt }}</div>
+                </div>
+              </sc-if>
               <div style="position:relative;z-index:1">
                 <div style="font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;font-weight:700">NOW AUCTIONING</div>
                 <h3 style="font-family:'Fredoka',sans-serif;font-size:21px;color:#fff;margin:6px 0 2px">{{ aucItem }}</h3>
@@ -994,6 +1029,9 @@ a, a:hover { color:#7B2D8E; }
                     <div style="padding:9px 16px;background:rgba(255,255,255,.18);border-radius:999px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onClick="{{ aucTogglePause }}">{{ aucPauseLabel }}</div>
                     <div style="padding:9px 14px;background:rgba(255,255,255,.12);border-radius:999px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onClick="{{ aucAddTime }}">+10s</div>
                     <div style="padding:9px 14px;background:rgba(255,255,255,.12);border-radius:999px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onClick="{{ aucAddTime5 }}">+5s</div>
+                    <sc-if value="{{ aucCanSell }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:9px 18px;background:linear-gradient(135deg,#F5C542,#E0A008);border-radius:999px;color:#1a1000;font-size:12px;font-weight:800;cursor:pointer" onClick="{{ aucSellNow }}">🔨 SOLD!</div>
+                    </sc-if>
                     <div style="padding:9px 14px;background:rgba(255,255,255,.08);border-radius:999px;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer" onClick="{{ aucNewItem }}">Next Item</div>
                   </div>
                 </sc-if>
@@ -1033,6 +1071,9 @@ a, a:hover { color:#7B2D8E; }
                   <div style="margin-top:10px;padding:9px;background:rgba(248,113,113,.18);border:1px solid rgba(248,113,113,.45);border-radius:10px;text-align:center;font-size:12.5px;color:#FECACA;font-weight:700">You've been outbid — bid again!</div>
                 </sc-if>
                 <div style="margin-top:10px;font-size:10.5px;color:rgba(255,255,255,.4);text-align:center">{{ aucBidCountTxt }} · updates automatically</div>
+                <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);text-align:center">
+                  <div style="display:inline-block;padding:9px 20px;background:rgba(255,255,255,.12);border-radius:999px;color:rgba(255,255,255,.85);font-size:12.5px;font-weight:600;cursor:pointer" onClick="{{ aucLogOut }}">Log out / hand off phone</div>
+                </div>
               </div>
             </sc-if>
 
@@ -1042,7 +1083,10 @@ a, a:hover { color:#7B2D8E; }
               <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#059669;margin-bottom:8px">Place Your Bid</div>
               <input value="{{ aucBidderName }}" onInput="{{ setAucBidder }}" placeholder="Your name"
                 style="width:100%;padding:11px 14px;border-radius:12px;border:2px solid #D1FAE5;font-size:14px;font-family:Outfit,sans-serif;box-sizing:border-box;margin-bottom:10px">
-              <div class="auc-bidgrid" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+              <sc-if value="{{ aucOnCooldown }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px;background:#FEF3C7;border:2px solid #FDE68A;border-radius:12px;text-align:center;margin-bottom:10px;font-family:'Fredoka',sans-serif;font-size:15px;color:#92400E">⏳ {{ aucCoolTxt }}</div>
+              </sc-if>
+              <div class="auc-bidgrid {{ aucBidBtnClass }}" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
                 <sc-for list="{{ aucPresets }}" as="ap" hint-placeholder-count="6">
                   <div style="padding:11px 16px;background:linear-gradient(135deg,#059669,#047857);border-radius:12px;color:#fff;font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer;flex:1;min-width:64px;text-align:center;box-shadow:0 2px 8px rgba(5,150,105,.22)" onClick="{{ ap.onClick }}">{{ ap.label }}</div>
                 </sc-for>
@@ -1147,9 +1191,9 @@ a, a:hover { color:#7B2D8E; }
                 <div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#DC2626;margin-bottom:8px">Session</div>
                 <div style="padding:15px;background:linear-gradient(135deg,#DC2626,#991B1B);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;text-align:center;cursor:pointer;box-shadow:0 4px 16px rgba(220,38,38,.28)" onClick="{{ aucEndGame }}">🛑 End Game</div>
                 <div style="font-size:11px;color:#999;text-align:center;margin-top:6px">Closes the auction on every device and shows the final tally</div>
-                <div style="display:flex;gap:14px;justify-content:center;margin-top:12px">
-                  <div style="font-size:11px;color:#DC2626;cursor:pointer" onClick="{{ aucResetPot }}">Reset total raised</div>
-                  <div style="font-size:11px;color:#bbb;cursor:pointer" onClick="{{ aucLeaveGame }}">Leave (keep game running)</div>
+                <div style="padding:12px;background:#fff;border:2px solid #FCA5A5;border-radius:999px;color:#DC2626;font-family:'Fredoka',sans-serif;font-size:14px;text-align:center;cursor:pointer;margin-top:10px" onClick="{{ aucResetPot }}">↺ Reset Total Raised to $0</div>
+                <div style="text-align:center;margin-top:10px">
+                  <div style="font-size:11px;color:#bbb;cursor:pointer;display:inline-block" onClick="{{ aucLeaveGame }}">Leave (keep game running)</div>
                 </div>
               </div>
             </sc-if>
@@ -1989,7 +2033,7 @@ class Component extends DCLogic {
     photoIdx: 0, photoRevealed: false, photoOrder: [],
     announcements:[], announceInput:'',
     playerName: '', playerPhone: '', playerNameSet: false, hostVerified: false, hostPassError: false,
-    auctionMode:null, aucRole:'', aucRoom:'', aucIsHost:false, aucManualPick:null, aucLastBeat:0, aucEndsAt:null, aucItemsSold:[], aucEnded:false, aucJoinError:'', aucPaused:false,
+    auctionMode:null, aucRole:'', aucRoom:'', aucIsHost:false, aucManualPick:null, aucLastBeat:0, aucEndsAt:null, aucItemsSold:[], aucEnded:false, aucCooldown:0, aucFlashName:null, aucFlashKey:0, aucJoinError:'', aucPaused:false,
     aucWinner:null, aucRaised:0, aucNames:[], aucQueue:[], aucMuted:false, auctionLive:null,
     auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
     announceUnlocked:false, announcePassError:false, quizEditUnlocked:false, quizPassError:false,
@@ -2455,10 +2499,12 @@ class Component extends DCLogic {
   _launchAuction(){
     const item=(this.state.auctionItem||'').trim();
     if(!item) return;
-    const endsAt=Date.now()+20000;
-    this.setState({auctionMode:'live', auctionBids:[], auctionTimer:20,
-      auctionRunning:true, auctionSold:false, aucPaused:false, aucWinner:null, aucEndsAt:endsAt});
-    this._aucSync({item:item, bids:[], timer:20, running:true, sold:false, endsAt:endsAt, paused:false});
+    // every item starts from $0 — no carry-over from the previous round
+    if(this._cdTimer) clearInterval(this._cdTimer);
+    const endsAt=Date.now()+60000;
+    this.setState({auctionMode:'live', auctionBids:[], auctionTimer:60,
+      auctionRunning:true, auctionSold:false, aucPaused:false, aucWinner:null, aucEndsAt:endsAt, aucCooldown:0, aucFlashName:null});
+    this._aucSync({item:item, bids:[], timer:60, running:true, sold:false, endsAt:endsAt, paused:false});
     this._auctionTick();
     this._aucStartLocalClock();
   }
@@ -2566,18 +2612,37 @@ class Component extends DCLogic {
   _auctionBid(amt, whoOverride){
     const name=(whoOverride||this.state.auctionBidderName||'').trim();
     if(!name) return;
+    // 5-second cooldown so bids can't be spammed
+    if(this.state.aucCooldown>0) return;
+    this._aucStartCooldown();
     const bids=[...(this.state.auctionBids||[])];
     const top=bids.length?bids[0].total:0;
     bids.unshift({name:name, amount:amt, total:top+amt,
       time:new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'}),
       id:Date.now()+Math.random()});
-    const endsAt=Date.now()+20000;
-    this.setState({auctionBids:bids, auctionTimer:20, auctionRunning:true,
+    const endsAt=Date.now()+60000;
+    this.setState({auctionBids:bids, auctionTimer:60, auctionRunning:true,
       auctionSold:false, aucWinner:null, aucPaused:false, aucEndsAt:endsAt});
     if(this._aucInterval) clearInterval(this._aucInterval);
     this._auctionTick();
-    this._aucSync({bids:bids, timer:20, running:true, sold:false, endsAt:endsAt, paused:false});
+    this._aucSync({bids:bids, timer:60, running:true, sold:false, endsAt:endsAt, paused:false});
     this._sfxClap();
+    this._aucFlashLeader(name);
+  }
+  _aucStartCooldown(){
+    if(this._cdTimer) clearInterval(this._cdTimer);
+    this.setState({aucCooldown:5});
+    this._cdTimer=setInterval(()=>{
+      const c=this.state.aucCooldown-1;
+      if(c<=0){ clearInterval(this._cdTimer); this.setState({aucCooldown:0}); }
+      else this.setState({aucCooldown:c});
+    },1000);
+  }
+  /* flash the new leader's name big on screen */
+  _aucFlashLeader(name){
+    this.setState({aucFlashName:name, aucFlashKey:Date.now()});
+    if(this._flashTimer) clearTimeout(this._flashTimer);
+    this._flashTimer=setTimeout(()=>this.setState({aucFlashName:null}), 2600);
   }
   _auctionCustomBid(){
     const el=document.getElementById('auction-custom');
@@ -2603,6 +2668,12 @@ class Component extends DCLogic {
       aucPaused:false, aucEndsAt:null});
     this._aucSync({item:'', bids:[], timer:0, running:false, sold:false, endsAt:null, winner:null});
   }
+  _aucSellNow(){
+    if(this.state.aucRole==='bidder') return;
+    if(!(this.state.auctionBids||[]).length) return;   // nothing to award
+    if(this._aucInterval) clearInterval(this._aucInterval);
+    this._aucFinish();
+  }
   _aucEndGame(){
     if(this.state.aucRole==='bidder') return;
     if(this._aucInterval) clearInterval(this._aucInterval);
@@ -2613,6 +2684,14 @@ class Component extends DCLogic {
     this._persist('auctionLive', {room:this.state.aucRoom, ended:true, item:'',
       bids:[], timer:0, running:false, sold:false, endsAt:null, winner:null,
       raised:this.state.aucRaised||0, itemsSold:this.state.aucItemsSold||[]});
+  }
+  _aucLogOut(){
+    if(this._aucInterval) clearInterval(this._aucInterval);
+    if(this._beatTimer) clearInterval(this._beatTimer);
+    if(this._cdTimer) clearInterval(this._cdTimer);
+    this._aucStopLocalClock();
+    this.setState({auctionMode:null, aucRole:'', aucRoom:'', aucEnded:false,
+      auctionBidderName:'', aucCooldown:0, aucFlashName:null});
   }
   _aucLeaveGame(){
     if(this._aucInterval) clearInterval(this._aucInterval);
@@ -3465,6 +3544,17 @@ class Component extends DCLogic {
     const aucPeerColor = aucPeerOn ? '#16A34A' : '#9CA3AF';
     const _myName = (s.auctionBidderName||s.playerName||'').trim().toLowerCase();
     const _topName = (s.auctionBids||[]).length ? (s.auctionBids[0].name||'').trim().toLowerCase() : '';
+    const aucCooldown    = s.aucCooldown||0;
+    const aucOnCooldown  = (s.aucCooldown||0) > 0;
+    const aucCanBid      = (s.aucCooldown||0) === 0;
+    const aucCoolTxt     = 'Wait '+(s.aucCooldown||0)+'s…';
+    const aucBidBtnClass = (s.aucCooldown||0) > 0 ? 'auc-cool' : '';
+    const aucFlashOn     = !!s.aucFlashName;
+    const aucFlashName   = s.aucFlashName||'';
+    const aucFlashAmt    = (s.auctionBids||[]).length ? ('$'+s.auctionBids[0].total.toLocaleString()) : '';
+    const aucSellNow     = ()=>this._aucSellNow();
+    const aucLogOut      = ()=>this._aucLogOut();
+    const aucCanSell     = (s.auctionBids||[]).length>0 && !s.auctionSold;
     const aucItemsSold = (s.aucItemsSold||[]).slice().reverse().map(r=>({
       item:r.item, winner:r.winner, amount:'$'+(r.amount||0).toLocaleString(), at:r.at
     }));
@@ -3912,6 +4002,8 @@ class Component extends DCLogic {
       // Auction
       aucRole, aucIsDisplay, aucIsRemote, aucIsBidder, aucNotDisplay, aucRemoteJoin,
       aucPeerOn, aucPeerOff, aucPeerLabel, aucPeerColor,
+      aucCooldown, aucOnCooldown, aucCanBid, aucCoolTxt, aucBidBtnClass,
+      aucFlashOn, aucFlashName, aucFlashAmt, aucSellNow, aucLogOut, aucCanSell,
       aucIsWinning, aucIsOutbid, aucBidCountTxt, aucItemsSold, aucHasSold, aucSoldCount,
       aucThisItemBid, aucEnded, aucNotEnded, aucEndGame, aucLeaveGame,
       aucManualPick, aucHasPick, aucNoPick, aucQuickNames, aucQuickPresets,
