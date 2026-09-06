@@ -103,6 +103,8 @@
               if (val.sold    !== undefined) patch.auctionSold     = val.sold;
               if (val.raised  !== undefined) patch.aucRaised       = val.raised;
               if (val.winner  !== undefined) patch.aucWinner       = val.winner;
+              if (val.endsAt  !== undefined) patch.aucEndsAt       = val.endsAt;
+              if (val.paused  !== undefined) patch.aucPaused       = val.paused;
               if (val.room    !== undefined && !mine) patch.aucRoom = val.room;
             }
           }
