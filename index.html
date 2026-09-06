@@ -2423,23 +2423,30 @@ class Component extends DCLogic {
     const names=this.state.wheelNames||[];if(!names.length)return;
     const history=this.state.dealPickHistory||[];
     const counts=this.state.dealPickCounts||{};
+    // with few players a 5-spin cooldown is impossible; scale it to the group
+    const cooldown=Math.min(5, Math.max(1, names.length-1));
     // filter: not picked in last 5 spins, and picked fewer than 2 times total
     let eligible=names.filter(n=>{
-      if(history.slice(-5).includes(n)) return false;
+      if(history.slice(-cooldown).includes(n)) return false;
       if((counts[n]||0)>=2) return false;
       return true;
     });
     // if everyone's exhausted, reset cooldown but keep the 2x cap
     if(!eligible.length) eligible=names.filter(n=>(counts[n]||0)<2);
     // if still empty (everyone hit 2x), reset everything
-    if(!eligible.length){ eligible=[...names]; }
+    // everyone has had two turns — start a fresh round
+    if(!eligible.length){ eligible=[...names]; this.setState({dealPickHistory:[],dealPickCounts:{}}); }
     // shuffle eligible
     for(let a=eligible.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[eligible[a],eligible[b]]=[eligible[b],eligible[a]];}
     const chosen=eligible[0];
     const pickIdx=names.indexOf(chosen);
     const sl=360/names.length;
     const turns=5+Math.floor(Math.random()*3);
-    const target=(this.state.wheelDeg||0)+turns*360+(360-(pickIdx*sl+sl/2));
+    // land the chosen slice under the top pointer, accounting for where the wheel already sits
+    const cur=((this.state.wheelDeg||0)%360+360)%360;
+    const want=((360-(pickIdx*sl+sl/2))%360+360)%360;
+    const delta=((want-cur)%360+360)%360;
+    const target=(this.state.wheelDeg||0)+turns*360+delta;
     const newHistory=[...history,chosen];
     const newCounts={...counts};newCounts[chosen]=(newCounts[chosen]||0)+1;
     this.setState({dealPhase:'spinning',wheelDeg:target,dealPickHistory:newHistory,dealPickCounts:newCounts});
