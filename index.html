@@ -803,13 +803,43 @@ a, a:hover { color:#7B2D8E; }
             <div class="auc-woodbar"></div>
           </div>
         </div>
-        <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:var(--radius-lg);padding:22px;margin-top:14px;cursor:pointer" onClick="{{ aucHostStart }}">
-          <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:0 0 4px">🎙️ I'm the Auctioneer</h3>
-          <p style="font-size:12px;color:rgba(255,255,255,.82);margin:0">Start a room and get a code to share.</p>
+        <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:var(--radius-lg);padding:20px;margin-top:14px;cursor:pointer" onClick="{{ aucStartDisplay }}">
+          <h3 style="font-family:'Fredoka',sans-serif;font-size:17px;color:#fff;margin:0 0 4px">📺 Main Display</h3>
+          <p style="font-size:12px;color:rgba(255,255,255,.82);margin:0">The big screen everyone watches. Generates the room code. No controls shown.</p>
         </div>
-        <div style="background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:var(--radius-lg);padding:22px;margin-top:12px;cursor:pointer" onClick="{{ aucGoJoin }}">
-          <h3 style="font-family:'Fredoka',sans-serif;font-size:18px;color:#fff;margin:0 0 4px">🙋 I'm Bidding</h3>
-          <p style="font-size:12px;color:rgba(255,255,255,.82);margin:0">Enter the room code to join the live auction.</p>
+        <div style="background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:var(--radius-lg);padding:20px;margin-top:12px;cursor:pointer" onClick="{{ aucStartRemote }}">
+          <h3 style="font-family:'Fredoka',sans-serif;font-size:17px;color:#fff;margin:0 0 4px">🎛️ Host Remote</h3>
+          <p style="font-size:12px;color:rgba(255,255,255,.82);margin:0">Your phone or tablet. All admin controls, hidden from the audience.</p>
+        </div>
+        <div style="background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:var(--radius-lg);padding:20px;margin-top:12px;cursor:pointer" onClick="{{ aucGoJoin }}">
+          <h3 style="font-family:'Fredoka',sans-serif;font-size:17px;color:#fff;margin:0 0 4px">🙋 I'm Bidding</h3>
+          <p style="font-size:12px;color:rgba(255,255,255,.82);margin:0">Family phones. Enter the room code to bid.</p>
+        </div>
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:14px;box-shadow:0 2px 10px rgba(0,0,0,.04)">
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#059669;margin-bottom:6px">How to run it with two devices</div>
+          <div style="font-size:12.5px;color:#666;line-height:1.95">
+            <b>1.</b> On the laptop/TV, open this app and tap <b>📺 Main Display</b>. A 4-letter room code appears.<br>
+            <b>2.</b> On your phone, open the same link, tap <b>🎛️ Host Remote</b>, and type that code.<br>
+            <b>3.</b> The remote shows a green <b>Connected</b> badge once it's paired.<br>
+            <b>4.</b> Run everything from your phone — the big screen only shows the auction.<br>
+            <b>5.</b> Family taps <b>🙋 I'm Bidding</b> and enters the same code.
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- REMOTE CONNECT -->
+      <sc-if value="{{ aucRemoteJoin }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border-radius:var(--radius-lg);padding:24px;margin-top:12px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.05)">
+          <div style="font-size:40px;margin-bottom:8px">🎛️</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:18px;color:#B45309;margin-bottom:4px">Connect to the Main Display</div>
+          <p style="font-size:12px;color:#999;margin:0 0 14px">Type the 4-letter code shown on the big screen</p>
+          <input id="auc-remote-code" maxlength="4" placeholder="ABCD" onKeyDown="{{ aucRemoteKey }}"
+            style="width:180px;padding:14px;border-radius:14px;border:2px solid #FDE68A;font-size:30px;font-family:'Fredoka',sans-serif;text-align:center;letter-spacing:8px;text-transform:uppercase;box-sizing:border-box">
+          <sc-if value="{{ aucHasJoinError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;color:#DC2626;margin-top:8px">{{ aucJoinError }}</div>
+          </sc-if>
+          <div style="padding:14px;background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;cursor:pointer;margin-top:14px" onClick="{{ aucRemoteConnect }}">Connect Remote</div>
+          <div style="font-size:12px;color:#bbb;margin-top:12px;cursor:pointer" onClick="{{ aucReset }}">Back</div>
         </div>
       </sc-if>
 
@@ -916,8 +946,8 @@ a, a:hover { color:#7B2D8E; }
                   <div style="font-size:13px;color:rgba(255,255,255,.72)">{{ aucTopBidder }}</div>
                 </div>
 
-                <!-- HOST ONLY -->
-                <sc-if value="{{ aucIsHost }}" hint-placeholder-val="{{ false }}">
+                <!-- CONTROLS: REMOTE ONLY (display stays clean) -->
+                <sc-if value="{{ aucIsRemote }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;gap:6px;justify-content:center;margin-top:12px;flex-wrap:wrap">
                     <div style="padding:9px 16px;background:rgba(255,255,255,.18);border-radius:999px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onClick="{{ aucTogglePause }}">{{ aucPauseLabel }}</div>
                     <div style="padding:9px 14px;background:rgba(255,255,255,.12);border-radius:999px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onClick="{{ aucAddTime }}">+10s</div>
@@ -928,7 +958,8 @@ a, a:hover { color:#7B2D8E; }
               </div>
             </div>
 
-            <!-- BIDDING -->
+            <!-- BIDDING: bidders and remote only -->
+            <sc-if value="{{ aucNotDisplay }}" hint-placeholder-val="{{ true }}">
             <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:12px;box-shadow:0 2px 10px rgba(0,0,0,.05)">
               <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#059669;margin-bottom:8px">Place Your Bid</div>
               <input value="{{ aucBidderName }}" onInput="{{ setAucBidder }}" placeholder="Your name"
@@ -944,32 +975,56 @@ a, a:hover { color:#7B2D8E; }
                 <div style="padding:11px 18px;background:#1a1a1a;border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap" onClick="{{ aucCustomBid }}">Bid</div>
               </div>
             </div>
+            </sc-if>
           </div>
 
           <div class="auc-col">
-            <!-- HOST: manual entry + roster -->
-            <sc-if value="{{ aucIsHost }}" hint-placeholder-val="{{ false }}">
-              <div class="auc-panel" style="background:#FFFBEB;border:2px solid #FDE68A;border-radius:var(--radius-lg);padding:16px;margin-top:12px">
-                <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#B45309;margin-bottom:8px">✍️ Enter a Bid Manually</div>
-                <div style="display:flex;gap:6px;margin-bottom:8px">
-                  <input id="auc-manual-name" placeholder="Bidder name" onKeyDown="{{ aucManualKey }}" style="flex:1.4;padding:11px 12px;border-radius:10px;border:2px solid #FDE68A;font-size:13px;font-family:Outfit,sans-serif">
-                  <input id="auc-manual-amt" type="number" placeholder="$" onKeyDown="{{ aucManualKey }}" style="flex:.8;padding:11px 12px;border-radius:10px;border:2px solid #FDE68A;font-size:13px;font-family:Outfit,sans-serif">
-                </div>
-                <div style="padding:12px;background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:14px;text-align:center;cursor:pointer" onClick="{{ aucManualBid }}">Submit Bid</div>
-                <div style="font-size:11px;color:#92400E;margin-top:6px;text-align:center">For family bidding without a phone</div>
+            <!-- HOST REMOTE PANEL -->
+            <sc-if value="{{ aucIsRemote }}" hint-placeholder-val="{{ false }}">
+              <!-- connection badge -->
+              <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fff;border-radius:12px;margin-top:12px;box-shadow:0 2px 10px rgba(0,0,0,.05)">
+                <div style="width:10px;height:10px;border-radius:50%;background:{{ aucPeerColor }};box-shadow:0 0 8px {{ aucPeerColor }}"></div>
+                <div style="flex:1;font-size:12.5px;font-weight:700;color:#444">{{ aucPeerLabel }}</div>
+                <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#B45309;letter-spacing:2px">{{ aucRoom }}</div>
               </div>
-              <div class="auc-panel" style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:12px;box-shadow:0 2px 10px rgba(0,0,0,.05)">
-                <div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#059669;margin-bottom:8px">👥 Participants</div>
-                <div style="display:flex;gap:6px">
-                  <input id="auc-add-name-live" placeholder="Add a bidder" onKeyDown="{{ aucNameKey }}" style="flex:1;padding:9px 11px;border-radius:9px;border:2px solid #D1FAE5;font-size:12px;font-family:Outfit,sans-serif">
-                  <div style="padding:9px 14px;background:#059669;border-radius:9px;color:#fff;font-weight:700;font-size:11px;cursor:pointer" onClick="{{ aucAddName }}">Add</div>
-                </div>
-                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:9px">
-                  <sc-for list="{{ aucNames }}" as="an2" hint-placeholder-count="0">
-                    <div style="padding:4px 10px;background:#D1FAE5;border-radius:999px;font-size:12px;color:#065F46;display:flex;align-items:center;gap:5px"><span style="cursor:pointer" onClick="{{ an2.onBid }}">{{ an2.name }}</span> <span style="cursor:pointer;opacity:.45" onClick="{{ an2.onRemove }}">✕</span></div>
+
+              <!-- QUICK-TAP BIDDING -->
+              <div class="auc-panel" style="background:#FFFBEB;border:2px solid #FDE68A;border-radius:var(--radius-lg);padding:16px;margin-top:12px">
+                <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#B45309;margin-bottom:4px">⚡ Quick-Tap Bidding</div>
+                <div style="font-size:11px;color:#92400E;margin-bottom:10px">Tap a name, then tap an amount</div>
+
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+                  <sc-for list="{{ aucQuickNames }}" as="qn" hint-placeholder-count="0">
+                    <div style="padding:10px 14px;background:{{ qn.bg }};color:{{ qn.fg }};border:2px solid {{ qn.bd }};border-radius:12px;font-family:'Fredoka',sans-serif;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:7px" onClick="{{ qn.onPick }}">{{ qn.name }}<span style="opacity:.4;font-size:12px" onClick="{{ qn.onRemove }}">✕</span></div>
                   </sc-for>
                 </div>
+
+                <sc-if value="{{ aucHasPick }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:#fff;border-radius:12px;padding:12px;border:2px solid #F59E0B">
+                    <div style="font-size:12px;color:#92400E;margin-bottom:8px">Bidding for <b style="font-family:Fredoka,sans-serif;font-size:15px">{{ aucManualPick }}</b></div>
+                    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">
+                      <sc-for list="{{ aucQuickPresets }}" as="qp" hint-placeholder-count="6">
+                        <div style="flex:1;min-width:56px;text-align:center;padding:12px 8px;background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:10px;color:#fff;font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer" onClick="{{ qp.onClick }}">{{ qp.label }}</div>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;gap:6px">
+                      <input id="auc-quick-amt" type="number" placeholder="Custom $" onKeyDown="{{ aucQuickKey }}"
+                        style="flex:1;padding:11px 12px;border-radius:10px;border:2px solid #FDE68A;font-size:14px;font-family:Outfit,sans-serif">
+                      <div style="padding:11px 18px;background:#1a1a1a;border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer" onClick="{{ aucQuickBid }}">Submit</div>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ aucNoPick }}" hint-placeholder-val="{{ true }}">
+                  <div style="text-align:center;padding:10px;color:#B45309;font-size:12px;opacity:.7">Tap a name above to bid for them</div>
+                </sc-if>
+
+                <div style="display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid #FDE68A">
+                  <input id="auc-add-name-live" placeholder="Add a new bidder" onKeyDown="{{ aucNameKey }}" style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid #FDE68A;font-size:13px;font-family:Outfit,sans-serif">
+                  <div style="padding:10px 16px;background:#B45309;border-radius:10px;color:#fff;font-weight:700;font-size:12px;cursor:pointer" onClick="{{ aucAddName }}">Add</div>
+                </div>
               </div>
+
+              <!-- ITEM QUEUE -->
               <div class="auc-panel" style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:12px;box-shadow:0 2px 10px rgba(0,0,0,.05)">
                 <div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#059669;margin-bottom:8px">📋 Upcoming Items</div>
                 <div style="display:flex;gap:6px">
@@ -1009,7 +1064,7 @@ a, a:hover { color:#7B2D8E; }
               </div>
             </sc-if>
 
-            <sc-if value="{{ aucIsHost }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ aucIsRemote }}" hint-placeholder-val="{{ false }}">
               <div style="text-align:center;margin-top:10px;display:flex;gap:14px;justify-content:center">
                 <div style="font-size:11px;color:#DC2626;cursor:pointer" onClick="{{ aucResetPot }}">Reset total raised</div>
                 <div style="font-size:11px;color:#bbb;cursor:pointer" onClick="{{ aucReset }}">Exit auction</div>
@@ -1817,7 +1872,7 @@ class Component extends DCLogic {
     photoIdx: 0, photoRevealed: false, photoOrder: [],
     announcements:[], announceInput:'',
     playerName: '', playerPhone: '', playerNameSet: false, hostVerified: false, hostPassError: false,
-    auctionMode:null, aucRoom:'', aucIsHost:false, aucJoinError:'', aucPaused:false,
+    auctionMode:null, aucRole:'', aucRoom:'', aucIsHost:false, aucManualPick:null, aucLastBeat:0, aucJoinError:'', aucPaused:false,
     aucWinner:null, aucRaised:0, aucNames:[], aucQueue:[], aucMuted:false, auctionLive:null,
     auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
     announceUnlocked:false, announcePassError:false, quizEditUnlocked:false, quizPassError:false,
@@ -2137,6 +2192,59 @@ class Component extends DCLogic {
     let c=''; for(let i=0;i<4;i++) c+=chars[Math.floor(Math.random()*chars.length)];
     return c;
   }
+  /* ---- roles: 'display' (audience/TV), 'remote' (host controls), 'bidder' (phone) ---- */
+  _aucStartDisplay(){
+    const code=this._makeRoomCode();
+    this.setState({auctionMode:'setup', aucRole:'display', aucRoom:code, aucIsHost:true,
+      auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false,
+      auctionSold:false, aucPaused:false, aucWinner:null,
+      aucRaised:this.state.aucRaised||0, aucNames:this.state.aucNames||[], aucQueue:this.state.aucQueue||[]});
+    this._aucBeat('display');
+  }
+  _aucStartRemote(){ this.setState({auctionMode:'remotejoin', aucRole:'remote', aucIsHost:true}); }
+  _aucRemoteConnect(){
+    const el=document.getElementById('auc-remote-code');
+    const code=(el?el.value:'').trim().toUpperCase();
+    if(code.length!==4){ this.setState({aucJoinError:'Enter the 4-character code'}); return; }
+    this.setState({auctionMode:'live', aucRole:'remote', aucRoom:code, aucIsHost:true, aucJoinError:''});
+    this._aucBeat('remote');
+  }
+  /* heartbeat so each view knows the other is live */
+  _aucBeat(who){
+    if(this._beatTimer) clearInterval(this._beatTimer);
+    const send=()=>{
+      const k = who==='remote' ? 'remoteSeen' : 'displaySeen';
+      const patch={}; patch[k]=Date.now();
+      this._aucSync(patch);
+      this.setState({aucLastBeat:Date.now()});
+    };
+    send();
+    this._beatTimer=setInterval(send, 4000);
+  }
+  _aucPeerLive(){
+    const live=this.state.auctionLive||{};
+    const other = this.state.aucRole==='remote' ? live.displaySeen : live.remoteSeen;
+    return !!other && (Date.now()-other) < 12000;   // seen within 12s
+  }
+
+  /* ---- quick-tap manual bidding ---- */
+  _aucPickBidder(n){ this.setState({aucManualPick:n}); }
+  _aucQuickBid(){
+    const n=this.state.aucManualPick;
+    const el=document.getElementById('auc-quick-amt');
+    const a=parseInt(el?el.value:'',10);
+    if(!n || isNaN(a) || a<1) return;
+    this._auctionBid(a, n);
+    if(el) el.value='';
+    this.setState({aucManualPick:null});
+  }
+  _aucQuickPreset(amt){
+    const n=this.state.aucManualPick;
+    if(!n) return;
+    this._auctionBid(amt, n);
+    this.setState({aucManualPick:null});
+  }
+
   _aucHostStart(){
     const code=this._makeRoomCode();
     this.setState({auctionMode:'setup', aucRoom:code, aucIsHost:true,
@@ -2275,7 +2383,7 @@ class Component extends DCLogic {
     this._auctionBid(a, n);
     if(nEl) nEl.value=''; if(aEl) aEl.value='';
   }
-  _auctionReset(){ if(this._aucInterval) clearInterval(this._aucInterval); this.setState({auctionMode:null}); }
+  _auctionReset(){ if(this._aucInterval) clearInterval(this._aucInterval); if(this._beatTimer) clearInterval(this._beatTimer); this.setState({auctionMode:null, aucRole:''}); }
   _auctionNewItem(){
     if(this._aucInterval) clearInterval(this._aucInterval);
     this.setState({auctionMode:'setup', auctionItem:'', auctionBids:[],
@@ -3103,6 +3211,38 @@ class Component extends DCLogic {
     const aucSetup   = s.auctionMode==='setup';
     const aucLive    = s.auctionMode==='live';
     const aucJoin    = s.auctionMode==='join';
+    const aucRole      = s.aucRole||'';
+    const aucIsDisplay = s.aucRole==='display';
+    const aucIsRemote  = s.aucRole==='remote';
+    const aucIsBidder  = s.aucRole==='bidder';
+    const aucNotDisplay= s.aucRole!=='display';
+    const aucRemoteJoin= s.auctionMode==='remotejoin';
+    const aucPeerOn    = this._aucPeerLive();
+    const aucPeerOff   = !aucPeerOn;
+    const aucPeerLabel = aucPeerOn
+      ? (s.aucRole==='remote' ? 'Connected to Display' : 'Remote Connected')
+      : (s.aucRole==='remote' ? 'Searching for Display…' : 'No Remote');
+    const aucPeerColor = aucPeerOn ? '#16A34A' : '#9CA3AF';
+    const aucManualPick = s.aucManualPick||'';
+    const aucHasPick    = !!s.aucManualPick;
+    const aucNoPick     = !s.aucManualPick;
+    const aucQuickNames = (s.aucNames||[]).map(n=>({
+      name:n,
+      bg: n===s.aucManualPick ? 'linear-gradient(135deg,#F59E0B,#D97706)' : '#FFFBEB',
+      fg: n===s.aucManualPick ? '#fff' : '#92400E',
+      bd: n===s.aucManualPick ? '#D97706' : '#FDE68A',
+      onPick: ()=>this._aucPickBidder(n),
+      onRemove: ()=>this._aucRemoveName(n)
+    }));
+    const aucQuickPresets = this._auctionPresets.map(v=>({
+      label:'$'+v, onClick:()=>this._aucQuickPreset(v)
+    }));
+    const aucStartDisplay = ()=>this._aucStartDisplay();
+    const aucStartRemote  = ()=>this._aucStartRemote();
+    const aucRemoteConnect= ()=>this._aucRemoteConnect();
+    const aucRemoteKey    = (e)=>{ if(e.key==='Enter') this._aucRemoteConnect(); };
+    const aucQuickBid     = ()=>this._aucQuickBid();
+    const aucQuickKey     = (e)=>{ if(e.key==='Enter') this._aucQuickBid(); };
     const aucIsHost  = !!s.aucIsHost;
     const aucIsPlayer= !s.aucIsHost;
     const aucRoom    = s.aucRoom||'';
@@ -3511,6 +3651,10 @@ class Component extends DCLogic {
       playerName, playerPhone, playerNameSet, playerNotSet, setPlayerName, playerNameKey, editPlayerName,
       hostVerified, hostNotVerified, checkHostPass, hostPassError, hostPassKey,
       // Auction
+      aucRole, aucIsDisplay, aucIsRemote, aucIsBidder, aucNotDisplay, aucRemoteJoin,
+      aucPeerOn, aucPeerOff, aucPeerLabel, aucPeerColor,
+      aucManualPick, aucHasPick, aucNoPick, aucQuickNames, aucQuickPresets,
+      aucStartDisplay, aucStartRemote, aucRemoteConnect, aucRemoteKey, aucQuickBid, aucQuickKey,
       aucRoleSel, aucSetup, aucLive, aucJoin, aucIsHost, aucIsPlayer, aucRoom,
       aucJoinError, aucHasJoinError, aucItem, aucTimer, aucPaused, aucRunning,
       aucPauseLabel, aucTimerColor, aucSold, aucNotSold, aucMuted, aucNotMuted,

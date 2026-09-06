@@ -54,6 +54,21 @@
           if (!app) return;
           muted = true;                       // don't echo this back up
           var patch = {}; patch[key] = val;
+          // auctionLive carries the whole live-auction state — mirror it into the
+          // individual fields so Display and Remote both reflect the same game
+          if (key === 'auctionLive' && val && typeof val === 'object') {
+            var mine = app.state.aucRoom;
+            if (!mine || !val.room || val.room === mine) {
+              if (val.item    !== undefined) patch.auctionItem    = val.item;
+              if (val.bids    !== undefined) patch.auctionBids     = val.bids || [];
+              if (val.timer   !== undefined) patch.auctionTimer    = val.timer;
+              if (val.running !== undefined) patch.auctionRunning  = val.running;
+              if (val.sold    !== undefined) patch.auctionSold     = val.sold;
+              if (val.raised  !== undefined) patch.aucRaised       = val.raised;
+              if (val.winner  !== undefined) patch.aucWinner       = val.winner;
+              if (val.room    !== undefined && !mine) patch.aucRoom = val.room;
+            }
+          }
           app.setState(patch);
           setTimeout(function(){ muted = false; }, 60);
         });
