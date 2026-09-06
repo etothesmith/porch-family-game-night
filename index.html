@@ -1644,7 +1644,7 @@ class Component extends DCLogic {
     dealCurrentQ: null, dealSelectedAnswer: null, dealCorrect: null, dealDoorPick: null,
     dealDoorCountdown: 0, dealDoorRevealing: false, dealPool: [], dealQi: 0,
     dealPickHistory: [], dealPickCounts: {}, dealIntroStep: 0, dealPassError: false, dealLobbyMsg: '',
-    wheelNames: [], wheelDeg: 0, wheelPick: '',
+    wheelNames: null, wheelDeg: 0, wheelPick: '',
     photoIdx: 0, photoRevealed: false, photoOrder: [],
     announcements:[], announceInput:'',
     playerName: '', playerPhone: '', playerNameSet: false, hostVerified: false, hostPassError: false,
@@ -2331,6 +2331,7 @@ class Component extends DCLogic {
   }
 
   // ===== PORCH OF A DEAL (redesigned) =====
+  _defaultWheelNames = ["Jeremiah", "Tee", "Kim", "Freddie", "Lewis", "Makayla D", "Apryl", "Makenzie", "Mildred", "Austin", "Renee", "Monica Flowers", "Todd", "Meousha", "Kevin", "Darryl", "Forrest", "Tommie", "James", "Kimberly", "Daphne", "Sabrina", "Debra Wheeler", "Dorothy T", "Kandace", "Precious", "KK", "Melvin", "Chase", "Keisha", "newG", "Shonnie", "Van", "Saundra", "Rejeana", "Tamara", "Reggie", "Mary De", "Keishaun", "Ivan", "Gaylon"];
   _dealSfx={intro:null,cd:null,cdLoop:null,muted:false};
   _initDealSfx(){
     this._dealSfx.intro=new Audio('sounds/three_big_doors.mp3');
@@ -2353,7 +2354,7 @@ class Component extends DCLogic {
   _dealBackToRoles(){ this._sfxStop(); this.setState({dealMode:null,dealPhase:null}); }
 
   _startDeal2(){
-    const names=this.state.wheelNames||[];
+    const names=this.state.wheelNames||this._defaultWheelNames;
     if(!names.length){ this.setState({dealLobbyMsg:'Add at least one player first!'}); return; }
     this._initDealSfx();
     const pool=[...Array(this._trivia.length).keys()];
@@ -2402,25 +2403,25 @@ class Component extends DCLogic {
     }
     const n=el?el.value.trim():'';
     if(!n) return;
-    const names=[...(this.state.wheelNames||[])];if(!names.includes(n))names.push(n);
+    const names=[...(this.state.wheelNames||this._defaultWheelNames)];if(!names.includes(n))names.push(n);
     this.setState({wheelNames:names});
     try{localStorage.setItem('pfw_wheelNames',JSON.stringify(names));}catch(e){}
     this._persist('wheelNames',names);if(el)el.value='';
   }
   _removeWheelName(n){
-    const names=(this.state.wheelNames||[]).filter(x=>x!==n);this.setState({wheelNames:names});
+    const names=(this.state.wheelNames||this._defaultWheelNames).filter(x=>x!==n);this.setState({wheelNames:names});
     try{localStorage.setItem('pfw_wheelNames',JSON.stringify(names));}catch(e){}
     this._persist('wheelNames',names);
   }
   _wheelBg(){
-    const names=this.state.wheelNames||[];
+    const names=this.state.wheelNames||this._defaultWheelNames;
     const cols=['#c2185b','#0277bd','#00897b','#f9a825','#7b1fa2','#ef6c00','#00838f','#d81b60','#00c853','#ff8f00'];
     if(!names.length)return'#333';const sl=360/names.length;
     return'conic-gradient('+names.map((n,i)=>cols[i%cols.length]+' '+(i*sl)+'deg '+((i+1)*sl)+'deg').join(',')+')';
   }
   _spinDealWheel(){
     if(this.state.dealPhase==='spinning')return;
-    const names=this.state.wheelNames||[];if(!names.length)return;
+    const names=this.state.wheelNames||this._defaultWheelNames;if(!names.length)return;
     const history=this.state.dealPickHistory||[];
     const counts=this.state.dealPickCounts||{};
     // with few players a 5-spin cooldown is impossible; scale it to the group
@@ -2891,7 +2892,7 @@ class Component extends DCLogic {
     const dealPlayerJoin = s.dealMode==='player';
     const dealPassError  = s.dealPassError;
     const dealLobbyMsg   = s.dealLobbyMsg||'';
-    const dealWheelCount = (s.wheelNames||[]).length;
+    const dealWheelCount = (s.wheelNames||this._defaultWheelNames).length;
     const dealHostLogin  = ()=>this._dealHostLogin();
     const dealHostPassKey= (e)=>{if(e.key==='Enter')this._dealHostLogin();};
     const dealJoinPlayer = ()=>this._dealJoinAsPlayer();
@@ -2917,21 +2918,33 @@ class Component extends DCLogic {
     const dealTimerColor = s.dealTimer<=5?'#DC2626':s.dealTimer<=10?'#F59E0B':'#10B981';
     const dealWheelOrSpin = s.dealPhase==='wheel' || s.dealPhase==='spinning';
     const dealWheelTitle  = s.dealPhase==='spinning' ? 'ROUND AND ROUND...' : "WHO'S UP NEXT?";
-    const _wn = s.wheelNames||[];
+    const _wn = s.wheelNames||this._defaultWheelNames;
     const wheelLabels = _wn.map(function(n,i){
-      const slice = 360/_wn.length;
-      const mid = i*slice + slice/2;           // center of this slice
-      const radius = 66;                        // px from hub
+      const count = _wn.length;
+      const slice = 360/count;
+      const mid = i*slice + slice/2;
+      // many slices → read radially (outward) and shrink; few slices → tangential
+      const radial = count > 12;
+      const fs = count > 30 ? 7 : count > 20 ? 8 : count > 12 ? 9 : 11;
+      const maxCh = count > 30 ? 7 : count > 20 ? 9 : 11;
+      const label = n.length > maxCh ? n.slice(0, maxCh-1)+'…' : n;
+      const radius = radial ? 92 : 66;
+      const tf = radial
+        ? 'rotate('+mid+'deg) translate(-50%,-'+radius+'px)'          // reads outward
+        : 'rotate('+mid+'deg) translate(-50%,-'+radius+'px) rotate(90deg)';
       return {
-        name: n.length>9 ? n.slice(0,8)+'…' : n,
+        name: label,
         style: 'position:absolute;left:50%;top:50%;transform-origin:0 0;'
-             + 'transform:rotate('+mid+'deg) translate(-50%,-'+radius+'px) rotate(90deg);'
-             + 'font-family:Fredoka,sans-serif;font-size:11px;color:#fff;white-space:nowrap;'
-             + 'text-shadow:0 1px 3px rgba(0,0,0,.7);pointer-events:none;font-weight:600;'
+             + 'transform:'+tf+';'
+             + 'font-family:Fredoka,sans-serif;font-size:'+fs+'px;color:#fff;white-space:nowrap;'
+             + 'text-shadow:0 1px 3px rgba(0,0,0,.85);pointer-events:none;font-weight:600;'
       };
     });
     const dealWheelBg = this._wheelBg();
-    const dealWheelStyle = 'transform:rotate('+(s.wheelDeg||0)+'deg);background:'+this._wheelBg()+';width:200px;height:200px;';
+    const _wcount = (s.wheelNames||this._defaultWheelNames).length;
+    const _wsize = _wcount > 20 ? 250 : 200;
+    const dealWheelStyle = 'transform:rotate('+(s.wheelDeg||0)+'deg);background:'+this._wheelBg()
+      + ';width:'+_wsize+'px;height:'+_wsize+'px;';
     const dealWheelPick = s.wheelPick||'';
     const dealMuted = s.dealMuted;
     const dealNotMuted = !s.dealMuted;
@@ -2939,8 +2952,8 @@ class Component extends DCLogic {
     const dealIntro1 = s.dealIntroStep>=1;
     const dealIntro2 = s.dealIntroStep>=2;
     const dealDoorCountdown = s.dealDoorCountdown;
-    const wheelNames = (s.wheelNames||[]).map(n=>({name:n,onRemove:()=>this._removeWheelName(n)}));
-    const hasWheelNames = (s.wheelNames||[]).length>0;
+    const wheelNames = (s.wheelNames||this._defaultWheelNames).map(n=>({name:n,onRemove:()=>this._removeWheelName(n)}));
+    const hasWheelNames = (s.wheelNames||this._defaultWheelNames).length>0;
     const dq = s.dealCurrentQ||{q:'',o:[],a:'',correctIdx:0};
     const dealQText = dq.q;
     const dealAnswers = (dq.o||[]).map((opt,i)=>({
