@@ -56,6 +56,43 @@
           var patch = {}; patch[key] = val;
           // auctionLive carries the whole live-auction state — mirror it into the
           // individual fields so Display and Remote both reflect the same game
+          // ---- notify on new announcements / messages arriving from other devices ----
+          try {
+            if (key === 'announcements' && Array.isArray(val)) {
+              var prevA = app.state.announcements || [];
+              if (val.length > prevA.length && val[0] &&
+                  (!prevA[0] || val[0].id !== prevA[0].id) &&
+                  window.PorchPush) {
+                window.PorchPush.announcement(val[0].text);
+              }
+            }
+            if (key === 'messageBoard' && Array.isArray(val)) {
+              var prevM = app.state.messageBoard || [];
+              if (val.length > prevM.length && val[0] &&
+                  (!prevM[0] || val[0].id !== prevM[0].id) &&
+                  window.PorchPush) {
+                var me = (app.state.playerName || '').toLowerCase();
+                if ((val[0].name || '').toLowerCase() !== me) {      // don't notify yourself
+                  window.PorchPush.message(val[0].name || 'Family', val[0].text);
+                }
+              } else if (val.length === prevM.length && window.PorchPush) {
+                // same post count — check for a new reply on any thread
+                for (var i = 0; i < val.length; i++) {
+                  var nr = (val[i].replies || []).length;
+                  var or = ((prevM[i] || {}).replies || []).length;
+                  if (nr > or) {
+                    var r = val[i].replies[nr - 1];
+                    var me2 = (app.state.playerName || '').toLowerCase();
+                    if (r && (r.name || '').toLowerCase() !== me2) {
+                      window.PorchPush.reply(r.name || 'Family', r.text);
+                    }
+                    break;
+                  }
+                }
+              }
+            }
+          } catch (e) {}
+
           if (key === 'auctionLive' && val && typeof val === 'object') {
             var mine = app.state.aucRoom;
             if (!mine || !val.room || val.room === mine) {

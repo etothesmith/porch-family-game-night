@@ -284,6 +284,12 @@ x-dc > * { max-width:100%; overflow-x:hidden; }
 <link rel="stylesheet" href="ds-styles.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="pf-icons.js"></script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7B2D8E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Porch Family">
+<script src="push-setup.js"></script>
 <script src="firebase-config.js"></script>
 <script src="firebase-live.js"></script>
 <script src="runner-engine.js"></script>
@@ -702,6 +708,19 @@ a, a:hover { color:#7B2D8E; }
       <h2 style="font-family:'Fredoka',sans-serif;font-size:22px;margin:0;color:#1a1a1a">Family Board</h2>
     </div>
     <div style="padding:0 16px">
+      <!-- NOTIFICATION STATUS -->
+      <div style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+        <div style="font-size:18px">🔔</div>
+        <sc-if value="{{ notifOn }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;font-size:12.5px;color:#059669;font-weight:600">Notifications are on</div>
+          <div style="font-size:11px;color:#7C3AED;cursor:pointer;text-decoration:underline" onClick="{{ notifTest }}">Send test</div>
+        </sc-if>
+        <sc-if value="{{ notifOff }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;font-size:12.5px;color:#999">Get notified about new messages</div>
+          <div style="padding:6px 14px;background:#7C3AED;border-radius:999px;color:#fff;font-size:11.5px;font-weight:700;cursor:pointer" onClick="{{ notifAsk }}">Turn on</div>
+        </sc-if>
+      </div>
+
       <!-- POST INPUT -->
       <div style="background:#fff;border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
         <div style="display:flex;gap:8px">
@@ -1844,6 +1863,40 @@ a, a:hover { color:#7B2D8E; }
 </div>
 
 
+
+<!-- NOTIFICATION PERMISSION PROMPT -->
+<sc-if value="{{ notifPrompt }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:12px;right:12px;bottom:64px;z-index:1400;
+              background:linear-gradient(135deg,#7B2D8E,#6D28D9);border-radius:18px;padding:16px 18px;
+              box-shadow:0 10px 36px rgba(0,0,0,.35);max-width:460px;margin:0 auto">
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <div style="font-size:30px;flex-shrink:0">🔔</div>
+      <div style="flex:1">
+        <sc-if value="{{ notifIsStd }}" hint-placeholder-val="{{ true }}">
+          <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:#fff">Turn on notifications?</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.5;margin-top:3px">
+            Get a ping when someone posts an announcement or a message — even when the app is closed.
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <div style="flex:1;padding:11px;background:#fff;border-radius:999px;color:#7B2D8E;font-family:'Fredoka',sans-serif;font-size:14px;text-align:center;cursor:pointer" onClick="{{ notifAsk }}">Allow</div>
+            <div style="padding:11px 16px;background:rgba(255,255,255,.15);border-radius:999px;color:rgba(255,255,255,.85);font-size:13px;cursor:pointer" onClick="{{ notifDismiss }}">Not now</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ notifIsIOS }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:#fff">One step for iPhone</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.85);line-height:1.6;margin-top:3px">
+            Apple only allows notifications once the app is on your Home Screen.<br>
+            Tap <b>Share</b> (□↑) → <b>Add to Home Screen</b>, then open it from the icon and allow notifications.
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <div style="padding:11px 18px;background:rgba(255,255,255,.15);border-radius:999px;color:#fff;font-size:13px;cursor:pointer" onClick="{{ notifDismiss }}">Got it</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
 <!-- SLIM NAV BAR -->
 <div class="pfw-nav">
   <button onClick="{{ nav.home }}" title="Home">🏠</button>
@@ -1876,7 +1929,7 @@ class Component extends DCLogic {
     aucWinner:null, aucRaised:0, aucNames:[], aucQueue:[], aucMuted:false, auctionLive:null,
     auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
     announceUnlocked:false, announcePassError:false, quizEditUnlocked:false, quizPassError:false,
-    messageBoard:[], boardLastSeen:0,
+    messageBoard:[], boardLastSeen:0, notifPrompt:false, notifPerm:'default',
     reokeMode:null,
     bingoMode:null, bingoCards:[], bingoMarkedAll:[], bingoActiveCard:0, bingoNumCards:1, bingoWonCard:-1, bingoCardPick:1, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoSuspense:false, bingoWon:false, bingoPattern:'line',
     players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
@@ -1906,6 +1959,7 @@ class Component extends DCLogic {
       customContacts: load('contacts')
     });
     this._loadPlayerName();
+    setTimeout(()=>this._maybePromptNotifs(), 4000);
     try{const a=localStorage.getItem('pfw_announcements');if(a)this.setState({announcements:JSON.parse(a)});}catch(e){}
     try{const b=localStorage.getItem('pfw_messageBoard');if(b)this.setState({messageBoard:JSON.parse(b)});}catch(e){}
     try{const bs=localStorage.getItem('pfw_boardSeen');if(bs)this.setState({boardLastSeen:parseInt(bs,10)||0});}catch(e){}
@@ -2017,6 +2071,42 @@ class Component extends DCLogic {
     this.setState({customContacts: contacts});
     if(nameEl) nameEl.value = '';
     if(phoneEl) phoneEl.value = '';
+  }
+
+  // ===== PUSH NOTIFICATIONS =====
+  _notifState(){
+    const P = window.PorchPush;
+    if(!P || !P.supported) return 'unsupported';
+    if(P.iosNeedsInstall) return 'ios-install';
+    return Notification.permission;   // 'default' | 'granted' | 'denied'
+  }
+  _notifAsk(){
+    const P = window.PorchPush; if(!P) return;
+    P.request().then(r => this.setState({notifPerm:r, notifPrompt:false}));
+  }
+  _notifDismiss(){
+    this.setState({notifPrompt:false});
+    try{ localStorage.setItem('pfw_notifDismissed','1'); }catch(e){}
+  }
+  _maybePromptNotifs(){
+    try{ if(localStorage.getItem('pfw_notifDismissed')) return; }catch(e){}
+    const st=this._notifState();
+    if(st==='default' || st==='ios-install') this.setState({notifPrompt:true, notifPerm:st});
+  }
+  /* fire notifications when new items arrive from other devices */
+  _notifyNewAnnouncement(list, prev){
+    if(!list || !list.length) return;
+    if(prev && prev.length && list[0] && prev[0] && list[0].id === prev[0].id) return;
+    if(!prev || list.length > prev.length){
+      if(window.PorchPush) window.PorchPush.announcement(list[0].text);
+    }
+  }
+  _notifyNewMessage(list, prev){
+    if(!list || !list.length) return;
+    if(!prev || list.length > prev.length){
+      const m=list[0];
+      if(window.PorchPush && m) window.PorchPush.message(m.name||'Family', m.text);
+    }
   }
 
   // ===== BOARD NOTIFICATIONS =====
@@ -3153,6 +3243,14 @@ class Component extends DCLogic {
       replyId: 'reply-'+p.id,
       doReply: ()=> this._replyMessage(p.id)
     }));
+    const notifPrompt   = s.notifPrompt;
+    const notifIsIOS    = s.notifPerm==='ios-install';
+    const notifIsStd    = s.notifPerm!=='ios-install';
+    const notifAsk      = ()=>this._notifAsk();
+    const notifDismiss  = ()=>this._notifDismiss();
+    const notifOn       = s.notifPerm==='granted';
+    const notifOff      = s.notifPerm!=='granted';
+    const notifTest     = ()=>{ if(window.PorchPush) window.PorchPush.show('Test notification','If you can see this, notifications are working.','./index.html?screen=board','porch-test'); };
     const boardCount = boardPosts.length;
     const boardNewCount = Math.max(0, boardCount - (s.boardLastSeen||0));
     const hasBoardNew = boardNewCount > 0;
@@ -3640,6 +3738,7 @@ class Component extends DCLogic {
       dealDoorPick: s.dealDoorPick,
       adminModalTitle, adminModalFields,
       // Message Board
+      notifPrompt, notifIsIOS, notifIsStd, notifAsk, notifDismiss, notifOn, notifOff, notifTest,
       boardPosts, hasBoardPosts, postMessage, boardMsgKey, clearMessages, boardCount, boardNewCount, hasBoardNew, boardBadge,
       // Reoke mode
       doReokeSpin, doReokePlay,
