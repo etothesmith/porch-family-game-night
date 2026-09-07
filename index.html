@@ -873,7 +873,15 @@ a, a:hover { color:#7B2D8E; }
             <div class="auc-woodbar"></div>
           </div>
         </div>
-        <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:var(--radius-lg);padding:20px;margin-top:14px;cursor:pointer" onClick="{{ aucStartDisplay }}">
+        <div style="background:linear-gradient(135deg,#7C3AED,#5B21B6);border-radius:var(--radius-lg);padding:20px;margin-top:14px;cursor:pointer;border:2px solid #A78BFA" onClick="{{ aucStartSolo }}">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <h3 style="font-family:'Fredoka',sans-serif;font-size:17px;color:#fff;margin:0">📱 Run It From My Phone</h3>
+            <span style="font-size:9px;background:rgba(255,255,255,.25);color:#fff;padding:2px 8px;border-radius:999px;font-weight:800;letter-spacing:.5px">SIMPLEST</span>
+          </div>
+          <p style="font-size:12px;color:rgba(255,255,255,.85);margin:0">No TV needed. One phone runs everything — you get the code, the controls, and the stage.</p>
+        </div>
+        <div style="text-align:center;font-size:11px;color:#bbb;margin:14px 0 6px;font-weight:600">— or use two devices —</div>
+        <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:var(--radius-lg);padding:20px;cursor:pointer" onClick="{{ aucStartDisplay }}">
           <h3 style="font-family:'Fredoka',sans-serif;font-size:17px;color:#fff;margin:0 0 4px">📺 Main Display</h3>
           <p style="font-size:12px;color:rgba(255,255,255,.82);margin:0">The big screen everyone watches. Generates the room code. No controls shown.</p>
         </div>
@@ -886,7 +894,13 @@ a, a:hover { color:#7B2D8E; }
           <p style="font-size:12px;color:rgba(255,255,255,.82);margin:0">Family phones. Enter the room code to bid.</p>
         </div>
         <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:14px;box-shadow:0 2px 10px rgba(0,0,0,.04)">
-          <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#059669;margin-bottom:6px">How to run it with two devices</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#7C3AED;margin-bottom:6px">Phone-only (simplest)</div>
+          <div style="font-size:12.5px;color:#666;line-height:1.95;margin-bottom:12px">
+            <b>1.</b> Tap <b>📱 Run It From My Phone</b>. A 4-letter code appears.<br>
+            <b>2.</b> Read the code out loud — family taps <b>🙋 I'm Bidding</b> and enters it.<br>
+            <b>3.</b> You run everything from your phone. Done.
+          </div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#059669;margin-bottom:6px">With a TV or laptop</div>
           <div style="font-size:12.5px;color:#666;line-height:1.95">
             <b>1.</b> On the laptop/TV, open this app and tap <b>📺 Main Display</b>. A 4-letter room code appears.<br>
             <b>2.</b> On your phone, open the same link, tap <b>🎛️ Host Remote</b>, and type that code.<br>
@@ -1024,7 +1038,7 @@ a, a:hover { color:#7B2D8E; }
                 </div>
 
                 <!-- CONTROLS: REMOTE ONLY (display stays clean) -->
-                <sc-if value="{{ aucIsRemote }}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{ aucCanControl }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;gap:6px;justify-content:center;margin-top:12px;flex-wrap:wrap">
                     <div style="padding:9px 16px;background:rgba(255,255,255,.18);border-radius:999px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onClick="{{ aucTogglePause }}">{{ aucPauseLabel }}</div>
                     <div style="padding:9px 14px;background:rgba(255,255,255,.12);border-radius:999px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onClick="{{ aucAddTime }}">+10s</div>
@@ -1102,7 +1116,7 @@ a, a:hover { color:#7B2D8E; }
 
           <div class="auc-col">
             <!-- HOST REMOTE PANEL -->
-            <sc-if value="{{ aucIsRemote }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ aucCanControl }}" hint-placeholder-val="{{ false }}">
               <!-- connection badge -->
               <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fff;border-radius:12px;margin-top:12px;box-shadow:0 2px 10px rgba(0,0,0,.05)">
                 <div style="width:10px;height:10px;border-radius:50%;background:{{ aucPeerColor }};box-shadow:0 0 8px {{ aucPeerColor }}"></div>
@@ -1186,7 +1200,7 @@ a, a:hover { color:#7B2D8E; }
               </div>
             </sc-if>
 
-            <sc-if value="{{ aucIsRemote }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ aucCanControl }}" hint-placeholder-val="{{ false }}">
               <div class="auc-panel" style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:12px;box-shadow:0 2px 10px rgba(0,0,0,.05)">
                 <div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#DC2626;margin-bottom:8px">Session</div>
                 <div style="padding:15px;background:linear-gradient(135deg,#DC2626,#991B1B);border-radius:999px;color:#fff;font-family:'Fredoka',sans-serif;font-size:16px;text-align:center;cursor:pointer;box-shadow:0 4px 16px rgba(220,38,38,.28)" onClick="{{ aucEndGame }}">🛑 End Game</div>
@@ -2399,6 +2413,16 @@ class Component extends DCLogic {
       aucRaised:this.state.aucRaised||0, aucNames:this.state.aucNames||[], aucQueue:this.state.aucQueue||[]});
     this._aucBeat('display');
   }
+  /* Solo host: one phone runs the whole auction — no second screen needed */
+  _aucStartSolo(){
+    const code=this._makeRoomCode();
+    this.setState({auctionMode:'setup', aucRole:'solo', aucRoom:code, aucIsHost:true,
+      auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false,
+      auctionSold:false, aucPaused:false, aucWinner:null, aucEnded:false,
+      aucRaised:this.state.aucRaised||0, aucNames:this.state.aucNames||[],
+      aucQueue:this.state.aucQueue||[], aucCooldown:0, aucFlashName:null});
+    this._aucStartLocalClock();
+  }
   _aucStartRemote(){ this.setState({auctionMode:'remotejoin', aucRole:'remote', aucIsHost:true}); }
   _aucRemoteConnect(){
     const el=document.getElementById('auc-remote-code');
@@ -2533,7 +2557,9 @@ class Component extends DCLogic {
     }, extra||{}));
   }
   /* guard every host-only action so a participant can never trigger one */
-  _hostOnly(fn){ if(this.state.aucRole==='bidder') return; fn(); }
+  _hostOnly(fn){ if(!this._aucCanControl()) return; fn(); }
+  /* who may change game state: the remote, a solo host, or the display itself */
+  _aucCanControl(){ const r=this.state.aucRole; return r==='remote'||r==='solo'||r==='display'; }
   _auctionTick(){
     if(this._aucInterval) clearInterval(this._aucInterval);
     this._aucInterval=setInterval(()=>{
@@ -2560,7 +2586,7 @@ class Component extends DCLogic {
       const left=Math.max(0, Math.ceil((s.aucEndsAt-Date.now())/1000));
       if(left!==s.auctionTimer) this.setState({auctionTimer:left});
       // only the display/remote may declare the winner — bidders just watch
-      if(left<=0 && (s.aucRole==='display'||s.aucRole==='remote') && !s.auctionSold){
+      if(left<=0 && (s.aucRole==='display'||s.aucRole==='remote'||s.aucRole==='solo') && !s.auctionSold){
         this._aucFinish();
       }
     },250);
@@ -2568,7 +2594,7 @@ class Component extends DCLogic {
   _aucStopLocalClock(){ if(this._aucClock) clearInterval(this._aucClock); }
 
   _aucFinish(){
-    if(this.state.aucRole==='bidder') return;      // participants never close a round
+    if(!this._aucCanControl()) return;      // participants never close a round
     const bids=this.state.auctionBids||[];
     const win=bids.length?bids[0]:null;
     // record this item's own result so past rounds stay separate from the running total
@@ -2661,7 +2687,7 @@ class Component extends DCLogic {
   }
   _auctionReset(){ if(this._aucInterval) clearInterval(this._aucInterval); if(this._beatTimer) clearInterval(this._beatTimer); this._aucStopLocalClock(); this.setState({auctionMode:null, aucRole:''}); }
   _auctionNewItem(){
-    if(this.state.aucRole==='bidder') return;
+    if(!this._aucCanControl()) return;
     if(this._aucInterval) clearInterval(this._aucInterval);
     this.setState({auctionMode:'setup', auctionItem:'', auctionBids:[],
       auctionTimer:0, auctionRunning:false, auctionSold:false, aucWinner:null,
@@ -2669,13 +2695,13 @@ class Component extends DCLogic {
     this._aucSync({item:'', bids:[], timer:0, running:false, sold:false, endsAt:null, winner:null});
   }
   _aucSellNow(){
-    if(this.state.aucRole==='bidder') return;
+    if(!this._aucCanControl()) return;
     if(!(this.state.auctionBids||[]).length) return;   // nothing to award
     if(this._aucInterval) clearInterval(this._aucInterval);
     this._aucFinish();
   }
   _aucEndGame(){
-    if(this.state.aucRole==='bidder') return;
+    if(!this._aucCanControl()) return;
     if(this._aucInterval) clearInterval(this._aucInterval);
     if(this._beatTimer) clearInterval(this._beatTimer);
     this._aucStopLocalClock();
@@ -2700,7 +2726,7 @@ class Component extends DCLogic {
     this.setState({auctionMode:null, aucRole:'', aucRoom:'', aucEnded:false});
   }
   _aucResetPot(){
-    if(this.state.aucRole==='bidder') return; this.setState({aucRaised:0}); this._aucSync({raised:0}); }
+    if(!this._aucCanControl()) return; this.setState({aucRaised:0}); this._aucSync({raised:0}); }
 
   // ===== PORCH FAMILY BINGO =====
   _bingoLetters = ['B','I','N','G','O'];
@@ -3532,9 +3558,13 @@ class Component extends DCLogic {
     const aucJoin    = s.auctionMode==='join';
     const aucRole      = s.aucRole||'';
     const aucIsDisplay = s.aucRole==='display';
-    const aucIsRemote  = s.aucRole==='remote';
+    const aucIsRemote   = s.aucRole==='remote';
+    const aucIsSolo     = s.aucRole==='solo';
+    const aucCanControl = s.aucRole==='remote' || s.aucRole==='solo';
+    const aucStartSolo  = ()=>this._aucStartSolo();
     const aucIsBidder  = s.aucRole==='bidder';
     const aucNotDisplay= s.aucRole!=='display';
+    const aucShowBidPanel = s.aucRole!=='display';
     const aucRemoteJoin= s.auctionMode==='remotejoin';
     const aucPeerOn    = this._aucPeerLive();
     const aucPeerOff   = !aucPeerOn;
@@ -4000,7 +4030,7 @@ class Component extends DCLogic {
       playerName, playerPhone, playerNameSet, playerNotSet, setPlayerName, playerNameKey, editPlayerName,
       hostVerified, hostNotVerified, checkHostPass, hostPassError, hostPassKey,
       // Auction
-      aucRole, aucIsDisplay, aucIsRemote, aucIsBidder, aucNotDisplay, aucRemoteJoin,
+      aucRole, aucIsDisplay, aucIsRemote, aucIsSolo, aucCanControl, aucStartSolo, aucIsBidder, aucNotDisplay, aucRemoteJoin,
       aucPeerOn, aucPeerOff, aucPeerLabel, aucPeerColor,
       aucCooldown, aucOnCooldown, aucCanBid, aucCoolTxt, aucBidBtnClass,
       aucFlashOn, aucFlashName, aucFlashAmt, aucSellNow, aucLogOut, aucCanSell,
