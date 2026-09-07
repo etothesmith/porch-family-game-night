@@ -392,6 +392,72 @@ a, a:hover { color:#7B2D8E; }
     </div>
     <div style="padding:24px 20px 0">
 
+
+      <!-- PAY YOUR BID -->
+      <div style="padding:0 20px;margin-top:12px">
+        <div style="background:linear-gradient(135deg,#065F46,#047857);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 4px 18px rgba(6,95,70,.24)">
+          <div style="padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer" onClick="{{ payToggle }}">
+            <div style="font-size:24px">💵</div>
+            <div style="flex:1">
+              <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:#fff">Pay Your Bid</div>
+              <div style="font-size:11.5px;color:rgba(255,255,255,.7)">Zelle · Cash App · Venmo</div>
+            </div>
+            <sc-if value="{{ payClosed }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:11px;color:rgba(255,255,255,.75);background:rgba(255,255,255,.18);padding:6px 14px;border-radius:999px;font-weight:700">Open</div>
+            </sc-if>
+            <sc-if value="{{ payOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:18px;color:rgba(255,255,255,.7)">×</div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ payOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:0 14px 14px">
+
+              <!-- ZELLE -->
+              <div style="background:rgba(255,255,255,.97);border-radius:14px;padding:14px;margin-bottom:9px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                  <div style="width:34px;height:34px;border-radius:9px;background:#6D1ED4;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fredoka',sans-serif;font-size:17px">Z</div>
+                  <div style="flex:1">
+                    <div style="font-weight:700;font-size:13.5px;color:#1a1a1a">Zelle</div>
+                    <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:#6D1ED4;letter-spacing:.5px">404-750-2157</div>
+                  </div>
+                </div>
+                <div style="padding:11px;background:#6D1ED4;border-radius:10px;color:#fff;font-weight:700;font-size:13px;text-align:center;cursor:pointer" onClick="{{ payCopyZelle }}">
+                  <sc-if value="{{ payNotCopied }}" hint-placeholder-val="{{ true }}">📋 Copy Number</sc-if>
+                  <sc-if value="{{ payCopied }}" hint-placeholder-val="{{ false }}">✓ Copied!</sc-if>
+                </div>
+                <div style="font-size:10.5px;color:#999;margin-top:6px;text-align:center">Open your bank app → Send with Zelle → paste this number</div>
+              </div>
+
+              <!-- CASH APP -->
+              <a href="https://cash.app/$ielee28" target="_blank" rel="noopener" style="display:block;text-decoration:none;background:rgba(255,255,255,.97);border-radius:14px;padding:14px;margin-bottom:9px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:34px;height:34px;border-radius:9px;background:#00D632;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fredoka',sans-serif;font-size:19px">$</div>
+                  <div style="flex:1">
+                    <div style="font-weight:700;font-size:13.5px;color:#1a1a1a">Cash App</div>
+                    <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:#00A828">$ielee28</div>
+                  </div>
+                  <div style="font-size:11px;color:#fff;background:#00D632;padding:8px 16px;border-radius:999px;font-weight:700">Open</div>
+                </div>
+              </a>
+
+              <!-- VENMO -->
+              <a href="https://venmo.com/ivan-lee-13" target="_blank" rel="noopener" style="display:block;text-decoration:none;background:rgba(255,255,255,.97);border-radius:14px;padding:14px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:34px;height:34px;border-radius:9px;background:#008CFF;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fredoka',sans-serif;font-size:19px">V</div>
+                  <div style="flex:1">
+                    <div style="font-weight:700;font-size:13.5px;color:#1a1a1a">Venmo</div>
+                    <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:#0074D4">@ivan-lee-13</div>
+                  </div>
+                  <div style="font-size:11px;color:#fff;background:#008CFF;padding:8px 16px;border-radius:999px;font-weight:700">Open</div>
+                </div>
+              </a>
+
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
       <!-- ANNOUNCEMENTS SECTION -->
       <div style="padding:0 20px;margin-top:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -2051,7 +2117,7 @@ class Component extends DCLogic {
     aucWinner:null, aucRaised:0, aucNames:[], aucQueue:[], aucMuted:false, auctionLive:null,
     auctionItem:'', auctionBids:[], auctionTimer:0, auctionRunning:false, auctionSold:false, auctionBidderName:'',
     announceUnlocked:false, announcePassError:false, quizEditUnlocked:false, quizPassError:false,
-    messageBoard:[], boardLastSeen:0, notifPrompt:false, notifPerm:'default',
+    messageBoard:[], boardLastSeen:0, payCopied:false, payOpen:false, notifPrompt:false, notifPerm:'default',
     reokeMode:null,
     bingoMode:null, bingoCards:[], bingoMarkedAll:[], bingoActiveCard:0, bingoNumCards:1, bingoWonCard:-1, bingoCardPick:1, bingoCard:[], bingoMarked:[], bingoBalls:[], bingoDrawn:[], bingoIdx:-1, bingoCurrent:null, bingoAnimating:false, bingoSuspense:false, bingoWon:false, bingoPattern:'line',
     players:'Uncle John, Aunt Mary, Cousin Tim, Grandma, Sarah, Mike', wheelDeg:0, wheelSpinning:false, wheelPick:'', wheelMsg:'Spin to see who plays!', curtainOpen:false,
@@ -2193,6 +2259,25 @@ class Component extends DCLogic {
     this.setState({customContacts: contacts});
     if(nameEl) nameEl.value = '';
     if(phoneEl) phoneEl.value = '';
+  }
+
+  // ===== PAY YOUR BID =====
+  _payCopyZelle(){
+    const num='404-750-2157';
+    const done=()=>{ this.setState({payCopied:true});
+      if(this._payT) clearTimeout(this._payT);
+      this._payT=setTimeout(()=>this.setState({payCopied:false}), 2500); };
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(num).then(done).catch(()=>done());
+      } else {
+        const t=document.createElement('textarea');
+        t.value=num; t.style.position='fixed'; t.style.opacity='0';
+        document.body.appendChild(t); t.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        document.body.removeChild(t); done();
+      }
+    }catch(e){ done(); }
   }
 
   // ===== PUSH NOTIFICATIONS =====
@@ -3490,6 +3575,12 @@ class Component extends DCLogic {
       replyId: 'reply-'+p.id,
       doReply: ()=> this._replyMessage(p.id)
     }));
+    const payCopied   = s.payCopied;
+    const payNotCopied= !s.payCopied;
+    const payOpen     = s.payOpen;
+    const payClosed   = !s.payOpen;
+    const payCopyZelle= ()=>this._payCopyZelle();
+    const payToggle   = ()=>this.setState({payOpen:!s.payOpen});
     const notifPrompt   = s.notifPrompt;
     const notifIsIOS    = s.notifPerm==='ios-install';
     const notifIsStd    = s.notifPerm!=='ios-install';
@@ -4018,6 +4109,7 @@ class Component extends DCLogic {
       dealDoorPick: s.dealDoorPick,
       adminModalTitle, adminModalFields,
       // Message Board
+      payCopied, payNotCopied, payOpen, payClosed, payCopyZelle, payToggle,
       notifPrompt, notifIsIOS, notifIsStd, notifAsk, notifDismiss, notifOn, notifOff, notifTest,
       boardPosts, hasBoardPosts, postMessage, boardMsgKey, clearMessages, boardCount, boardNewCount, hasBoardNew, boardBadge,
       // Reoke mode
